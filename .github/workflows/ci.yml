@@ -24,11 +24,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradlew Executable
         run: chmod +x gradlew
 
-      - name: Check Gradle dependencies and structure
+      - name: Check Gradle version
         run: ./gradlew --version
+
