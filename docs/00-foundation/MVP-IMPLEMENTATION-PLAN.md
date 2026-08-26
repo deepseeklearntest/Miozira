@@ -238,7 +238,7 @@ When a task references an exact learning or interaction rule, read the directly 
 - Produces: `start(SpeechAttemptRequest, SpeechAttemptListener): AppResult<SpeechAttemptHandle>`, `stop(handle)`, and `stopAll()`.
 - Produces: only `ATTEMPT_DETECTED`, `NO_ATTEMPT_DETECTED`, or `MICROPHONE_UNAVAILABLE`; PCM remains inside the adapter/classifier call stack.
 
-- [ ] **Step 1: Add deterministic frame tests: ambient frames return no attempt, 160 ms sustained energy above a measured noise floor returns attempt, and one impulse does not.**
+- [ ] **Step 1: Add deterministic frame tests: ambient frames return no attempt, 250 ms sustained energy above a measured noise floor returns attempt, and one impulse does not.**
 - [ ] **Step 2: Run the classifier test; expect failure because the classifier is absent.**
 - [ ] **Step 3: Implement configurable 2,500 ms capture, 20–40 ms frames, relative-noise RMS gating, one terminal event, prompt release on stop/background, and no file/path API.**
 - [ ] **Step 4: On the primary tablet test quiet speech, silence, tap noise, adult speech, background, and rotation; inspect app-private storage before/after and record results in `docs/05-quality/evidence/spike-microphone.md`.**
