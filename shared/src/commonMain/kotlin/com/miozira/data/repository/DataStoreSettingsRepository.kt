@@ -18,6 +18,7 @@ interface SettingsRepository {
     suspend fun setStartingLanguage(languageId: LanguageId?): AppResult<Unit>
     suspend fun isSpeechAttemptDetectionEnabled(): AppResult<Boolean>
     suspend fun setSpeechAttemptDetectionEnabled(value: Boolean): AppResult<Unit>
+    suspend fun resetForUserData(): AppResult<Unit>
 }
 
 class DataStoreSettingsRepository(
@@ -46,6 +47,12 @@ class DataStoreSettingsRepository(
 
     override suspend fun setSpeechAttemptDetectionEnabled(value: Boolean): AppResult<Unit> = write {
         it[speechAttemptDetectionEnabledKey] = value
+    }
+
+    override suspend fun resetForUserData(): AppResult<Unit> = write {
+        it.remove(setupCompleteKey)
+        it.remove(startingLanguageKey)
+        it.remove(speechAttemptDetectionEnabledKey)
     }
 
     private suspend fun <T> read(read: (Preferences) -> T): AppResult<T> = try {

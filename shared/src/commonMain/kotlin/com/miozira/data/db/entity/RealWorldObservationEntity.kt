@@ -9,7 +9,10 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "real_world_observation",
     foreignKeys = [ForeignKey(ConceptLanguagePairEntity::class, ["pair_id"], ["pair_id"])],
-    indices = [Index(value = ["pair_id"])],
+    indices = [
+        Index(value = ["pair_id"]),
+        Index(value = ["pair_id", "observation_type"], unique = true),
+    ],
 )
 data class RealWorldObservationEntity(
     @PrimaryKey

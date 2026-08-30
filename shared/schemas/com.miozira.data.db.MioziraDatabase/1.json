@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d2e5b038a0524518680135be4eb55533",
+    "identityHash": "303a93f24fe59d6f5ce8e1eb80632c3f",
     "entities": [
       {
         "tableName": "content_version",
@@ -756,6 +756,16 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_real_world_observation_pair_id` ON `${TABLE_NAME}` (`pair_id`)"
+          },
+          {
+            "name": "index_real_world_observation_pair_id_observation_type",
+            "unique": true,
+            "columnNames": [
+              "pair_id",
+              "observation_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_real_world_observation_pair_id_observation_type` ON `${TABLE_NAME}` (`pair_id`, `observation_type`)"
           }
         ],
         "foreignKeys": [
@@ -866,7 +876,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd2e5b038a0524518680135be4eb55533')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '303a93f24fe59d6f5ce8e1eb80632c3f')"
     ]
   }
 }

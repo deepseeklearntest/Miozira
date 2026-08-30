@@ -49,4 +49,7 @@ interface ContentDao {
 
     @Query("SELECT COUNT(*) FROM pair_learning_state WHERE learning_state = 'NEW'")
     suspend fun newPairStateCount(): Int
+
+    @Query("SELECT * FROM pair_learning_state ORDER BY pair_id")
+    suspend fun allPairLearningStates(): List<PairLearningStateEntity>
 }

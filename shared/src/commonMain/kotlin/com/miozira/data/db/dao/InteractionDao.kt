@@ -49,11 +49,33 @@ interface InteractionDao {
     )
     suspend fun rebuildPairEvidence(pairId: String, updatedAtMs: Long): Int
 
+    @Query(
+        "UPDATE pair_learning_state SET " +
+            "learning_state = CASE " +
+            "WHEN rest_until_ms IS NOT NULL AND rest_until_ms > :updatedAtMs THEN 'RESTING' " +
+            "WHEN (real_world_use_count > 0 AND valid_exposure_count > 0) OR " +
+            "(valid_exposure_count >= 3 AND session_exposure_count >= 2 AND " +
+            "(attempt_detected_count > 0 OR replay_count_total > 0 OR " +
+            "real_world_recognition_count > 0 OR real_world_use_count > 0)) THEN 'FAMILIAR' " +
+            "WHEN valid_exposure_count > 0 THEN 'EMERGING' ELSE 'NEW' END, " +
+            "next_due_at_ms = CASE " +
+            "WHEN rest_until_ms IS NOT NULL AND rest_until_ms > :updatedAtMs THEN NULL " +
+            "WHEN last_exposed_at_ms IS NULL OR valid_exposure_count = 0 THEN NULL " +
+            "WHEN (real_world_use_count > 0 AND valid_exposure_count > 0) THEN last_exposed_at_ms + 432000000 " +
+            "WHEN valid_exposure_count >= 3 AND session_exposure_count >= 2 AND " +
+            "(attempt_detected_count > 0 OR replay_count_total > 0 OR " +
+            "real_world_recognition_count > 0 OR real_world_use_count > 0) THEN last_exposed_at_ms + 259200000 " +
+            "ELSE last_exposed_at_ms + 86400000 END, " +
+            "updated_at_ms = :updatedAtMs WHERE pair_id = :pairId",
+    )
+    suspend fun projectAdaptiveState(pairId: String, updatedAtMs: Long): Int
+
     @Transaction
     suspend fun commitExposureAndRebuild(interactionId: String, committedAtMs: Long): CommitMutationResult {
         val interaction = findInteraction(interactionId) ?: return CommitMutationResult.NOT_FOUND
         return if (markExposureOnce(interactionId, committedAtMs) == 1) {
             rebuildPairEvidence(interaction.pairId, committedAtMs)
+            projectAdaptiveState(interaction.pairId, committedAtMs)
             CommitMutationResult.CHANGED
         } else {
             CommitMutationResult.ALREADY_APPLIED
@@ -67,6 +89,7 @@ interface InteractionDao {
         val existingState = findPairState(interaction.pairId)
             ?: return CommitMutationResult.NOT_FOUND
         rebuildPairEvidence(interaction.pairId, existingState.updatedAtMs)
+        projectAdaptiveState(interaction.pairId, existingState.updatedAtMs)
         return CommitMutationResult.CHANGED
     }
 
@@ -79,6 +102,7 @@ interface InteractionDao {
         val interaction = findInteraction(interactionId) ?: return CommitMutationResult.NOT_FOUND
         return if (recordAttemptOnce(interactionId, attemptState, recordedAtMs) == 1) {
             rebuildPairEvidence(interaction.pairId, recordedAtMs)
+            projectAdaptiveState(interaction.pairId, recordedAtMs)
             CommitMutationResult.CHANGED
         } else {
             CommitMutationResult.ALREADY_APPLIED

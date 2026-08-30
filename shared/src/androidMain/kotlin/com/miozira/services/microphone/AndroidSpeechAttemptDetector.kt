@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class AndroidSpeechAttemptDetector(
     private val context: Context,
+    private val config: SpeechAttemptConfig = SpeechAttemptConfig(),
 ) : SpeechAttemptDetector {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val lock = Any()
@@ -55,7 +56,7 @@ class AndroidSpeechAttemptDetector(
                 } else {
                     activeCapture = capture
                     capture.job = scope.launch {
-                        captureWindow(capture, request.durationMs)
+                        captureWindow(capture, request.durationMs.coerceAtMost(config.windowDurationMs))
                     }
                     AppResult.Success(handle)
                 }
@@ -77,8 +78,15 @@ class AndroidSpeechAttemptDetector(
     }
 
     private suspend fun captureWindow(capture: ActiveCapture, durationMs: Long) {
-        val classifier = EnergyAttemptClassifier()
-        val frame = ShortArray(FRAME_SAMPLE_COUNT)
+        val classifier = EnergyAttemptClassifier(
+            EnergyAttemptClassifier.Config(
+                frameDurationMs = config.frameDurationMs,
+                calibrationFrameCount = config.calibrationFrameCount,
+                requiredSustainedEnergyMs = config.minimumActiveDurationMs,
+                relativeEnergyMultiplier = config.thresholdMargin,
+            ),
+        )
+        val frame = ShortArray(SAMPLE_RATE_HZ * config.frameDurationMs / 1_000)
         val deadlineMs = SystemClock.elapsedRealtime() + durationMs
 
         while (SystemClock.elapsedRealtime() < deadlineMs && isActive(capture)) {

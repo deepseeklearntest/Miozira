@@ -60,6 +60,7 @@ class RoomLearningRepository(
             AppResult.Failure(AppError.InvalidState("Unknown content pair"))
         } else {
             interactionDao.rebuildPairEvidence(pairId.value, rebuiltAtMs)
+            interactionDao.projectAdaptiveState(pairId.value, rebuiltAtMs)
             AppResult.Success(Unit)
         }
     } catch (error: Exception) {

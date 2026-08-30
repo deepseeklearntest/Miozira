@@ -5,6 +5,9 @@ import androidx.room.RoomDatabase
 import com.miozira.data.db.dao.ContentDao
 import com.miozira.data.db.dao.InteractionDao
 import com.miozira.data.db.dao.RecoveryDao
+import com.miozira.data.db.dao.RealWorldObservationDao
+import com.miozira.data.db.dao.ResetDao
+import com.miozira.data.db.dao.FamilyRecordingDao
 import com.miozira.data.db.dao.SessionDao
 import com.miozira.data.db.entity.ConceptEntity
 import com.miozira.data.db.entity.ConceptLanguagePairEntity
@@ -39,4 +42,10 @@ abstract class MioziraDatabase : RoomDatabase() {
     abstract fun interactionDao(): InteractionDao
 
     abstract fun recoveryDao(): RecoveryDao
+
+    abstract fun realWorldObservationDao(): RealWorldObservationDao
+
+    abstract fun resetDao(): ResetDao
+
+    abstract fun familyRecordingDao(): FamilyRecordingDao
 }
