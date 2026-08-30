@@ -1,0 +1,2 @@
+# The only sensitive runtime capability Prototype 0.1 may request.
+android.permission.RECORD_AUDIO

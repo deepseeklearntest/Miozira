@@ -19,11 +19,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current Repository State
 
-**Gradle build system & multiplatform scaffolding initialized.** Root and module build scripts (`build.gradle.kts`, `settings.gradle.kts`, `gradle/libs.versions.toml`, `gradlew`) are configured for `:shared`, `:androidApp`, and `:iosApp`.
+**Gradle build verified working.** `:shared` (KMP, Android target only so far) and `:androidApp` build, test, and assemble cleanly. See [`docs/03-engineering/development-environment.md`](docs/03-engineering/development-environment.md) for full host-tool setup (JDK 17, Android SDK).
 
-Consequences:
-- The Gradle wrapper (`./gradlew`) is available for building multiplatform targets.
-- The next planned step is the **Mandatory Technical Spike** (README §5 Step 1): validate tap-to-audio latency ($\le 250\text{ ms}$), memory-only attempt detection, Room persistence, and rotation without duplicated evidence on real Android tablet hardware before feature work.
+Verified emulator command (run from repo root):
+
+```bash
+./gradlew :shared:testDebugUnitTest :shared:connectedDebugAndroidTest :androidApp:connectedDebugAndroidTest :androidApp:assembleDebug :androidApp:checkManifestPolicy
+```
+
+- `:shared:testDebugUnitTest` — common Kotlin unit tests (`shared/src/commonTest`).
+- `:shared:connectedDebugAndroidTest` and `:androidApp:connectedDebugAndroidTest` — Room/repository and Android integration tests on an emulator or device.
+- `:androidApp:assembleDebug` — builds the debug APK.
+- `:androidApp:checkManifestPolicy` — fails the build if the merged manifest's `android.permission.*` set drifts from [`config/android-permission-allowlist.txt`](config/android-permission-allowlist.txt) (currently `RECORD_AUDIO` only) or gains `INTERNET`. This is the CI-enforced form of the no-network invariant, not just a docs claim.
+- Instrumented tests need a device/emulator to run; `./gradlew :androidApp:compileDebugAndroidTestKotlin` verifies the Android-app tests compile without one.
+
+Implemented through Phase 3: Android audio and memory-only speech-attempt technical spikes, the draft content-review surface, a Room-backed local schema and idempotent evidence persistence, DataStore settings, and safe startup recovery. The iOS target/shell, production child session state machine, adaptive selection, and parent area are not yet built.
+
+The next planned implementation phase is the **child session state machine**. Physical-tablet audio latency and real-microphone validation remain mandatory before the seven-day family test; emulator results must not be presented as physical-device proof.
 
 ---
 
@@ -35,7 +47,8 @@ shared/src/androidMain/kotlin/com/miozira/platform      # audio, mic, permission
 shared/src/iosMain/kotlin/com/miozira/platform          # minimal iOS shell
 shared/src/commonTest/kotlin/com/miozira                # domain/adaptive-engine unit tests
 shared/src/commonMain/resources
-androidApp/src/main/{java,res}
+androidApp/src/main/{kotlin,res}
+androidApp/src/androidTest/kotlin/com/miozira        # instrumented tests (need a device/emulator)
 iosApp/
 content/concepts/<concept>/                             # illustrations + en/ta audio, 8 concepts
 ```

@@ -1,0 +1,33 @@
+{
+  "contentVersion": "prototype-0.1-v1",
+  "releaseStatus": "DRAFT",
+  "languages": ["en", "ta"],
+  "concepts": [
+    { "id": "apple", "visual": "drawable/concept_apple_draft.png" },
+    { "id": "ball", "visual": "drawable/concept_ball_draft.png" },
+    { "id": "cup", "visual": "drawable/concept_cup_draft.jpg" },
+    { "id": "hand", "visual": "drawable/concept_hand_draft.jpg" },
+    { "id": "nose", "visual": "drawable/concept_nose_draft.png" },
+    { "id": "cat", "visual": "drawable/concept_cat_draft.png" },
+    { "id": "car", "visual": "drawable/concept_car_draft.png" },
+    { "id": "water", "visual": "drawable/concept_water_draft.jpg" }
+  ],
+  "pairs": [
+    { "id": "apple:en", "spokenForm": "apple", "audio": "files/audio/word_apple_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "apple:ta", "spokenForm": "ஆப்பிள்", "audio": "files/audio/word_apple_ta_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "ball:en", "spokenForm": "ball", "audio": "files/audio/word_ball_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "ball:ta", "spokenForm": "பந்து", "audio": "files/audio/word_ball_ta_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "cup:en", "spokenForm": "cup", "audio": "files/audio/word_cup_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "cup:ta", "spokenForm": "கப்", "audio": "files/audio/word_cup_ta_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "hand:en", "spokenForm": "hand", "audio": "files/audio/word_hand_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "hand:ta", "spokenForm": "கை", "audio": "files/audio/word_hand_ta_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "nose:en", "spokenForm": "nose", "audio": "files/audio/word_nose_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "nose:ta", "spokenForm": "மூக்கு", "audio": "files/audio/word_nose_ta_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "cat:en", "spokenForm": "cat", "audio": "files/audio/word_cat_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "cat:ta", "spokenForm": "பூனை", "audio": "files/audio/word_cat_ta_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "car:en", "spokenForm": "car", "audio": "files/audio/word_car_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "car:ta", "spokenForm": "கார்", "audio": "files/audio/word_car_ta_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "water:en", "spokenForm": "water", "audio": "files/audio/word_water_en_draft.m4a", "reviewStatus": "DRAFT" },
+    { "id": "water:ta", "spokenForm": "தண்ணீர்", "audio": "files/audio/word_water_ta_draft.m4a", "reviewStatus": "DRAFT" }
+  ]
+}

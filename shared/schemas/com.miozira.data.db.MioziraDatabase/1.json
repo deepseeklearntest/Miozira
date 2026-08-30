@@ -1,0 +1,872 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "d2e5b038a0524518680135be4eb55533",
+    "entities": [
+      {
+        "tableName": "content_version",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`version_id` TEXT NOT NULL, `created_at_ms` INTEGER NOT NULL, `description` TEXT, PRIMARY KEY(`version_id`))",
+        "fields": [
+          {
+            "fieldPath": "versionId",
+            "columnName": "version_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtMs",
+            "columnName": "created_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "version_id"
+          ]
+        }
+      },
+      {
+        "tableName": "concept",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`concept_id` TEXT NOT NULL, `category` TEXT NOT NULL, `primary_visual_asset_id` TEXT NOT NULL, `movement_eligible` INTEGER NOT NULL, `content_version_id` TEXT NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`concept_id`), FOREIGN KEY(`content_version_id`) REFERENCES `content_version`(`version_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "conceptId",
+            "columnName": "concept_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "primaryVisualAssetId",
+            "columnName": "primary_visual_asset_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "movementEligible",
+            "columnName": "movement_eligible",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentVersionId",
+            "columnName": "content_version_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "concept_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_concept_content_version_id",
+            "unique": false,
+            "columnNames": [
+              "content_version_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_concept_content_version_id` ON `${TABLE_NAME}` (`content_version_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "content_version",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "content_version_id"
+            ],
+            "referencedColumns": [
+              "version_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "language",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`language_id` TEXT NOT NULL, `language_code` TEXT NOT NULL, `display_name` TEXT NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`language_id`))",
+        "fields": [
+          {
+            "fieldPath": "languageId",
+            "columnName": "language_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "languageCode",
+            "columnName": "language_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "display_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "language_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_language_language_code",
+            "unique": true,
+            "columnNames": [
+              "language_code"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_language_language_code` ON `${TABLE_NAME}` (`language_code`)"
+          }
+        ]
+      },
+      {
+        "tableName": "concept_language_pair",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pair_id` TEXT NOT NULL, `concept_id` TEXT NOT NULL, `language_id` TEXT NOT NULL, `spoken_form` TEXT NOT NULL, `canonical_audio_asset_id` TEXT NOT NULL, `review_status` TEXT NOT NULL, `content_version_id` TEXT NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`pair_id`), FOREIGN KEY(`concept_id`) REFERENCES `concept`(`concept_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`language_id`) REFERENCES `language`(`language_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`content_version_id`) REFERENCES `content_version`(`version_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "pairId",
+            "columnName": "pair_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conceptId",
+            "columnName": "concept_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "languageId",
+            "columnName": "language_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spokenForm",
+            "columnName": "spoken_form",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "canonicalAudioAssetId",
+            "columnName": "canonical_audio_asset_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reviewStatus",
+            "columnName": "review_status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentVersionId",
+            "columnName": "content_version_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pair_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_concept_language_pair_concept_id_language_id",
+            "unique": true,
+            "columnNames": [
+              "concept_id",
+              "language_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_concept_language_pair_concept_id_language_id` ON `${TABLE_NAME}` (`concept_id`, `language_id`)"
+          },
+          {
+            "name": "index_concept_language_pair_language_id",
+            "unique": false,
+            "columnNames": [
+              "language_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_concept_language_pair_language_id` ON `${TABLE_NAME}` (`language_id`)"
+          },
+          {
+            "name": "index_concept_language_pair_content_version_id",
+            "unique": false,
+            "columnNames": [
+              "content_version_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_concept_language_pair_content_version_id` ON `${TABLE_NAME}` (`content_version_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "concept",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "concept_id"
+            ],
+            "referencedColumns": [
+              "concept_id"
+            ]
+          },
+          {
+            "table": "language",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "language_id"
+            ],
+            "referencedColumns": [
+              "language_id"
+            ]
+          },
+          {
+            "table": "content_version",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "content_version_id"
+            ],
+            "referencedColumns": [
+              "version_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "session",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_id` TEXT NOT NULL, `started_at_ms` INTEGER NOT NULL, `ended_at_ms` INTEGER, `starting_language_id` TEXT, `completion_reason` TEXT, `content_version_id` TEXT NOT NULL, `adaptive_config_version` TEXT NOT NULL, `meaningful_activity` INTEGER NOT NULL DEFAULT 0, `generated_suggestion_id` TEXT, PRIMARY KEY(`session_id`), FOREIGN KEY(`starting_language_id`) REFERENCES `language`(`language_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`content_version_id`) REFERENCES `content_version`(`version_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAtMs",
+            "columnName": "started_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endedAtMs",
+            "columnName": "ended_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "startingLanguageId",
+            "columnName": "starting_language_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "completionReason",
+            "columnName": "completion_reason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "contentVersionId",
+            "columnName": "content_version_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "adaptiveConfigVersion",
+            "columnName": "adaptive_config_version",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meaningfulActivity",
+            "columnName": "meaningful_activity",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "generatedSuggestionId",
+            "columnName": "generated_suggestion_id",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "session_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_session_started_at_ms",
+            "unique": false,
+            "columnNames": [
+              "started_at_ms"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_session_started_at_ms` ON `${TABLE_NAME}` (`started_at_ms`)"
+          },
+          {
+            "name": "index_session_starting_language_id",
+            "unique": false,
+            "columnNames": [
+              "starting_language_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_session_starting_language_id` ON `${TABLE_NAME}` (`starting_language_id`)"
+          },
+          {
+            "name": "index_session_content_version_id",
+            "unique": false,
+            "columnNames": [
+              "content_version_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_session_content_version_id` ON `${TABLE_NAME}` (`content_version_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "language",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "starting_language_id"
+            ],
+            "referencedColumns": [
+              "language_id"
+            ]
+          },
+          {
+            "table": "content_version",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "content_version_id"
+            ],
+            "referencedColumns": [
+              "version_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "interaction",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`interaction_id` TEXT NOT NULL, `session_id` TEXT NOT NULL, `pair_id` TEXT NOT NULL, `sequence_index` INTEGER NOT NULL, `selection_reason` TEXT NOT NULL, `started_at_ms` INTEGER NOT NULL, `completed_at_ms` INTEGER, `completion_reason` TEXT, `exposure_committed` INTEGER NOT NULL DEFAULT 0, `exposure_committed_at_ms` INTEGER, `replay_count` INTEGER NOT NULL DEFAULT 0, `attempt_state` TEXT NOT NULL DEFAULT 'NOT_MEASURED', `attempt_recorded_at_ms` INTEGER, `planned` INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(`interaction_id`), FOREIGN KEY(`session_id`) REFERENCES `session`(`session_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`pair_id`) REFERENCES `concept_language_pair`(`pair_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "interactionId",
+            "columnName": "interaction_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pairId",
+            "columnName": "pair_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sequenceIndex",
+            "columnName": "sequence_index",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selectionReason",
+            "columnName": "selection_reason",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAtMs",
+            "columnName": "started_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completedAtMs",
+            "columnName": "completed_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "completionReason",
+            "columnName": "completion_reason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "exposureCommitted",
+            "columnName": "exposure_committed",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "exposureCommittedAtMs",
+            "columnName": "exposure_committed_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "replayCount",
+            "columnName": "replay_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "attemptState",
+            "columnName": "attempt_state",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'NOT_MEASURED'"
+          },
+          {
+            "fieldPath": "attemptRecordedAtMs",
+            "columnName": "attempt_recorded_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "planned",
+            "columnName": "planned",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "interaction_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_interaction_session_id_sequence_index",
+            "unique": true,
+            "columnNames": [
+              "session_id",
+              "sequence_index"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_interaction_session_id_sequence_index` ON `${TABLE_NAME}` (`session_id`, `sequence_index`)"
+          },
+          {
+            "name": "index_interaction_pair_id",
+            "unique": false,
+            "columnNames": [
+              "pair_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_interaction_pair_id` ON `${TABLE_NAME}` (`pair_id`)"
+          },
+          {
+            "name": "index_interaction_pair_id_exposure_committed",
+            "unique": false,
+            "columnNames": [
+              "pair_id",
+              "exposure_committed"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_interaction_pair_id_exposure_committed` ON `${TABLE_NAME}` (`pair_id`, `exposure_committed`)"
+          },
+          {
+            "name": "index_interaction_completed_at_ms",
+            "unique": false,
+            "columnNames": [
+              "completed_at_ms"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_interaction_completed_at_ms` ON `${TABLE_NAME}` (`completed_at_ms`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "session",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "session_id"
+            ],
+            "referencedColumns": [
+              "session_id"
+            ]
+          },
+          {
+            "table": "concept_language_pair",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pair_id"
+            ],
+            "referencedColumns": [
+              "pair_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "pair_learning_state",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pair_id` TEXT NOT NULL, `learning_state` TEXT NOT NULL, `next_due_at_ms` INTEGER, `rest_until_ms` INTEGER, `valid_exposure_count` INTEGER NOT NULL DEFAULT 0, `session_exposure_count` INTEGER NOT NULL DEFAULT 0, `attempt_detected_count` INTEGER NOT NULL DEFAULT 0, `replay_count_total` INTEGER NOT NULL DEFAULT 0, `real_world_recognition_count` INTEGER NOT NULL DEFAULT 0, `real_world_use_count` INTEGER NOT NULL DEFAULT 0, `last_exposed_at_ms` INTEGER, `last_attempt_at_ms` INTEGER, `last_real_world_event_at_ms` INTEGER, `low_interaction_encounter_count` INTEGER NOT NULL DEFAULT 0, `rest_count` INTEGER NOT NULL DEFAULT 0, `updated_at_ms` INTEGER NOT NULL, `state_version` INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(`pair_id`), FOREIGN KEY(`pair_id`) REFERENCES `concept_language_pair`(`pair_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "pairId",
+            "columnName": "pair_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningState",
+            "columnName": "learning_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextDueAtMs",
+            "columnName": "next_due_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "restUntilMs",
+            "columnName": "rest_until_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "validExposureCount",
+            "columnName": "valid_exposure_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "sessionExposureCount",
+            "columnName": "session_exposure_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "attemptDetectedCount",
+            "columnName": "attempt_detected_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "replayCountTotal",
+            "columnName": "replay_count_total",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "realWorldRecognitionCount",
+            "columnName": "real_world_recognition_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "realWorldUseCount",
+            "columnName": "real_world_use_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "lastExposedAtMs",
+            "columnName": "last_exposed_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastAttemptAtMs",
+            "columnName": "last_attempt_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastRealWorldEventAtMs",
+            "columnName": "last_real_world_event_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lowInteractionEncounterCount",
+            "columnName": "low_interaction_encounter_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "restCount",
+            "columnName": "rest_count",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "updatedAtMs",
+            "columnName": "updated_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stateVersion",
+            "columnName": "state_version",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pair_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_pair_learning_state_pair_id",
+            "unique": false,
+            "columnNames": [
+              "pair_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_pair_learning_state_pair_id` ON `${TABLE_NAME}` (`pair_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "concept_language_pair",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pair_id"
+            ],
+            "referencedColumns": [
+              "pair_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "real_world_observation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`observation_id` TEXT NOT NULL, `pair_id` TEXT NOT NULL, `observation_type` TEXT NOT NULL, `recorded_at_ms` INTEGER NOT NULL, `observed_at_ms` INTEGER, `context` TEXT, `source` TEXT NOT NULL DEFAULT 'PARENT_REPORT', PRIMARY KEY(`observation_id`), FOREIGN KEY(`pair_id`) REFERENCES `concept_language_pair`(`pair_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "observationId",
+            "columnName": "observation_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pairId",
+            "columnName": "pair_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observationType",
+            "columnName": "observation_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordedAtMs",
+            "columnName": "recorded_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observedAtMs",
+            "columnName": "observed_at_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "context",
+            "columnName": "context",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'PARENT_REPORT'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "observation_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_real_world_observation_pair_id",
+            "unique": false,
+            "columnNames": [
+              "pair_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_real_world_observation_pair_id` ON `${TABLE_NAME}` (`pair_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "concept_language_pair",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pair_id"
+            ],
+            "referencedColumns": [
+              "pair_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "family_recording",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`recording_id` TEXT NOT NULL, `pair_id` TEXT NOT NULL, `logical_file_id` TEXT NOT NULL, `created_at_ms` INTEGER NOT NULL, `updated_at_ms` INTEGER NOT NULL, `duration_ms` INTEGER, `format` TEXT, `status` TEXT NOT NULL, PRIMARY KEY(`recording_id`), FOREIGN KEY(`pair_id`) REFERENCES `concept_language_pair`(`pair_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "recordingId",
+            "columnName": "recording_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pairId",
+            "columnName": "pair_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logicalFileId",
+            "columnName": "logical_file_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtMs",
+            "columnName": "created_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtMs",
+            "columnName": "updated_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationMs",
+            "columnName": "duration_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "format",
+            "columnName": "format",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "recording_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_family_recording_pair_id",
+            "unique": true,
+            "columnNames": [
+              "pair_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_family_recording_pair_id` ON `${TABLE_NAME}` (`pair_id`)"
+          },
+          {
+            "name": "index_family_recording_logical_file_id",
+            "unique": true,
+            "columnNames": [
+              "logical_file_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_family_recording_logical_file_id` ON `${TABLE_NAME}` (`logical_file_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "concept_language_pair",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pair_id"
+            ],
+            "referencedColumns": [
+              "pair_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd2e5b038a0524518680135be4eb55533')"
+    ]
+  }
+}

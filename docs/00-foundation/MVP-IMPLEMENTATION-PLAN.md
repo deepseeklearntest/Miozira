@@ -92,8 +92,9 @@ Each task is one review gate and should normally be one small PR. Use red-green-
 Use these concrete commands unless the task names a narrower one:
 
 ```bash
-# Pure common/domain/content tests
-./gradlew :shared:allTests
+# Shared common/domain/content tests
+# `:shared:allTests` is not created by the Android-only KMP target in this repository.
+./gradlew :shared:testDebugUnitTest
 
 # Room, Android service, and shared Android instrumented tests
 ./gradlew :shared:connectedAndroidTest
@@ -105,7 +106,7 @@ Use these concrete commands unless the task names a narrower one:
 ./gradlew :androidApp:assembleDebug
 
 # Release-candidate verification
-./gradlew :shared:allTests :androidApp:lintRelease :androidApp:assembleRelease
+./gradlew :shared:testDebugUnitTest :androidApp:lintRelease :androidApp:assembleRelease
 ```
 
 For each Step 2, the expected result is a failure in the named new behavior—not a configuration or unrelated test failure. For each Step 4, the expected result is that the named narrow test and every affected command above pass. If actual Gradle task names differ after the Phase 0 source-set setup, Phase 0 must document the exact replacement commands here before feature work begins.
@@ -346,7 +347,9 @@ When a task references an exact learning or interaction rule, read the directly 
 
 ---
 
-## Phase 3 — Local persistence
+## Phase 3 — Local persistence ✅ PASS (emulator validated)
+
+**Implementation status (2026-08-30):** The Phase 3 exit criteria are satisfied on the Pixel Tablet emulator. The state-specific manual lifecycle matrix is deferred to Phase 4, when the child interaction states exist. Physical-tablet audio and microphone validation remains a separate gate.
 
 **Goal:** Persist content identity, sessions, interactions, evidence, derived pair state, observations, and settings locally with idempotent transactions.
 
@@ -381,11 +384,11 @@ When a task references an exact learning or interaction rule, read the directly 
 - Consumes: `manifest-v1.json` and stable logical IDs.
 - Produces: specified tables, foreign keys/indexes, schema export, and `seedContent(version): AppResult<Unit>`.
 
-- [ ] **Step 1: Add a fresh-database test that seeds twice and asserts 8 concepts, 2 languages, 16 unique pairs, 16 `NEW` pair states, and no duplicate rows.**
-- [ ] **Step 2: Run the test; expect failure against the spike schema.**
-- [ ] **Step 3: Implement the privacy-minimal Room entities/DAOs and a single seed transaction matching `database.md` fields and stable enum strings.**
-- [ ] **Step 4: Run schema/seed/foreign-key tests and export the initial schema for future migration tests.**
-- [ ] **Step 5: Commit as `feat: seed Prototype 0.1 Room schema`.**
+- [x] **Step 1: Add a fresh-database test that seeds twice and asserts 8 concepts, 2 languages, 16 unique pairs, 16 `NEW` pair states, and no duplicate rows.**
+- [x] **Step 2: Run the test; expect failure against the spike schema.**
+- [x] **Step 3: Implement the privacy-minimal Room entities/DAOs and a single seed transaction matching `database.md` fields and stable enum strings.**
+- [x] **Step 4: Run schema/seed/foreign-key tests and export the initial schema for future migration tests.**
+- [ ] **Step 5: Commit as `feat: seed Prototype 0.1 Room schema`.** *(Not performed: this is a shared dirty worktree and no automatic commit was requested.)*
 
 ### Task 3.2: Commit one completed interaction atomically and idempotently
 
@@ -398,11 +401,11 @@ When a task references an exact learning or interaction rule, read the directly 
 - Produces: `commitExposure(interactionId, committedAt)`, `incrementReplay(interactionId)`, `recordAttempt(interactionId, attemptState, recordedAt)`, and `completeInteraction(interactionId, result)` returning `AppResult`.
 - Guarantees: one scheduled exposure per interaction; replay never increments exposure; `NOT_MEASURED` is not silently converted to no attempt.
 
-- [ ] **Step 1: Add a transaction test that sends duplicate threshold/completion/attempt callbacks and asserts one exposure, exact replay total, one terminal attempt value, and updated pair summary.**
-- [ ] **Step 2: Run the test; expect failure because repositories are absent.**
-- [ ] **Step 3: Implement narrow DAOs and one database transaction that finalizes interaction fields and pair summary without exposing Room types above data.**
-- [ ] **Step 4: Run repository tests including interruption before/after threshold, planned-but-unseen interaction, and concurrent duplicate commits.**
-- [ ] **Step 5: Commit as `feat: persist interaction evidence idempotently`.**
+- [x] **Step 1: Add a transaction test that sends duplicate threshold/completion/attempt callbacks and asserts one exposure, exact replay total, one terminal attempt value, and updated pair summary.**
+- [x] **Step 2: Run the test; expect failure because repositories are absent.**
+- [x] **Step 3: Implement narrow DAOs and one database transaction that finalizes interaction fields and pair summary without exposing Room types above data.**
+- [x] **Step 4: Run repository tests including interruption before/after threshold, planned-but-unseen interaction, and concurrent duplicate commits.**
+- [ ] **Step 5: Commit as `feat: persist interaction evidence idempotently`.** *(Not performed: this is a shared dirty worktree and no automatic commit was requested.)*
 
 ### Task 3.3: Restore settings and interrupted sessions after process death
 
@@ -415,11 +418,11 @@ When a task references an exact learning or interaction rule, read the directly 
 - Produces: `SettingsRepository` methods for setup, starting language, and speech-attempt enablement.
 - Produces: `recoverInterruptedSessions(): AppResult<RecoverySummary>` that closes stale active sessions without fabricating exposure/attempt evidence.
 
-- [ ] **Step 1: Add tests that restart with one complete and one incomplete interaction; assert only real evidence survives and the interrupted session closes with `APP_EXITED` or `ERROR_RECOVERY`.**
-- [ ] **Step 2: Run tests; expect failure because recovery/settings implementations are absent.**
-- [ ] **Step 3: Implement DataStore preferences and startup recovery using `Clock`; keep permission truth in the OS rather than DataStore.**
-- [ ] **Step 4: Run restart/recovery tests and manually force-stop during READY, playback-before-threshold, playback-after-threshold, and listening.**
-- [ ] **Step 5: Commit as `feat: recover local session state safely`.**
+- [x] **Step 1: Add tests that restart with one complete and one incomplete interaction; assert only real evidence survives and the interrupted session closes with `APP_EXITED` or `ERROR_RECOVERY`.**
+- [x] **Step 2: Run tests; expect failure because recovery/settings implementations are absent.**
+- [x] **Step 3: Implement DataStore preferences and startup recovery using `Clock`; keep permission truth in the OS rather than DataStore.**
+- [ ] **Step 4: Run restart/recovery tests and manually force-stop during READY, playback-before-threshold, playback-after-threshold, and listening.** *(Automated restart/recovery tests and an emulator force-stop/relaunch check passed. The state-specific manual lifecycle matrix belongs to Phase 4 because this screen does not yet expose those states.)*
+- [ ] **Step 5: Commit as `feat: recover local session state safely`.** *(Not performed: this is a shared dirty worktree and no automatic commit was requested.)*
 
 ---
 
