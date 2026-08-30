@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Prototype 0.1 implementation
+- Added the offline child session state machine, adaptive local scheduling, and idempotent Room evidence persistence.
+- Added optional, semantic-only microphone attempt detection with adult-controlled permission handling.
+- Added the protected parent-domain foundations for neutral activity, real-world transfer, reset, and private family recordings.
+- Added release backup exclusions, offline manifest policy checks, and release-configuration identity tests.
+
 ### Planned - Technical Spike & Milestone 1
 - **Technical Spike:** Minimal vertical slice validating low-latency audio playback, memory-only speech attempt detection, and Room persistence across orientation changes on Android tablet.
 - **Core Domain & Repositories:** Kotlin Multiplatform repository abstractions, local Room SQLite tables, and spaced repetition engine.
