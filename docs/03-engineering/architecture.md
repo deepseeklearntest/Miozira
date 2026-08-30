@@ -31,18 +31,7 @@ It describes:
 - Android-first implementation constraints;
 - future iPadOS portability.
 
-This document intentionally defines the **architecture before the final technology decision**.
-
-The final choice between:
-
-- Kotlin Multiplatform + Compose Multiplatform;
-- Android-native Kotlin/Compose;
-- Flutter;
-- another justified implementation;
-
-belongs in:
-
-> `ADR-0001-technology-stack.md`
+The technology stack is decided: **Kotlin Multiplatform + Compose Multiplatform**, with native Android as the only fallback, per [`ADR-0001-technology-stack.md`](../decisions/ADR-0001-technology-stack.md) (Accepted). This document describes the layered architecture in stack-independent terms by design, not because the stack is still open — the layering (Presentation → Domain → Data → Platform) is a boundary discipline that would hold under the fallback too, not an unresolved choice.
 
 ---
 

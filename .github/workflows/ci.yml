@@ -33,3 +33,8 @@ jobs:
       - name: Check Gradle version
         run: ./gradlew --version
 
+      - name: Run common tests and Android build
+        run: ./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug
+
+      - name: Check merged Android manifest policy
+        run: ./gradlew :androidApp:checkManifestPolicy

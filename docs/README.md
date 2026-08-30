@@ -57,6 +57,7 @@ docs/
 - [`03-engineering/local-storage.md`](03-engineering/local-storage.md) — Private app directory filesystem management for family custom recordings.
 - [`03-engineering/performance.md`](03-engineering/performance.md) — Frame rate, memory caps, latency targets, and low-end tablet optimization.
 - [`03-engineering/platform-support.md`](03-engineering/platform-support.md) — Platform support matrix (Android tablet primary, future iPadOS considerations).
+- [`03-engineering/development-environment.md`](03-engineering/development-environment.md) — Host tools, Android SDK, pinned build versions, and environment verification.
 - [`03-engineering/permissions.md`](03-engineering/permissions.md) — Runtime permission flows (Record Audio) with safe fallbacks.
 
 ### 04. Privacy, Safety & Security
@@ -73,6 +74,7 @@ docs/
 - [`05-quality/family-test-protocol.md`](05-quality/family-test-protocol.md) — 7-day family trial protocol and evaluation metrics.
 - [`05-quality/qa-checklist.md`](05-quality/qa-checklist.md) — Release readiness checklist.
 - [`05-quality/release.md`](05-quality/release.md) — Build signing, packaging, and local side-loading instructions for family test devices.
+- [`05-quality/evidence/phase-3-local-persistence.md`](05-quality/evidence/phase-3-local-persistence.md) — Phase 3 emulator validation record for local persistence.
 
 ### Architecture Decision Records (ADRs)
 - [`decisions/README.md`](decisions/README.md) — Architecture Decision Records log and authoring template.

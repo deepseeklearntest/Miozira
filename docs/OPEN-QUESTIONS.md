@@ -55,11 +55,15 @@ This document tracks unresolved product, content, engineering, and UX questions 
 - **Referenced in:** `README.md` (§3), `CLAUDE.md`, repository root
 - **Resolution:** Root and module Gradle Kotlin DSL scripts (`build.gradle.kts`, `settings.gradle.kts`, `gradle/libs.versions.toml`, `gradlew`) have been established for the Multiplatform project, scaffolding `:shared`, `:androidApp`, and `:iosApp`.
 
-### OQ-008: `architecture.md` Preamble Predates the Accepted ADR
+### OQ-008: `architecture.md` Preamble Predates the Accepted ADR [Resolved]
 - **Referenced in:** `docs/03-engineering/architecture.md` (§1 "Purpose"), `docs/decisions/ADR-0001-technology-stack.md` (Status: Accepted)
-- **Context:** `architecture.md` §1 closes with "This document intentionally defines the architecture before the final technology decision" and lists Kotlin Multiplatform, Android-native Kotlin/Compose, and Flutter as still-open candidates.
-- **Conflict / Tension:** ADR-0001 is marked **Accepted** and selects Kotlin Multiplatform + Compose Multiplatform, with native Android as the only fallback (Flutter is not a live option). The stale preamble invites an agent to re-litigate a decision that is already closed.
-- **Recommendation:** Update the `architecture.md` preamble to reference ADR-0001 as decided, and state that the layered architecture is stack-independent by design rather than stack-undecided. Do not treat Flutter as an available option.
+- **Resolution:** The `architecture.md` §1 preamble now references ADR-0001 as decided (Kotlin Multiplatform + Compose Multiplatform, native Android fallback) and states the layered architecture is stack-independent by design, not stack-undecided. Flutter is no longer listed as a live option.
+
+### OQ-009: Prototype 0.1 Content Is Packaged but Not Yet Reviewed
+- **Referenced in:** `docs/00-foundation/MVP-IMPLEMENTATION-PLAN.md` (Phase 2), `docs/01-learning/content-spec.md` (§10, §47).
+- **Context:** A local draft manifest now maps all eight concepts and sixteen English/Tamil pairs. The bundled clips are development drafts, and the Cat, Cup, Hand, and Water visuals are supplied drafts with provenance not yet recorded.
+- **Impact:** The structural content package is testable, but it cannot be frozen or described as reviewed canonical content. This preserves the content-review and child-safety rules.
+- **Required before family-test freeze:** Record visual provenance/licences; obtain fluent Tamil and English review of wording, pronunciation, and loudness; then promote each accepted pair from `DRAFT` to an approved review status.
 
 ---
 
