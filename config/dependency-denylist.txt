@@ -1,0 +1,11 @@
+# Group prefixes forbidden in the offline Prototype 0.1 release graph.
+com.google.firebase
+com.google.android.gms.play-services-analytics
+com.google.android.gms.play-services-measurement
+com.facebook
+com.appsflyer
+com.adjust
+io.sentry
+com.bugsnag
+io.fabric
+com.crashlytics

@@ -18,6 +18,34 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val releaseStorePath = providers.environmentVariable("MIOZIRA_RELEASE_STORE_FILE").orNull
+    val releaseStorePassword = providers.environmentVariable("MIOZIRA_RELEASE_STORE_PASSWORD").orNull
+    val releaseKeyAlias = providers.environmentVariable("MIOZIRA_RELEASE_KEY_ALIAS").orNull
+    val releaseKeyPassword = providers.environmentVariable("MIOZIRA_RELEASE_KEY_PASSWORD").orNull
+    val releaseSigningConfigured = listOf(
+        releaseStorePath,
+        releaseStorePassword,
+        releaseKeyAlias,
+        releaseKeyPassword,
+    ).all { !it.isNullOrBlank() }
+
+    signingConfigs {
+        if (releaseSigningConfigured) {
+            create("familyTest") {
+                storeFile = file(releaseStorePath!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            if (releaseSigningConfigured) signingConfig = signingConfigs.getByName("familyTest")
+        }
+    }
+
     buildFeatures {
         compose = true
     }
@@ -74,6 +102,78 @@ androidComponents {
     }
 }
 
+tasks.matching { it.name == "assembleRelease" }.configureEach {
+    dependsOn("checkManifestPolicy")
+}
+
+tasks.register("verifyFamilyTestSigning") {
+    doLast {
+        val required = providers.environmentVariable("MIOZIRA_REQUIRE_SIGNED_RELEASE").orNull == "true"
+        val configured = listOf(
+            "MIOZIRA_RELEASE_STORE_FILE",
+            "MIOZIRA_RELEASE_STORE_PASSWORD",
+            "MIOZIRA_RELEASE_KEY_ALIAS",
+            "MIOZIRA_RELEASE_KEY_PASSWORD",
+        ).all { !providers.environmentVariable(it).orNull.isNullOrBlank() }
+        check(!required || configured) {
+            "Signed family-test release requested, but MIOZIRA_RELEASE_* signing variables are incomplete"
+        }
+    }
+}
+
+tasks.register("checkDependencyPolicy") {
+    doLast {
+        val denylist = rootProject.file("config/dependency-denylist.txt")
+            .readLines()
+            .map(String::trim)
+            .filter { it.isNotEmpty() && !it.startsWith("#") }
+        val configuration = configurations.getByName("releaseRuntimeClasspath")
+        val groups = configuration.incoming.resolutionResult.allComponents
+            .mapNotNull { it.moduleVersion?.group }
+            .toSet()
+        val forbidden = groups.filter { group -> denylist.any { prefix -> group == prefix || group.startsWith("$prefix.") } }
+        check(forbidden.isEmpty()) {
+            "Forbidden SDK groups found in release runtime classpath: $forbidden"
+        }
+    }
+}
+
+tasks.register("checkBackupPolicy") {
+    val legacyRules = layout.projectDirectory.file("src/main/res/xml/backup_rules.xml")
+    val modernRules = layout.projectDirectory.file("src/main/res/xml/data_extraction_rules.xml")
+    inputs.files(legacyRules, modernRules)
+    doLast {
+        val requiredExclusions = setOf("family-recordings/", "miozira.db", ".")
+        listOf(legacyRules.asFile, modernRules.asFile).forEach { rulesFile ->
+            check(rulesFile.isFile) { "Backup rules file not found: $rulesFile" }
+            val factory = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+            val document = factory.newDocumentBuilder().parse(rulesFile)
+            val exclusions = (0 until document.documentElement.childNodes.length)
+                .flatMap { index ->
+                    val node = document.documentElement.childNodes.item(index)
+                    if (node.nodeName == "exclude") {
+                        listOf(node.attributes.getNamedItem("path")?.nodeValue)
+                    } else {
+                        (0 until node.childNodes.length)
+                            .mapNotNull { childIndex ->
+                                val child = node.childNodes.item(childIndex)
+                                if (child.nodeName == "exclude") child.attributes.getNamedItem("path")?.nodeValue else null
+                            }
+                    }
+                }
+                .filterNotNull()
+                .toSet()
+            check(requiredExclusions.all { it in exclusions }) {
+                "$rulesFile is missing required backup exclusions: ${requiredExclusions - exclusions}"
+            }
+        }
+    }
+}
+
+tasks.matching { it.name == "assembleRelease" || it.name == "lintRelease" }.configureEach {
+    dependsOn("checkDependencyPolicy", "checkBackupPolicy")
+}
+
 dependencies {
     implementation(project(":shared"))
     implementation(compose.runtime)
@@ -81,6 +181,7 @@ dependencies {
     implementation(compose.material3)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.datastore.preferences)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(kotlin("test"))

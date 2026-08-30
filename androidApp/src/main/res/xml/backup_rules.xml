@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Family voice and local learning history must not leave app-private storage. -->
+    <exclude domain="file" path="family-recordings/" />
+    <exclude domain="database" path="miozira.db" />
+    <exclude domain="sharedpref" path="." />
+</full-backup-content>
