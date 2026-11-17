@@ -128,7 +128,7 @@ return available[i.mod(n)] to available[(i + 1).mod(n)]
 
 A language is ready when it has exactly one pair for each of the `conceptCount` concepts and, for `ja`, `ar` and `es`, every one of those pairs has `audio.reviewStatus` of `NATIVE_REVIEWED` or `APPROVED`. English and Tamil are ready at any review status (the family judges those by ear). The result keeps `languageOrder`.
 
-- [ ] **Step 1: Write the failing tests** (build fake pairs with a small helper `fakePair(concept, language, status)`):
+- [x] **Step 1: Write the failing tests** (build fake pairs with a small helper `fakePair(concept, language, status)`):
 
 ```kotlin
 @Test fun bundledContent_hasEnglishAndTamilReady() =
@@ -144,10 +144,10 @@ A language is ready when it has exactly one pair for each of the `conceptCount` 
     assertFalse(LanguageId("es") in readyLanguages(eightConcepts("es", APPROVED).drop(1)))
 ```
 
-- [ ] **Step 2: Run** `./gradlew :shared:testDebugUnitTest --tests '*LanguageReadinessTest'` — expect FAIL.
-- [ ] **Step 3: Implement** the three top-level declarations and the two object functions. In `ContentSeedService`, seed all five `LanguageEntity` rows (`ja`/"Japanese", `ar`/"Arabic", `es`/"Spanish" added); inserts are already `IGNORE`, so existing databases gain the rows on next start and no migration is needed. Update the language-count assertion in `SchemaAndSeedTest` from 2 to 5.
-- [ ] **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS; `./gradlew :shared:compileDebugAndroidTestKotlin` — expect BUILD SUCCESSFUL.
-- [ ] **Step 5: Commit** `feat: model five languages and gate unchecked ones`.
+- [x] **Step 2: Run** `./gradlew :shared:testDebugUnitTest --tests '*LanguageReadinessTest'` — expect FAIL.
+- [x] **Step 3: Implement** the three top-level declarations and the two object functions. In `ContentSeedService`, seed all five `LanguageEntity` rows (`ja`/"Japanese", `ar`/"Arabic", `es`/"Spanish" added); inserts are already `IGNORE`, so existing databases gain the rows on next start and no migration is needed. Update the language-count assertion in `SchemaAndSeedTest` from 2 to 5.
+- [x] **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS; `./gradlew :shared:compileDebugAndroidTestKotlin` — expect BUILD SUCCESSFUL.
+- [x] **Step 5: Commit** `feat: model five languages and gate unchecked ones`.
 
 ---
 
