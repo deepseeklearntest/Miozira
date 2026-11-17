@@ -210,15 +210,15 @@ warm launch ~<=2 s
 - [ ] Child does not casually enter parent controls during normal tapping.
 - [ ] Nothing is drawn at the parent corner; a short tap there does nothing; the 3-second hold shows no progress.
 - [x] The reading step shows a two-digit number written as a word, different each time.
-- [x] A wrong number, or 10 seconds without input, returns silently to the same child state.
+- [ ] A wrong number, or 10 seconds without input, returns silently to the same child state.
 - [ ] The parent area locks again on leaving it and when the screen turns off.
 - [ ] Parent can mark “He understood it.”
 - [ ] Parent can mark “He said it.”
 - [ ] Parent can view four words for today, each with a moment to say it.
-- [x] The parent area shows no numbers, dates or durations, and never the words “missed”, “wrong” or “mastered”.
+- [ ] The parent area shows no numbers, dates or durations, and never the words “missed”, “wrong” or “mastered”.
 - [ ] Parent can record, play and replace each guide phrase in both parent voices, and each Tamil word.
 - [ ] Parent can start an extra session, after one confirmation.
-- [x] Parent can manage microphone setting.
+- [ ] Parent can manage microphone setting.
 - [ ] Parent can reset local data.
 
 ## AC-H08 — Child safety

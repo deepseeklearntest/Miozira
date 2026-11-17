@@ -33,8 +33,9 @@ fun ParentActionsScreen(
     ) {
         Text("Microphone and privacy", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "The microphone is only used to notice that he is trying to say a word. " +
+            "When listening is on, the microphone only notices that he is trying to say a word. " +
                 "What he says is never saved, never sent anywhere and never judged. " +
+                "It records a family voice only when you press Record. " +
                 "Miozira works without a network connection.",
         )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {

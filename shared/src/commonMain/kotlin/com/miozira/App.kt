@@ -97,7 +97,13 @@ fun MioziraApp(
     val scope = rememberCoroutineScope()
     var page by remember { mutableStateOf(ParentPage.HOME) }
     var permissionPending by remember { mutableStateOf(false) }
-    if (access == ParentAccess.Locked) page = ParentPage.HOME
+    LaunchedEffect(access) {
+        if (access == ParentAccess.Locked) {
+            page = ParentPage.HOME
+            familyPair = null
+            familyRecordingController?.onBackground()
+        }
+    }
     MaterialTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.miozira.content.PrototypeContentRepository
 import com.miozira.core.model.PairId
 
 @Composable
@@ -29,7 +30,7 @@ fun FamilyVoiceScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Family voice", style = MaterialTheme.typography.headlineSmall)
-        Text("Optional pronunciation for ${pairId.value}. Canonical audio is always available.")
+        Text("Optional pronunciation for ${wordLabel(pairId, PrototypeContentRepository.languageNames)}. Canonical audio is always available.")
         when (state) {
             FamilyRecordingState.Idle -> {
                 Button(onClick = onRequestPermission) { Text("Allow microphone") }

@@ -81,6 +81,12 @@ This document tracks unresolved product, content, engineering, and UX questions 
 - **Impact:** Until they land, the parent home shows fewer categories than the spec describes. No data is invented for them.
 - **Required:** Add the two categories, the puzzle page and Voices with the child-session/puzzle and guide-voice plans.
 
+### OQ-012: Microphone and Privacy Page Had No Baseline Explanation to Keep
+- **Referenced in:** `docs/superpowers/plans/2026-11-17-parent-area.md` (Task 8: the page "keeps the existing explanation"), `shared/src/commonMain/kotlin/com/miozira/presentation/parent/ParentActionsScreen.kt`
+- **Context:** The baseline page held only a settings button and the reset controls; there was no explanation to keep. Task 8 wrote one from `docs/03-engineering/microphone.md` and `docs/04-privacy-safety/security.md`, separating the listening switch from family recording.
+- **Impact:** The wording is unreviewed by the parent or a copy owner.
+- **Required:** Review and approve the wording, or supply the intended text.
+
 ---
 
 ## 3. Decision Process
