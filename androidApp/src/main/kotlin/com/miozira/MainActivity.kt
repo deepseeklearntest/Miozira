@@ -19,6 +19,9 @@ import com.miozira.data.repository.FamilyRecordingCleanup
 import com.miozira.data.repository.RoomResetCoordinator
 import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.LearningSessionEngine
+import com.miozira.domain.session.SessionSchedule
+import com.miozira.core.time.AndroidLocalDay
+import com.miozira.services.permissions.AttemptMeasurementDecision
 import com.miozira.domain.adaptive.AdaptivePairPlanner
 import com.miozira.domain.transfer.RealWorldTransferService
 import com.miozira.presentation.parent.ParentController
@@ -51,6 +54,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var parentController: ParentController
     private lateinit var familyRecordingController: FamilyRecordingController
     private lateinit var parentActionsController: ParentActionsController
+    private var startupDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,9 +166,13 @@ class MainActivity : ComponentActivity() {
                 ),
             ),
             persistence = persistence,
+            schedule = SessionSchedule(RoomSessionRepository(database.sessionDao()), AndroidLocalDay, AndroidClock),
             audioService = audioService,
             clock = AndroidClock,
             scope = serviceScope,
+            readyLanguages = PrototypeContentRepository::readyLanguages,
+            // Detection stays off until Task 9 wires the settings switch and the detector.
+            measurement = { AttemptMeasurementDecision.NOT_MEASURED },
         )
         serviceScope.launch {
             privateFileStore.deleteOrphanTemporaryFiles()
@@ -173,7 +181,8 @@ class MainActivity : ComponentActivity() {
                 nowMs = System::currentTimeMillis,
             ).seedContent(PrototypeContentRepository.contentVersion)
             RoomRecoveryService(database.recoveryDao(), AndroidClock).recoverInterruptedSessions()
-            childSessionController.start()
+            childSessionController.open()
+            startupDone = true
         }
         setContent {
             MioziraApp(
@@ -193,7 +202,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (::childSessionController.isInitialized) childSessionController.onForeground()
+        // Before startup finishes (seed and recovery), onCreate's own open() covers the first start.
+        if (startupDone) serviceScope.launch { childSessionController.open() }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

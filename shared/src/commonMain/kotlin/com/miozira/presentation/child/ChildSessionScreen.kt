@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.input.pointer.pointerInput
 import com.miozira.content.ConceptLanguagePair
 import com.miozira.content.VisualAssetRef
+import com.miozira.domain.session.ChildScreenState
 import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.InteractionPhase
 import com.miozira.core.result.AppResult
@@ -99,26 +100,25 @@ fun ChildSessionScreen(
     onParentGateUnlocked: () -> Unit = {},
 ) {
     val state by controller.state.collectAsState()
-    val current = state ?: return
+    // Interim until Task 8's WordScreen: the picture for a word, a plain tappable background otherwise.
+    val word = state as? ChildScreenState.Word
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Button(
             modifier = Modifier.fillMaxSize().padding(48.dp).semantics {
-                contentDescription = "${current.pair.spokenForm}. Tap to hear the word."
+                contentDescription = word?.let { "${it.pair.spokenForm}. Tap to hear the word." } ?: ""
                 role = Role.Button
             },
-            enabled = current.phase == InteractionPhase.READY || current.phase == InteractionPhase.RESPONDING,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF2EEE7)),
-            onClick = {
-                if (current.phase == InteractionPhase.READY) controller.tap()
-                else controller.acknowledgeResponse()
-            },
+            onClick = { controller.tap() },
         ) {
-            Image(
-                painter = painterResource(current.pair.visual.toDrawableResource()),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize(),
-            )
+            if (word != null) {
+                Image(
+                    painter = painterResource(word.pair.visual.toDrawableResource()),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
         Box(
             modifier = Modifier
