@@ -275,7 +275,7 @@ The table (exact copy):
 
 Each line is `"<moment>: <wordLabel>"`, for example `"At breakfast, when you pour: water (Tamil)"`. Choose tried words first, then listened, then heard-unmeasured, in session order; at most one line per concept; at most `max` lines; a concept with no moment is skipped. `null` summary → empty list (the card is not shown).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 @Test fun noSession_givesNoWords()
@@ -287,8 +287,8 @@ Each line is `"<moment>: <wordLabel>"`, for example `"At breakfast, when you pou
 @Test fun noLineContainsADigit()
 ```
 
-- [ ] **Step 2: Run** `--tests '*WordsForTodayTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS.
-- [ ] **Step 5: Commit** `feat: four words for today in place of the single suggestion`.
+- [x] **Step 2: Run** `--tests '*WordsForTodayTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS.
+- [x] **Step 5: Commit** `feat: four words for today in place of the single suggestion`.
 
 ---
 
