@@ -61,7 +61,7 @@
 **Interfaces:**
 - Produces: `object LanguageRotation { fun languagesFor(completedSessions: Int, available: List<LanguageId>): Pair<LanguageId, LanguageId>? }`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 private val five = listOf("en", "ta", "ja", "ar", "es").map(::LanguageId)
@@ -93,9 +93,9 @@ private fun ids(vararg v: String) = v.map(::LanguageId)
 @Test fun noLanguages_givesNull() = assertNull(LanguageRotation.languagesFor(0, emptyList()))
 ```
 
-- [ ] **Step 2: Run** `./gradlew :shared:testDebugUnitTest --tests '*LanguageRotationTest'` — expect FAIL (unresolved `LanguageRotation`).
+- [x] **Step 2: Run** `./gradlew :shared:testDebugUnitTest --tests '*LanguageRotationTest'` — expect FAIL (unresolved `LanguageRotation`).
 
-- [ ] **Step 3: Implement `languagesFor`.** The rule (the tests do not fully determine it):
+- [x] **Step 3: Implement `languagesFor`.** The rule (the tests do not fully determine it):
 
 ```kotlin
 val n = available.size
@@ -106,8 +106,8 @@ val i = 2 * completedSessions + shift
 return available[i.mod(n)] to available[(i + 1).mod(n)]
 ```
 
-- [ ] **Step 4: Run the same command** — expect PASS.
-- [ ] **Step 5: Commit** `feat: add language rotation for two languages per session`.
+- [x] **Step 4: Run the same command** — expect PASS.
+- [x] **Step 5: Commit** `feat: add language rotation for two languages per session`.
 
 ---
 
