@@ -1,6 +1,7 @@
 package com.miozira.presentation.child
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -100,26 +101,9 @@ fun ChildSessionScreen(
     onParentGateUnlocked: () -> Unit = {},
 ) {
     val state by controller.state.collectAsState()
-    // Interim until Task 8's WordScreen: the picture for a word, a plain tappable background otherwise.
-    val word = state as? ChildScreenState.Word
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(
-            modifier = Modifier.fillMaxSize().padding(48.dp).semantics {
-                contentDescription = word?.let { "${it.pair.spokenForm}. Tap to hear the word." } ?: ""
-                role = Role.Button
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF2EEE7)),
-            onClick = { controller.tap() },
-        ) {
-            if (word != null) {
-                Image(
-                    painter = painterResource(word.pair.visual.toDrawableResource()),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-        }
+    Box(Modifier.fillMaxSize().background(Color(0xFFF2EEE7)), contentAlignment = Alignment.Center) {
+        // Loading, Breath and Quiet are the plain background: nothing tappable, nothing described.
+        (state as? ChildScreenState.Word)?.let { WordScreen(it, onTap = controller::tap) }
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
