@@ -63,18 +63,18 @@
 
 `ParentCorner` is an undrawn 72 dp box. It reads raw pointer events (`awaitEachGesture`), sends `PressStarted`, `Moved`, `Released` and `Cancelled` to `ParentGate.reduce`, and calls `onHoldCompleted` only when the state becomes `UNLOCKED`, then sends `Consumed`. It has no semantics, no indication and no child content. `ChildSessionScreen` places it at `Alignment.TopEnd` on every child screen state and drops the `detectTapGestures(onLongPress = …)` block.
 
-- [ ] **Step 1: Change the reducer tests to three seconds and add one:**
+- [x] **Step 1: Change the reducer tests to three seconds and add one:**
 
 ```kotlin
 @Test fun holdOfTwoPointNineSeconds_doesNotUnlock()   // PressStarted(0) + Released(2_999) -> IDLE
 @Test fun exactThreeSecondStableHold_unlocks()        // replaces exactTwoSecondStableHold_unlocks
 ```
 
-- [ ] **Step 2: Run** `./gradlew :shared:testDebugUnitTest --tests '*ParentGateTest'` — expect FAIL.
-- [ ] **Step 3: Set `REQUIRED_HOLD_MS` to `3_000L`, write `ParentCorner`, and use it in `ChildSessionScreen`.**
-- [ ] **Step 4: Run** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug` — expect PASS and BUILD SUCCESSFUL.
-- [ ] **Step 5: Manual check on an emulator:** a tap and a one-second press on the corner do nothing; sliding the finger away during the hold does nothing; a three-second hold then lift triggers the callback.
-- [ ] **Step 6: Commit** `fix: route the parent corner through the three-second hold reducer`.
+- [x] **Step 2: Run** `./gradlew :shared:testDebugUnitTest --tests '*ParentGateTest'` — expect FAIL.
+- [x] **Step 3: Set `REQUIRED_HOLD_MS` to `3_000L`, write `ParentCorner`, and use it in `ChildSessionScreen`.**
+- [x] **Step 4: Run** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug` — expect PASS and BUILD SUCCESSFUL.
+- [ ] **Step 5: Manual check on an emulator:** a tap and a one-second press on the corner do nothing; sliding the finger away during the hold does nothing; a three-second hold then lift triggers the callback. *(NOT VERIFIED: no device attached; R10)*
+- [x] **Step 6: Commit** `fix: route the parent corner through the three-second hold reducer`.
 
 ---
 
