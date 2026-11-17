@@ -41,12 +41,14 @@ class ParentController(
             is AppResult.Success -> {
                 val summary = result.value
                 val names = PrototypeContentRepository.languageNames
-                val rows = (evidence as? AppResult.Success)?.value.orEmpty()
                 ParentUiState(
                     sessionLines = describeSession(summary, PrototypeContentRepository.languageNames),
                     wordsForToday = wordsForToday(summary, PrototypeContentRepository.languageNames),
-                    languageLines = languageOrder.map { describeLanguage(it, rows, names) },
+                    languageLines = (evidence as? AppResult.Success)?.value
+                        ?.let { rows -> languageOrder.map { describeLanguage(it, rows, names) } }
+                        .orEmpty(),
                     recentPairs = summary?.let { it.tried + it.listened + it.heardUnmeasured }.orEmpty(),
+                    notice = if (evidence is AppResult.Failure) ParentUiState.Notice.ERROR else null,
                 )
             }
         }

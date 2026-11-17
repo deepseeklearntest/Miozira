@@ -2,6 +2,7 @@ package com.miozira.presentation.parent
 
 import com.miozira.content.LanguageId
 import com.miozira.core.model.PairId
+import com.miozira.core.result.AppError
 import com.miozira.core.result.AppResult
 import com.miozira.domain.transfer.RealWorldObservation
 import com.miozira.domain.transfer.RealWorldObservationRepository
@@ -10,6 +11,7 @@ import com.miozira.domain.transfer.RealWorldTransferService
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ParentControllerTest {
     @Test
@@ -28,6 +30,30 @@ class ParentControllerTest {
         assertEquals(ParentUiState.Notice.SAVED, controller.state.value.notice)
         assertEquals(listOf(PairId("apple:ta")), controller.state.value.recentPairs)
         assertEquals("Tried saying: apple (Tamil)", controller.state.value.sessionLines.last())
+    }
+
+    private fun controllerWith(evidence: AppResult<List<PairEvidence>>) = ParentController(
+        object : ParentDataSource {
+            override suspend fun mostRecentSession() = AppResult.Success<SessionSummary?>(null)
+            override suspend fun pairEvidence() = evidence
+        },
+        RealWorldTransferService(RecordingRepository()), { 20L }, { "o" },
+    )
+
+    @Test
+    fun refresh_withEvidence_showsOneLinePerLanguage() = runBlocking {
+        val controller = controllerWith(AppResult.Success(emptyList()))
+        controller.refresh()
+        assertEquals(2, controller.state.value.languageLines.size)
+        assertEquals(null, controller.state.value.notice)
+    }
+
+    @Test
+    fun refresh_whenEvidenceReadFails_hasNoLanguageLines_andShowsError() = runBlocking {
+        val controller = controllerWith(AppResult.Failure(AppError.Unexpected("x")))
+        controller.refresh()
+        assertTrue(controller.state.value.languageLines.isEmpty())
+        assertEquals(ParentUiState.Notice.ERROR, controller.state.value.notice)
     }
 
     private class RecordingRepository : RealWorldObservationRepository {
