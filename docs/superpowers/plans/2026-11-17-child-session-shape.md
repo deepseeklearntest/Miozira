@@ -428,15 +428,15 @@ Layout and motion decisions (all inside one `BoxWithConstraints`, a centred `Col
 - Picture scale: 1.02 on tap for 100 ms; 1.03 → 1.0 once when `nod`; one pulse to 1.03 after 8 s in `READY` without a tap, once per interaction.
 - Changing words: cross-fade of 400 ms keyed on the interaction's pair.
 
-- [ ] **Step 1: Implement** `WordScreen` and the `when (state)` in `ChildSessionScreen`.
-- [ ] **Step 2: Build** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug` — expect BUILD SUCCESSFUL.
-- [ ] **Step 3: Manual check on an emulator in landscape** (install the debug APK). Confirm each line and note the result in the commit body:
+- [x] **Step 1: Implement** `WordScreen` and the `when (state)` in `ChildSessionScreen`.
+- [x] **Step 2: Build** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug` — expect BUILD SUCCESSFUL.
+- [ ] **Step 3: Manual check on an emulator in landscape** (install the debug APK). Confirm each line and note the result in the commit body: — NOT DONE: no device attached, and the emulator is shared with a parallel session. Left for the owner on the Xiaomi Pad or emulator.
   - the picture waits with no word under it; a tap plays the word and the word fades in teal, then turns dark;
   - the ring appears around the picture only, never touching the word, for about four seconds, and fades;
   - a second tap during the ring repeats the word;
   - nothing on screen is tappable except the picture; the breath and quiet screens are plain;
   - the longest Tamil word (`மூக்கு`) is not clipped and stays on one line.
-- [ ] **Step 4: Commit** `feat: word screen with written word and his-turn ring`.
+- [x] **Step 4: Commit** `feat: word screen with written word and his-turn ring`.
 
 ---
 
