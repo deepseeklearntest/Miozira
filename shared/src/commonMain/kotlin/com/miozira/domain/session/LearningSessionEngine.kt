@@ -32,6 +32,7 @@ interface SessionPersistence {
     suspend fun createSession(snapshot: SessionSnapshot): AppResult<Unit>
     suspend fun createInteraction(plan: InteractionPlan): AppResult<Unit>
     suspend fun commitExposure(interactionId: InteractionId, committedAtMs: Long): AppResult<Unit>
+    suspend fun recordReplay(interactionId: InteractionId): AppResult<Unit>
     suspend fun recordAttempt(interactionId: InteractionId, state: com.miozira.core.model.AttemptState, recordedAtMs: Long): AppResult<Unit>
     suspend fun completeInteraction(interactionId: InteractionId, reason: com.miozira.core.model.InteractionCompletionReason, completedAtMs: Long): AppResult<Unit>
     suspend fun endSession(sessionId: SessionId, reason: SessionEndReason, endedAtMs: Long): AppResult<Unit>

@@ -92,6 +92,7 @@ class LearningSessionEngineTest {
             return AppResult.Success(Unit)
         }
         override suspend fun commitExposure(interactionId: InteractionId, committedAtMs: Long) = AppResult.Success(Unit)
+        override suspend fun recordReplay(interactionId: InteractionId) = AppResult.Success(Unit)
         override suspend fun recordAttempt(interactionId: InteractionId, state: AttemptState, recordedAtMs: Long) = AppResult.Success(Unit)
         override suspend fun completeInteraction(interactionId: InteractionId, reason: InteractionCompletionReason, completedAtMs: Long) = AppResult.Success(Unit)
         override suspend fun endSession(sessionId: SessionId, reason: SessionEndReason, endedAtMs: Long): AppResult<Unit> {

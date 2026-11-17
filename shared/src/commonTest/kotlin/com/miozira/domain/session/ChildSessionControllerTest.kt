@@ -143,6 +143,7 @@ class ChildSessionControllerTest {
             exposures++
             return AppResult.Success(Unit)
         }
+        override suspend fun recordReplay(interactionId: InteractionId) = AppResult.Success(Unit)
         override suspend fun recordAttempt(interactionId: InteractionId, state: AttemptState, recordedAtMs: Long): AppResult<Unit> {
             lastAttempt = state
             return AppResult.Success(Unit)

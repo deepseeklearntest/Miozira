@@ -36,6 +36,9 @@ class RoomSessionPersistence(
     override suspend fun commitExposure(interactionId: InteractionId, committedAtMs: Long): AppResult<Unit> =
         learning.commitExposure(interactionId, committedAtMs)
 
+    override suspend fun recordReplay(interactionId: InteractionId): AppResult<Unit> =
+        learning.incrementReplay(interactionId)
+
     override suspend fun recordAttempt(interactionId: InteractionId, state: AttemptState, recordedAtMs: Long): AppResult<Unit> =
         learning.recordAttempt(interactionId, state, recordedAtMs)
 
