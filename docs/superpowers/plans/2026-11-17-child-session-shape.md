@@ -373,7 +373,7 @@ Behaviour, in the order one word runs:
 8. A clip failure skips to the next step. `maxClipFailuresInARow` failures in a row → `endSession(CONTENT_ERROR)` and `Quiet`; this does not count as completed.
 9. `onBackground()` stops audio and the detector and cancels timers; the word returns to `READY` on `open()`.
 
-- [ ] **Step 1: Write the failing tests.** Use shape `SessionShape(1, 2, 1)`, an audio fake that completes on demand (`emitThreshold`/`emitCompleted`, as today), and a controllable pause:
+- [x] **Step 1: Write the failing tests.** Use shape `SessionShape(1, 2, 1)`, an audio fake that completes on demand (`emitThreshold`/`emitCompleted`, as today), and a controllable pause:
 
 ```kotlin
 class Pauses { val pending = ArrayDeque<Pair<Long, CompletableDeferred<Unit>>>()
@@ -403,10 +403,10 @@ class Pauses { val pending = ArrayDeque<Pair<Long, CompletableDeferred<Unit>>>()
 @Test fun staleAudioCallbacks_doNotCommitExposureForCurrentInteraction()     // kept from the existing file
 ```
 
-- [ ] **Step 2: Run** `--tests '*ChildSessionControllerTest'` — expect FAIL.
-- [ ] **Step 3: Implement.** Keep every state change going through `reduce`; the controller only reacts to effects and timers. Each timer is one `scope.launch { pause(ms); ... }` whose `Job` is cancelled on replay, background and step change, and whose body re-checks the interaction ID before acting.
-- [ ] **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS.
-- [ ] **Step 5: Commit** `feat: run a whole child session from warm-up to quiet`.
+- [x] **Step 2: Run** `--tests '*ChildSessionControllerTest'` — expect FAIL.
+- [x] **Step 3: Implement.** Keep every state change going through `reduce`; the controller only reacts to effects and timers. Each timer is one `scope.launch { pause(ms); ... }` whose `Job` is cancelled on replay, background and step change, and whose body re-checks the interaction ID before acting.
+- [x] **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS.
+- [x] **Step 5: Commit** `feat: run a whole child session from warm-up to quiet`.
 
 ---
 
