@@ -82,6 +82,7 @@ class MainActivity : ComponentActivity() {
             nowMs = { AndroidClock.nowMs() },
             idGenerator = { UUID.randomUUID().toString() },
         )
+        val settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore)
         parentActionsController = ParentActionsController(
             ResetService(
                 RoomResetCoordinator(
@@ -113,13 +114,15 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     },
-                    settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore),
+                    settings = settings,
                     clock = AndroidClock,
                     onResetComplete = {
                         permissionHistory.edit().remove("record_audio_requested").apply()
                     },
                 ),
             ),
+            settings,
+            permissionService,
         )
         parentController = ParentController(
             dataSource = RoomParentDataSource(database.interactionDao()),
