@@ -22,7 +22,9 @@ import com.miozira.presentation.parent.FamilyRecordingState
 import com.miozira.presentation.parent.FamilyVoiceScreen
 import com.miozira.presentation.parent.ParentActionsController
 import com.miozira.presentation.parent.ParentActionsScreen
+import com.miozira.presentation.parent.LanguagesScreen
 import com.miozira.core.model.PairId
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,6 +40,8 @@ import kotlinx.coroutines.launch
 import com.miozira.domain.session.ChildSessionController
 import com.miozira.services.audio.AudioService
 import com.miozira.services.audio.PlaybackHandle
+
+enum class ParentPage { HOME, LANGUAGES, MICROPHONE }
 
 fun appDisplayName(): String = "Miozira"
 
@@ -91,6 +95,9 @@ fun MioziraApp(
     val access by parentAccess.state.collectAsState()
     var familyPair by remember { mutableStateOf<PairId?>(null) }
     val scope = rememberCoroutineScope()
+    var page by remember { mutableStateOf(ParentPage.HOME) }
+    var permissionPending by remember { mutableStateOf(false) }
+    if (access == ParentAccess.Locked) page = ParentPage.HOME
     MaterialTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -108,29 +115,13 @@ fun MioziraApp(
                 val state by parentController.state.collectAsState()
                 val familyState = familyRecordingController?.state?.collectAsState()?.value ?: FamilyRecordingState.Idle
                 val actionsState = parentActionsController?.state?.collectAsState()?.value
-                    Column(
-                        modifier = Modifier.fillMaxSize().padding(top = 48.dp),
-                    ) {
+                Column(
+                    modifier = Modifier.fillMaxSize().background(Color(0xFFF6F3EE)).padding(top = 48.dp),
+                ) {
                     TextButton(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         onClick = parentAccess::lock,
                     ) { androidx.compose.material3.Text("Lock and go back") }
-                    if (actionsState != null) {
-                        ParentActionsScreen(
-                            state = actionsState,
-                            onOpenMicrophoneSettings = onOpenMicrophoneSettings,
-                            onRequestReset = parentActionsController!!::requestReset,
-                            onCancelReset = parentActionsController!!::cancelReset,
-                            onConfirmReset = {
-                                scope.launch {
-                                    familyRecordingController?.onBackground()
-                                    parentActionsController!!.confirmReset()
-                                    parentController.refresh()
-                                    familyPair = null
-                                }
-                            },
-                        )
-                    }
                     if (familyPair != null && familyRecordingController != null) {
                         FamilyVoiceScreen(
                             pairId = familyPair!!,
@@ -143,12 +134,41 @@ fun MioziraApp(
                             onCancel = { scope.launch { familyRecordingController.cancel(); familyPair = null } },
                             onDelete = { scope.launch { familyRecordingController.delete(); familyPair = null } },
                         )
+                    } else if (page == ParentPage.LANGUAGES) {
+                        LanguagesScreen(state, onBack = { page = ParentPage.HOME }, modifier = Modifier.weight(1f))
+                    } else if (page == ParentPage.MICROPHONE && actionsState != null && parentActionsController != null) {
+                        LaunchedEffect(Unit) { parentActionsController.load() }
+                        ParentActionsScreen(
+                            state = actionsState,
+                            onSetListening = { on ->
+                                scope.launch {
+                                    if (on) permissionPending = true
+                                    try { parentActionsController.setListening(on) } finally { permissionPending = false }
+                                }
+                            },
+                            switchEnabled = !permissionPending,
+                            onOpenMicrophoneSettings = onOpenMicrophoneSettings,
+                            onRequestReset = parentActionsController::requestReset,
+                            onCancelReset = parentActionsController::cancelReset,
+                            onConfirmReset = {
+                                scope.launch {
+                                    familyRecordingController?.onBackground()
+                                    parentActionsController.confirmReset()
+                                    parentController.refresh()
+                                    familyPair = null
+                                }
+                            },
+                            onBack = { page = ParentPage.HOME },
+                            modifier = Modifier.weight(1f),
+                        )
                     } else {
                         ParentSummaryScreen(
                             modifier = Modifier.weight(1f),
                             state = state,
                             onRecognized = { scope.launch { parentController.recordRecognition(it) } },
                             onUsed = { scope.launch { parentController.recordUse(it) } },
+                            onOpenLanguages = { page = ParentPage.LANGUAGES },
+                            onOpenMicrophone = { page = ParentPage.MICROPHONE },
                             onFamilyVoice = familyRecordingController?.let { { pairId ->
                                 familyPair = pairId
                                 scope.launch { it.load(pairId) }

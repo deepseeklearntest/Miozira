@@ -34,7 +34,7 @@ Verified emulator command (run from repo root):
 - `:androidApp:checkManifestPolicy` — fails the build if the merged manifest's `android.permission.*` set drifts from [`config/android-permission-allowlist.txt`](config/android-permission-allowlist.txt) (currently `RECORD_AUDIO` only) or gains `INTERNET`. This is the CI-enforced form of the no-network invariant, not just a docs claim.
 - Instrumented tests need a device/emulator to run; `./gradlew :androidApp:compileDebugAndroidTestKotlin` verifies the Android-app tests compile without one.
 
-Implemented through Phase 3: Android audio and memory-only speech-attempt technical spikes, the draft content-review surface, a Room-backed local schema and idempotent evidence persistence, DataStore settings, and safe startup recovery. The iOS target/shell, production child session state machine, adaptive selection, and parent area are not yet built.
+Implemented through Phase 3: Android audio and memory-only speech-attempt technical spikes, the draft content-review surface, a Room-backed local schema and idempotent evidence persistence, DataStore settings, and safe startup recovery. The iOS target/shell, production child session state machine, adaptive selection, and the parent Voices screen and puzzle page are not yet built. The parent area has the two-step gate (a number read as a word) and a sentence-based home with language and microphone pages; Voices and the puzzle page are not built.
 
 The next planned implementation phase is the **child session state machine**. Physical-tablet audio latency and real-microphone validation remain mandatory before the seven-day family test; emulator results must not be presented as physical-device proof.
 

@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,8 @@ fun ParentSummaryScreen(
     state: ParentUiState,
     onRecognized: (PairId) -> Unit,
     onUsed: (PairId) -> Unit,
+    onOpenLanguages: () -> Unit,
+    onOpenMicrophone: () -> Unit,
     onFamilyVoice: ((PairId) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
@@ -28,28 +31,47 @@ fun ParentSummaryScreen(
         modifier = modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        item {
-            Text("Most recent session", style = MaterialTheme.typography.headlineSmall)
-        }
-        items(state.sessionLines) { Text(it) }
-        item {
-            Text("Noticed at home", style = MaterialTheme.typography.titleMedium)
-        }
-        items(state.recentPairs, key = { it.value }) { pairId ->
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(wordLabel(pairId, PrototypeContentRepository.languageNames))
-                Button(onClick = { onRecognized(pairId) }) { Text("Recognized outside Miozira") }
-                Button(onClick = { onUsed(pairId) }) { Text("Used outside Miozira") }
-                onFamilyVoice?.let { openFamilyVoice ->
-                    Button(onClick = { openFamilyVoice(pairId) }) { Text("Family voice") }
+        item { Text("Miozira for parents", style = MaterialTheme.typography.headlineSmall) }
+        if (state.wordsForToday.isNotEmpty()) {
+            item {
+                ParentCard {
+                    Text("Four words for today", style = MaterialTheme.typography.titleMedium)
+                    state.wordsForToday.forEach { Text(it) }
                 }
             }
         }
-        state.notice?.let { notice ->
-            item { Text(if (notice == ParentUiState.Notice.SAVED) "Saved." else "Could not save this yet.") }
+        item {
+            ParentCard { state.sessionLines.forEach { Text(it) } }
         }
+        if (state.recentPairs.isNotEmpty()) {
+            item {
+                ParentCard {
+                    Text("Noticed at home", style = MaterialTheme.typography.titleMedium)
+                    state.recentPairs.forEach { pairId ->
+                        Text(wordLabel(pairId, PrototypeContentRepository.languageNames))
+                        Button(onClick = { onRecognized(pairId) }) { Text("He understood it") }
+                        Button(onClick = { onUsed(pairId) }) { Text("He said it") }
+                        onFamilyVoice?.let { open ->
+                            Button(onClick = { open(pairId) }) { Text("Family voice") }
+                        }
+                    }
+                    state.notice?.let {
+                        Text(if (it == ParentUiState.Notice.SAVED) "Saved." else "Could not save this yet.")
+                    }
+                }
+            }
+        }
+        item { TextButton(onClick = onOpenLanguages, modifier = Modifier.fillMaxWidth()) { Text("How each language is going") } }
+        item { TextButton(onClick = onOpenMicrophone, modifier = Modifier.fillMaxWidth()) { Text("Microphone and privacy") } }
+    }
+}
+
+@Composable
+internal fun ParentCard(content: @Composable () -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) { content() }
     }
 }
