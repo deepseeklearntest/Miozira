@@ -166,7 +166,7 @@ A language is ready when it has exactly one pair for each of the `conceptCount` 
 
 Order: `warmUpTurns` easy words in `first`; `blockTurns` words in `first`; one `Breath`; `blockTurns` words in `second`; `endingTurns` easy words in `second`. The thinking puzzle (a later plan) goes between two breaths at the position of the single `Breath`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```kotlin
 @Test fun steps_followWarmUpFirstBreathSecondEnding() {
@@ -190,8 +190,8 @@ Order: `warmUpTurns` easy words in `first`; `blockTurns` words in `first`; one `
 }
 ```
 
-- [ ] **Step 2: Run** `--tests '*SessionStepsTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** — expect PASS.
-- [ ] **Step 5: Commit** `feat: describe a session as a list of steps`.
+- [x] **Step 2: Run** `--tests '*SessionStepsTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** — expect PASS.
+- [x] **Step 5: Commit** `feat: describe a session as a list of steps`.
 
 ---
 
