@@ -451,14 +451,14 @@ Layout and motion decisions (all inside one `BoxWithConstraints`, a centred `Col
 **Interfaces:**
 - Consumes: everything above.
 
-- [ ] **Step 1: Add the failing instrumented assertion** in `ManifestPolicyTest`: the launcher activity's `screenOrientation` equals `ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE`.
-- [ ] **Step 2: Lock the manifest:** add `android:screenOrientation="sensorLandscape"` to `.MainActivity`. Keep `configChanges`.
-- [ ] **Step 3: Wire `MainActivity`:** build `SessionSchedule(RoomSessionRepository(...), AndroidLocalDay, AndroidClock)`; pass `readyLanguages = PrototypeContentRepository::readyLanguages`, the detector, and `measurement = { decideAttemptMeasurement(settings.isSpeechAttemptDetectionEnabled() == Success(true), permissionService.getMicrophonePermissionState()) }` using one shared `DataStoreSettingsRepository`. Replace `childSessionController.start()` with `open()`, and call `open()` from `onStart` in place of `onForeground()`. (Detection stays off until a parent turns it on; the parent-area plan adds that switch.)
-- [ ] **Step 4: Run the full check:**
+- [x] **Step 1: Add the failing instrumented assertion** in `ManifestPolicyTest`: the launcher activity's `screenOrientation` equals `ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE`. — built as landscape (ruling R1: spec wins over sensorLandscape).
+- [x] **Step 2: Lock the manifest:** add `android:screenOrientation="sensorLandscape"` to `.MainActivity`. Keep `configChanges`. — built as landscape (ruling R1), not sensorLandscape.
+- [x] **Step 3: Wire `MainActivity`:** build `SessionSchedule(RoomSessionRepository(...), AndroidLocalDay, AndroidClock)`; pass `readyLanguages = PrototypeContentRepository::readyLanguages`, the detector, and `measurement = { decideAttemptMeasurement(settings.isSpeechAttemptDetectionEnabled() == Success(true), permissionService.getMicrophonePermissionState()) }` using one shared `DataStoreSettingsRepository`. Replace `childSessionController.start()` with `open()`, and call `open()` from `onStart` in place of `onForeground()`. (Detection stays off until a parent turns it on; the parent-area plan adds that switch.)
+- [ ] **Step 4: Run the full check:** — NOT RUN: no device or emulator attached; compile and unit checks done.
   `./gradlew :shared:testDebugUnitTest :shared:connectedDebugAndroidTest :androidApp:connectedDebugAndroidTest :androidApp:assembleDebug :androidApp:checkManifestPolicy` — expect BUILD SUCCESSFUL with `RECORD_AUDIO` still the only permission.
-- [ ] **Step 5: Manual check on the Xiaomi Pad** (physical tablet; emulator results are not device proof): a whole English-then-Tamil session runs to the quiet screen with no adult help; reopening the app the same day shows the quiet screen; the screen never goes upright; Tamil renders correctly in the tablet's font.
-- [ ] **Step 6: Update `CLAUDE.md`:** in "Current Repository State", state that the child session now runs a whole session (warm-up, two language blocks, ending, quiet screen) in landscape, and that puzzles, the guide voice and the three unchecked languages are not built.
-- [ ] **Step 7: Commit** `feat: lock landscape and wire the whole-session controller`.
+- [ ] **Step 5: Manual check on the Xiaomi Pad** (physical tablet; emulator results are not device proof): a whole English-then-Tamil session runs to the quiet screen with no adult help; reopening the app the same day shows the quiet screen; the screen never goes upright; Tamil renders correctly in the tablet's font. — NOT DONE: no physical Xiaomi Pad attached to this run.
+- [x] **Step 6: Update `CLAUDE.md`:** in "Current Repository State", state that the child session now runs a whole session (warm-up, two language blocks, ending, quiet screen) in landscape, and that puzzles, the guide voice and the three unchecked languages are not built.
+- [x] **Step 7: Commit** `feat: lock landscape and wire the whole-session controller`.
 
 ---
 
