@@ -20,6 +20,9 @@ interface InteractionDao {
     )
     suspend fun heardInMostRecentSession(): List<InteractionEntity>
 
+    @Query("SELECT * FROM pair_learning_state")
+    suspend fun allPairStates(): List<PairLearningStateEntity>
+
     @Query("SELECT * FROM pair_learning_state WHERE pair_id = :pairId")
     suspend fun findPairState(pairId: String): PairLearningStateEntity?
 

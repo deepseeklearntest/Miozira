@@ -4,6 +4,8 @@ import com.miozira.content.PrototypeContentRepository
 import com.miozira.core.result.AppError
 import com.miozira.core.result.AppResult
 import com.miozira.data.db.dao.InteractionDao
+import com.miozira.presentation.parent.PairEvidence
+import com.miozira.core.model.PairId
 import com.miozira.presentation.parent.ParentDataSource
 import com.miozira.presentation.parent.SessionSummary
 import com.miozira.presentation.parent.summarize
@@ -18,5 +20,15 @@ class RoomParentDataSource(
         )
     } catch (error: Exception) {
         AppResult.Failure(AppError.Unexpected("Could not read local parent summary"))
+    }
+
+    override suspend fun pairEvidence(): AppResult<List<PairEvidence>> = try {
+        AppResult.Success(
+            interactionDao.allPairStates().map {
+                PairEvidence(PairId(it.pairId), it.validExposureCount > 0, it.attemptDetectedCount > 0)
+            },
+        )
+    } catch (error: Exception) {
+        AppResult.Failure(AppError.Unexpected("Could not read local language evidence"))
     }
 }

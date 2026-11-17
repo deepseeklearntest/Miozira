@@ -19,6 +19,7 @@ class ParentControllerTest {
             override suspend fun mostRecentSession() = AppResult.Success<SessionSummary?>(
                 SessionSummary(listOf(LanguageId("ta")), listOf(PairId("apple:ta")), emptyList(), emptyList()),
             )
+            override suspend fun pairEvidence() = AppResult.Success(emptyList<PairEvidence>())
         }
         val controller = ParentController(data, RealWorldTransferService(repository), { 20L }, { "observation-1" })
         controller.recordUse(PairId("apple:ta"))

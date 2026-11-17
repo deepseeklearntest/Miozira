@@ -66,3 +66,34 @@ fun wordsForToday(summary: SessionSummary?, languageNames: Map<LanguageId, Strin
         .take(max)
         .map { it.second }
 }
+
+/** What the child has done with one pair: heard it (valid exposure) and tried saying it (attempt detected). */
+data class PairEvidence(val pairId: PairId, val heard: Boolean, val tried: Boolean)
+
+/** Languages in the order the content lists them. */
+val languageOrder: List<LanguageId> = PrototypeContentRepository.allPairs().map { it.languageId }.distinct()
+
+/** One paragraph about one language, from that language's pairs only. No counts: "most"/"some" stand in. */
+fun describeLanguage(
+    languageId: LanguageId,
+    evidence: List<PairEvidence>,
+    languageNames: Map<LanguageId, String>,
+): String {
+    val name = languageNames[languageId].orEmpty()
+    val pairs = PrototypeContentRepository.allPairs().filter { it.languageId == languageId }.associateBy { it.pairId }
+    val heard = evidence.filter { it.heard && it.pairId in pairs }
+    if (heard.isEmpty()) return "$name — not met yet."
+    val tried = heard.count { it.tried }
+    val head = when {
+        tried == 0 -> "$name — he has not tried saying his $name words yet."
+        tried * 3 >= heard.size * 2 -> "$name — he tries most of his $name words."
+        else -> "$name — he tries some of his $name words."
+    }
+    val base = PrototypeContentRepository.baseLanguageId
+    val listening = heard.filter { !it.tried }.map { e ->
+        val concept = pairs.getValue(e.pairId).conceptId
+        PrototypeContentRepository.allPairs().firstOrNull { it.conceptId == concept && it.languageId == base }?.spokenForm
+            ?: concept.value
+    }
+    return if (listening.isEmpty()) head else "$head Still just listening: ${listening.joinToString(", ")}."
+}

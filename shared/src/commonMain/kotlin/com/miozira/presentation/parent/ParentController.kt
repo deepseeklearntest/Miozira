@@ -14,6 +14,7 @@ data class ParentUiState(
     val sessionLines: List<String> = describeSession(null, PrototypeContentRepository.languageNames),
     val recentPairs: List<PairId> = emptyList(),
     val wordsForToday: List<String> = emptyList(),
+    val languageLines: List<String> = emptyList(),
     val notice: Notice? = null,
 ) {
     enum class Notice { SAVED, ERROR }
@@ -21,6 +22,7 @@ data class ParentUiState(
 
 interface ParentDataSource {
     suspend fun mostRecentSession(): AppResult<SessionSummary?>
+    suspend fun pairEvidence(): AppResult<List<PairEvidence>>
 }
 
 class ParentController(
@@ -33,13 +35,17 @@ class ParentController(
     val state: StateFlow<ParentUiState> = _state.asStateFlow()
 
     suspend fun refresh() {
+        val evidence = dataSource.pairEvidence()
         _state.value = when (val result = dataSource.mostRecentSession()) {
             is AppResult.Failure -> ParentUiState(notice = ParentUiState.Notice.ERROR)
             is AppResult.Success -> {
                 val summary = result.value
+                val names = PrototypeContentRepository.languageNames
+                val rows = (evidence as? AppResult.Success)?.value.orEmpty()
                 ParentUiState(
                     sessionLines = describeSession(summary, PrototypeContentRepository.languageNames),
                     wordsForToday = wordsForToday(summary, PrototypeContentRepository.languageNames),
+                    languageLines = languageOrder.map { describeLanguage(it, rows, names) },
                     recentPairs = summary?.let { it.tried + it.listened + it.heardUnmeasured }.orEmpty(),
                 )
             }
