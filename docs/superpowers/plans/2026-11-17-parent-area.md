@@ -349,7 +349,7 @@ Behaviour:
 - `setListening(false)` saves off and never touches the permission.
 - `confirmExtraSession()` does nothing unless `extraSessionConfirmationRequired` is true; otherwise it calls `startExtraSession()` and then `lock()`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 @Test fun turningListeningOn_withPermissionGranted_savesOn()
@@ -360,8 +360,8 @@ Behaviour:
 @Test fun confirmExtraSession_withoutARequest_doesNothing()
 ```
 
-- [ ] **Step 2: Run** `--tests '*ParentActionsControllerTest'` — expect FAIL. **Step 3: Implement and wire in `MainActivity`** (share the one `DataStoreSettingsRepository` instance with the child controller's `measurement`). **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS.
-- [ ] **Step 5: Commit** `feat: listening switch and extra session in the parent area`.
+- [x] **Step 2: Run** `--tests '*ParentActionsControllerTest'` — expect FAIL. **Step 3: Implement and wire in `MainActivity`** (share the one `DataStoreSettingsRepository` instance with the child controller's `measurement`). **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS.
+- [x] **Step 5: Commit** `feat: listening switch and extra session in the parent area`.
 
 ---
 
