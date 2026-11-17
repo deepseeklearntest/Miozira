@@ -107,7 +107,7 @@ object ParentChallenge {
 
 `reduce`: a digit appends to `typed`; when `typed` has two digits, `outcome` is `ACCEPTED` if it equals the number, otherwise `CANCELLED`. `TimedOut` gives `CANCELLED`. Once `outcome` is set the state no longer changes.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 @Test fun numberWords_coverTheIrregularAndRegularForms() {
@@ -123,8 +123,8 @@ object ParentChallenge {
 @Test fun start_neverRepeatsThePreviousNumber()        // random always returns 47, previous 47 -> result != 47 and within 10..99
 ```
 
-- [ ] **Step 2: Run** `--tests '*ParentChallengeTest'` — expect FAIL. **Step 3: Implement.** For `start`, if the drawn number equals the previous one, use the next number in range (wrapping 99 → 10). **Step 4: Run** — expect PASS.
-- [ ] **Step 5: Commit** `feat: add the number-word reading step for the parent gate`.
+- [x] **Step 2: Run** `--tests '*ParentChallengeTest'` — expect FAIL. **Step 3: Implement.** For `start`, if the drawn number equals the previous one, use the next number in range (wrapping 99 → 10). **Step 4: Run** — expect PASS.
+- [x] **Step 5: Commit** `feat: add the number-word reading step for the parent gate`.
 
 ---
 
