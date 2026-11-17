@@ -3,7 +3,7 @@
 **Document:** `docs/OPEN-QUESTIONS.md`  
 **Status:** Active  
 **Product:** Miozira Prototype 0.1  
-**Last updated:** 2026-08-25  
+**Last updated:** 2026-11-17  
 
 ---
 
@@ -15,23 +15,26 @@ This document tracks unresolved product, content, engineering, and UX questions 
 
 ## 2. Open Questions & Identified Tensions
 
-### OQ-001: Tamil Lexical Form for "Cup" (`கப்` vs `கோப்பை`)
+### OQ-001: Tamil Lexical Form for "Cup" (`கப்` vs `கோப்பை`) [Resolved]
 - **Referenced in:** `docs/01-learning/content-spec.md` (lines 330–338, 1575), `docs/05-quality/testing.md` (line 1407), `docs/05-quality/acceptance-criteria.md` (line 246)
 - **Context:** Everyday colloquial Tamil, especially among young bilingual children and diaspora families, overwhelmingly uses `கப்` (loan word). Traditional or formal Tamil uses `கோப்பை` (*koappai*).
 - **Conflict / Tension:** `content-spec.md` marks this as `decision required` before recording freeze.
 - **Recommendation:** Use `கப்` if prioritizing immediate conversational familiarity for bilingual 4–5-year-olds in family routines, or `கோப்பை` if prioritizing formal linguistic purity. Record `கப்` as the primary family-tested term for Prototype 0.1, with optional family custom voice recording allowing parents to record their preferred regional term.
+- **Resolution (parent, 2026-11-16):** `கப்`. Tamil uses the conversational forms the parents say at home, and the parents record the Tamil words themselves (`docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md`, sections 7.6 and 9). `content-spec.md` and `acceptance-criteria.md` were updated on 2026-11-17.
 
-### OQ-002: Tamil Lexical Form for "Water" (`தண்ணீர்` vs `தண்ணி`)
+### OQ-002: Tamil Lexical Form for "Water" (`தண்ணீர்` vs `தண்ணி`) [Resolved]
 - **Referenced in:** `docs/01-learning/content-spec.md` (lines 340–348, 1580), `docs/05-quality/qa-checklist.md` (line 38)
 - **Context:** `தண்ணீர்` (*thanniir*) is the standard literary and canonical spoken form, while `தண்ணி` (*thanni*) is common colloquial spoken shorthand.
 - **Conflict / Tension:** `content-spec.md` lists `தண்ணீர்` with note `preferred; review required`.
-- **Recommendation:** Adopt `தண்ணீர்` (*thanniir*) for canonical bundled audio recorded with natural, warm maternal intonation.
+- **Earlier recommendation (superseded):** Adopt `தண்ணீர்` (*thanniir*) for canonical bundled audio recorded with natural, warm maternal intonation.
+- **Resolution (parent, 2026-11-16):** `தண்ணி`, the conversational form, for the same reason as OQ-001 (`docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md`, sections 7.6 and 9). This overrides the earlier recommendation; `content-spec.md` and `acceptance-criteria.md` were updated on 2026-11-17.
 
-### OQ-003: Parent Gate Mechanism (Timed Discreet Hold vs Math Challenge)
+### OQ-003: Parent Gate Mechanism (Timed Discreet Hold vs Math Challenge) [Resolved]
 - **Referenced in:** `docs/02-design/parent-experience.md` (§14–16), `docs/02-design/ui-ux.md` (§30–32), `docs/04-privacy-safety/security.md` (§13–14), `docs/05-quality/acceptance-criteria.md` (`AC-H07`)
 - **Context:** `parent-experience.md` and `ui-ux.md` explicitly specify avoiding child-friendly math questions (which turn into attractive puzzles for toddlers) and recommend a discreet 2-second hold on a quiet, low-contrast corner hotspot.
 - **Conflict / Tension:** Earlier drafts mentioned arithmetic challenge modals, which create cognitive friction for parents and attract child curiosity.
 - **Recommendation:** Standardize on the discreet $\approx 2\text{-second}$ hold gesture on the low-contrast corner hotspot as defined in `parent-experience.md` and `ui-ux.md`. Treat the gate as a light friction boundary (`AC-H07`) against accidental toddler navigation, not authentication.
+- **Resolution (parent, 2026-11-17):** Two steps: a 3-second hold on an undrawn top-right corner, then typing a two-digit number that is written as a word and changes every time (`docs/superpowers/specs/2026-11-16-ui-ux-design.md`, section 10.1). This is a reading step, not arithmetic, so it is not a puzzle a pre-reader can enjoy solving; a wrong answer or 10 seconds of nothing returns silently to the child screen. It remains a friction boundary, not authentication. `security.md` and `AC-H07` were updated on 2026-11-17.
 
 ### OQ-004: Speech Attempt Detection Thresholding (RMS vs Lightweight VAD)
 - **Referenced in:** `docs/03-engineering/microphone.md` (§80), `docs/03-engineering/architecture.md` (§95–96), `docs/decisions/ADR-0001-technology-stack.md` (§38)
@@ -63,6 +66,7 @@ This document tracks unresolved product, content, engineering, and UX questions 
 - **Referenced in:** `docs/00-foundation/MVP-IMPLEMENTATION-PLAN.md` (Phase 2), `docs/01-learning/content-spec.md` (§10, §47).
 - **Context:** A local draft manifest now maps all eight concepts and sixteen English/Tamil pairs. The bundled clips are development drafts, and the Cat, Cup, Hand, and Water visuals are supplied drafts with provenance not yet recorded.
 - **Impact:** The structural content package is testable, but it cannot be frozen or described as reviewed canonical content. This preserves the content-review and child-safety rules.
+- **Update 2026-11-17:** The scope is now five languages (forty pairs). Six of the eight draft pictures are to be replaced or repainted under the picture rules in `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, section 8 (painted realistic, no faces, no glow); only apple and ball are kept. No Arabic, Japanese or Spanish word reaches the child before a native speaker has checked it.
 - **Required before family-test freeze:** Record visual provenance/licences; obtain fluent Tamil and English review of wording, pronunciation, and loudness; then promote each accepted pair from `DRAFT` to an approved review status.
 
 ---

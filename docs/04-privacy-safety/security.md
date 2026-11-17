@@ -6,7 +6,7 @@
 **Product:** Miozira  
 **Primary platform:** Android tablet  
 **Architecture:** Offline-first, local-only learning data  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-11-17
 
 ---
 
@@ -252,7 +252,16 @@ The actual goal is:
 
 > reduce accidental child activation of settings, reset, and recordings.
 
-A hidden long-press + adult confirmation is sufficient for Prototype 0.1 if family testing validates it.
+Since 2026-11-17 (OQ-003 closed) the gate has two steps:
+
+1. a 3-second hold on the top-right corner, where nothing is drawn and no progress is shown;
+2. typing a two-digit number that is written as a word and changes every time.
+
+A wrong answer, or 10 seconds without input, returns silently to the child screen. The parent area locks again when the parent leaves it or the screen turns off.
+
+The second step is a reading step, which a pre-reader cannot pass and cannot learn by watching. It stops working as a barrier once the child can read number words; a parent-chosen PIN is planned for then. This is sufficient for Prototype 0.1 if family testing validates it.
+
+Details: `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, section 10.1.
 
 ---
 
@@ -261,7 +270,8 @@ A hidden long-press + adult confirmation is sufficient for Prototype 0.1 if fami
 Actions needing stronger confirmation:
 
 - reset all local data;
-- delete family recording.
+- delete a voice recording;
+- start an extra session.
 
 The parent gate alone is not the only confirmation for destructive actions.
 

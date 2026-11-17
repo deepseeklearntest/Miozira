@@ -4,10 +4,21 @@
 **Version:** 0.2  
 **Status:** Draft for Prototype 0.1 — Palette & Wellbeing Update  
 **Product:** Miozira  
-**Prototype:** Android-first, 8 concepts × English + Tamil  
+**Prototype:** Android-first, 8 concepts × five languages (English, Tamil, Japanese, Arabic, Spanish)  
 **Primary modes:** Child + Parent  
-**Supported orientations:** Portrait + Landscape  
-**Last updated:** 2026-08-25
+**Supported orientations:** Landscape only (locked)  
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+Revised to match the approved UI/UX design, `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, which is the source of truth
+for screens and wins wherever the two differ.
+
+Changed in place: landscape only; the child's written word in four scripts; the
+four-words card; the voice row with two parent slots; the parent gate screen.
+New child components are listed in the addendum at the end of this document.
 
 ---
 
@@ -57,7 +68,7 @@ The design system should make Miozira:
 - development-friendly;
 - accessible;
 - suitable for preschool touch;
-- visually coherent across portrait and landscape;
+- visually coherent on a landscape-locked tablet;
 - easy to extend without redesigning every screen.
 
 ---
@@ -149,8 +160,7 @@ Recommended child-mode spacing:
 
 ```text
 screen horizontal safe padding:
-  portrait: 24–32 dp
-  landscape: 32–48 dp
+  32–48 dp (landscape only)
 
 screen vertical safe padding:
   24–40 dp
@@ -272,15 +282,17 @@ Visual separation should come mainly from:
 
 # 11. Typography Philosophy
 
-Child mode should contain very little visible text.
+Child mode shows exactly one piece of text: the written word under the picture. There is no instructional text.
 
 Parent mode should use a conventional readable hierarchy.
 
 The design system should support:
 
-- English;
+- Latin (English, Spanish);
 - Tamil Unicode;
-- dynamic text scaling.
+- Arabic, right to left, with vowel marks;
+- Japanese (hiragana and katakana);
+- dynamic text scaling in parent mode.
 
 ---
 
@@ -316,33 +328,37 @@ These values should be tested with Tamil script and Android font scaling.
 
 # 13. Child Typography
 
-Child text should be exceptional rather than default.
-
-If a child-visible label is used:
+The only child text is the written word under the picture.
 
 ```text
-type.child.large = 28–36 sp
+type.child.word = about one tenth of the screen height
+colour while spoken = #4F746B
+colour at rest      = #26312E
+alignment           = centred under the picture
 ```
 
 It must:
 
-- remain supplementary;
-- have strong contrast;
-- not be required for interaction.
+- remain supplementary and never be required for interaction;
+- never be a tap target;
+- light up as a whole word, with no letter-by-letter sweep;
+- sit below the his-turn ring with a clear gap;
+- leave enough height for Arabic vowel marks and Tamil vowel signs;
+- ignore system font scaling, so the layout stays fixed.
 
 ---
 
 # 14. Font Requirements
 
-The selected font stack must:
+The font stack must:
 
-- render Tamil correctly;
-- support English;
-- preserve legibility at larger text sizes;
-- avoid clipped Tamil glyphs;
-- behave well under Android font scaling.
+- render Latin, Tamil, Arabic (with vowel marks) and Japanese correctly;
+- look like one family across the four scripts;
+- preserve legibility at large sizes;
+- avoid clipped Tamil glyphs and clipped Arabic marks;
+- behave well under Android font scaling in parent mode.
 
-Prototype 0.1 should prefer robust system-supported fonts over decorative branding fonts that reduce readability.
+The child's word uses fonts carried inside the app, so the words look the same on any tablet (for example the Noto family, trimmed to the characters actually used). Parent mode may use system fonts.
 
 ---
 
@@ -648,7 +664,7 @@ Responsibilities:
 - render one concept visual;
 - provide the primary tap target;
 - show temporary state cues;
-- adapt to portrait/landscape;
+- fit the landscape-locked screen;
 - expose accessible semantics;
 - avoid decorative chrome.
 
@@ -861,7 +877,7 @@ Should remain clearly actionable but visually less dominant than primary action.
 
 Used for:
 
-- Delete family recording;
+- Delete a voice recording;
 - Reset data.
 
 Requirements:
@@ -899,21 +915,18 @@ Avoid creating a dashboard grid of many small cards.
 
 ---
 
-# 38. RealWorldSuggestionCard
+# 38. FourWordsCard
+
+Replaces the single real-world suggestion card.
 
 Structure:
 
 ```text
-eyebrow/heading
-concept-language context
-suggestion sentence
+heading: Four words for today
+four rows: moment of the day + word + (language)
 ```
 
-Optional:
-
-- concept thumbnail.
-
-No completion checkbox.
+No completion checkbox, no counts, no dates.
 
 ---
 
@@ -933,8 +946,8 @@ Example:
 Apple — Tamil
 Heard recently · Tried saying it
 
-[Recognized outside Miozira]
-[Used outside Miozira]
+[He understood it]
+[He said it]
 ```
 
 ---
@@ -946,25 +959,25 @@ Because labels are long, use full-width or roomy buttons rather than tiny chips.
 Recommended:
 
 ```text
-Recognized outside Miozira
-Used outside Miozira
+He understood it
+He said it
 ```
 
 Avoid icon-only actions.
 
 ---
 
-# 41. FamilyRecordingRow
+# 41. VoiceRow
 
-Recommended structure:
+Used for guide phrases (two slots) and Tamil words (one slot).
 
 ```text
-Concept + language
-Standard voice [Play]
-Family voice [Record / Play / Replace / Delete]
+Phrase or word
+Mother   Recorded            [Play] [Record again]
+Father   Not recorded yet    [Record]
 ```
 
-The row may expand rather than showing many small controls simultaneously.
+Each slot states plainly whether it holds a recording or is using the prepared voice. The row may expand rather than showing many small controls simultaneously.
 
 ---
 
@@ -1028,9 +1041,9 @@ Avoid excessive action icons.
 
 # 46. Parent Gate Visual
 
-The hidden parent-entry hotspot should not be part of the visible design system in ordinary child mode.
+The hidden parent corner is not drawn at all in child mode, and holding it shows no progress.
 
-When the gate is activated, the confirmation UI should switch to adult-oriented styling.
+The reading step uses plain adult styling on the parent background: one line of instruction, a two-digit number written as a word, and a number pad. A wrong answer or a 10-second timeout returns to the child screen with no message, sound or animation.
 
 ---
 
@@ -1175,26 +1188,21 @@ Prototype 0.1 is tablet-first, so component behavior should be designed for medi
 
 ---
 
-# 56. Portrait Component Behavior
+# 56. Portrait Component Behavior (retired)
 
-In portrait:
-
-- concept remains centered;
-- vertical space may hold temporary listening cue below concept;
-- parent cards stack vertically;
-- buttons are full-width where helpful.
+Retired 2026-11-17. The app is locked to landscape.
 
 ---
 
 # 57. Landscape Component Behavior
 
-In landscape:
+Landscape is the only orientation.
 
-- concept remains dominant;
-- listening cue may sit below or beside concept if balance improves;
-- parent screens may use wider card width or two-column detail layouts cautiously.
+- the concept picture is centred and dominant, with the written word beneath it;
+- two-picture activities place the pictures side by side;
+- parent screens may use a wider card width or two-column detail layouts cautiously.
 
-Do not add extra child controls because more horizontal space exists.
+Do not add extra child controls because horizontal space exists.
 
 ---
 
@@ -1384,7 +1392,7 @@ Do not truncate critical microphone/privacy/reset text.
 
 ---
 
-# 72. Tamil Typography Rules
+# 72. Script Rules
 
 Tamil text requires:
 
@@ -1394,7 +1402,18 @@ Tamil text requires:
 - Unicode storage/rendering;
 - natural wrapping.
 
-Design review must include real Tamil strings, not Latin placeholders.
+Arabic text requires:
+
+- right-to-left layout;
+- vowel marks shown and not clipped;
+- correct joining of letters.
+
+Japanese text requires:
+
+- hiragana for everyday words and katakana for borrowed words, as the checker specifies per word;
+- no fallback to Chinese-style glyph shapes.
+
+Design review must include real strings in every script, not Latin placeholders.
 
 ---
 
@@ -1458,7 +1477,7 @@ ParentCard
 ParentPrimaryButton
 ParentSecondaryButton
 ParentDestructiveButton
-RealWorldSuggestionCard
+FourWordsCard
 RecentLearningRow
 ObservationAction
 FamilyRecordingRow
@@ -1506,8 +1525,9 @@ Before approving a child screen:
 - [ ] Is there any score/reward pattern?
 - [ ] Does the state still make sense with microphone off?
 - [ ] Does reduced motion preserve meaning?
-- [ ] Does portrait work?
-- [ ] Does landscape work?
+- [ ] Does it work in landscape (the only orientation)?
+- [ ] Does the written word clear the ring in all four scripts?
+- [ ] Does any picture show a face?
 
 ---
 
@@ -1586,7 +1606,7 @@ Prefer:
 
 ```text
 ConceptStage
-RealWorldSuggestionCard
+FourWordsCard
 ObservationAction
 ```
 
@@ -1700,7 +1720,7 @@ Miozira Prototype 0.1 uses a deliberately small design system built around:
 9. calm motion with reduced-motion alternatives;
 10. one reusable `ConceptStage` for the child;
 11. a small set of conventional parent components;
-12. consistent portrait/landscape behavior;
+12. consistent landscape-only behavior;
 13. no reward/gamification components.
 
 The system should make Miozira easier to build consistently without making the prototype visually or technically heavy.
@@ -1749,3 +1769,26 @@ progress celebrations
 ```
 
 The child should remain interested because the object, sound, action, prediction, repetition, and real-world connection are meaningful.
+
+---
+
+# Addendum 2026-11-17 — New Child Components
+
+Defined in `docs/superpowers/specs/2026-11-16-ui-ux-design.md`; listed here so the design system names them.
+
+| Component | Description |
+|---|---|
+| HisTurnRing | One ring, `#607C8A`, about 3 dp, breathing slowly around the picture for about 4 seconds. Belongs to the picture; never touches the word. |
+| WrittenWord | See §13. |
+| Nod | The picture grows very slightly and settles, once. No sound, no colour. |
+| StepForward | A picture grows a little while it is named, then settles. Used in "Which one?", the puzzles and the scene. |
+| EmptyPlace | A faint dashed outline (`#B8B2A8`) marking the empty place in "What comes next?". Never used to show something not yet met. |
+| Breath | One second of plain background before and after the puzzle. |
+| QuietScreen | Plain `#F2EEE7`, nothing on it, nothing tappable. |
+| Scene | One painted place holding six to eight known things, each a large target. No pinch-zoom. |
+
+Child tap targets are at least about 2.5 cm across with clear space between them, and none sits near the top-right corner.
+
+Picture rules: realistic and softly painted; one thing per picture, cut out, directly on the background; no glow, frame or shadow box; no faces on people or animals; body parts shown one at a time.
+
+Sound: voices only. No music, instrument or effect sounds.

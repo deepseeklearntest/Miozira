@@ -4,9 +4,26 @@
 **Version:** 0.2  
 **Status:** Draft for Prototype 0.1 — Palette & Wellbeing Update  
 **Product:** Miozira  
-**Prototype:** Android-first, 8 concepts × English + Tamil  
+**Prototype:** Android-first, 8 concepts × five languages (English, Tamil, Japanese, Arabic, Spanish)  
 **Target child:** approximately 4–5 years old  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+Revised to match the approved UI/UX design, `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, which is the source of truth
+for screens and wins wherever the two differ.
+
+Changed in place: five languages with no language cue; "Your turn" after every
+word; the ring as his turn; movement; inactivity and stopping; landscape only;
+the written word; voices as the only sounds; the Malayalam guide voice.
+
+New principle: **nothing is earned.** Nothing in the app is unlocked, awarded or
+announced as an achievement. The scene at the end of a session is an ordinary
+part of it, never a prize. The puzzle experience is described in the UI/UX
+design §5.4–5.6: after any tap the same thing happens and nothing is shown as
+wrong.
 
 ---
 
@@ -189,18 +206,21 @@ That understanding is more important than anything else in the first few interac
 
 # 8. First Speaking Invitation
 
-The first speaking invitation should be gentle and brief.
+The speaking invitation is gentle and brief.
 
-It should not demand:
+After every word, "Your turn" is spoken once in Malayalam in a parent's recorded voice. To this child the phrase is company, not pressure (parent, 2026-11-17).
+
+It must never become:
 
 > “Say it now.”
 
-Preferred behavior:
+So:
 
-- word plays;
-- short pause;
-- subtle invitation;
-- child may respond or remain silent.
+- the word plays;
+- "Your turn" is said once, in the same warm way every time;
+- a calm ring marks a few seconds of space;
+- the child may respond or remain silent;
+- the phrase is never repeated, made louder or followed by another prompt.
 
 ---
 
@@ -469,13 +489,13 @@ The child should not know the system classified it differently.
 
 # 26. Language Switching Experience
 
-English and Tamil should feel like two natural spoken possibilities, not a translation drill.
+The five languages (English, Tamil, Japanese, Arabic, Spanish) should feel like natural spoken possibilities, not a translation drill. Each session has two of them, in separate blocks.
 
-The child should not be required to understand:
+The child is never told:
 
 > “Now we are switching languages.”
 
-The session may simply transition naturally.
+There is no language cue of any kind (parent, 2026-11-17). He hears the word and links it to the picture; the script of the written word is the only visible difference.
 
 ---
 
@@ -490,9 +510,10 @@ Possible signs:
 
 If this happens consistently:
 
-- session design may add a subtle language cue;
 - block lengths may change;
-- switching frequency may decrease.
+- the pairing of languages may change.
+
+A language cue is not added without a new parent decision.
 
 Do not assume confusion from a single unusual reaction.
 
@@ -515,7 +536,7 @@ Preference is observation, not judgment.
 
 # 29. Movement Interaction Experience
 
-A movement prompt should feel playful and natural.
+A movement prompt should feel playful and natural. It is spoken in Malayalam in a parent's voice and opens the puzzle part when a fitting word is in the day's set.
 
 Example:
 
@@ -528,7 +549,7 @@ The child may:
 - ignore it;
 - do something else.
 
-No outcome is graded.
+The app waits a few seconds and moves on. No outcome is checked or graded.
 
 ---
 
@@ -550,17 +571,14 @@ If the child stops touching the screen:
 
 Miozira should become quieter, not louder.
 
-Possible sequence:
-
 ```text
-wait
-→ subtle cue
-→ wait
-→ optional second cue
-→ quiet idle
+wait about 8 seconds
+→ one soft pulse of the picture, once
+→ wait about a minute
+→ quiet screen
 ```
 
-The product should not escalate.
+The product never escalates.
 
 ---
 
@@ -582,13 +600,13 @@ A session does not need formal completion to be valid.
 
 # 33. Early Exit Experience
 
-If the child leaves after 3–4 minutes:
+If the child leaves partway:
 
 - no failure message;
 - no “come back to finish” prompt;
 - no loss of progress.
 
-The child should simply be done.
+The child should simply be done. After about a minute the app shows the quiet screen. If he returns the same day, a tap carries on where he left off; nothing is said about it, then or later.
 
 ---
 
@@ -618,16 +636,9 @@ A technical interruption should not be transformed into a learning event.
 
 ---
 
-# 36. Orientation Change
+# 36. Orientation (landscape only)
 
-If the tablet rotates:
-
-- the same concept remains;
-- the same interaction remains;
-- no new word is triggered automatically;
-- the child does not need to rediscover controls.
-
-Rotation should feel like layout adaptation, not navigation.
+The app is locked to landscape and the screen does not turn (parent, 2026-11-17). Sitting with the tablet sideways in one place is part of the routine.
 
 ---
 
@@ -635,12 +646,12 @@ Rotation should feel like layout adaptation, not navigation.
 
 If microphone access is not available:
 
-the child experience should still feel normal.
+the child experience looks and feels the same.
 
-The only difference may be:
+The only difference:
 
-- no listening cue;
-- slightly simpler pause;
+- the ring still marks his turn as a quiet space;
+- the small nod after an attempt never happens;
 - same progression.
 
 The child should never see:
@@ -649,11 +660,11 @@ The child should never see:
 
 ---
 
-# 38. Microphone Cue
+# 38. His-Turn Cue
 
-If microphone detection is enabled:
+One calm ring breathes slowly around the picture during his turn.
 
-the cue should communicate:
+It communicates:
 
 > **“You may speak now.”**
 
@@ -665,6 +676,7 @@ Avoid:
 
 - waveforms;
 - volume meters;
+- microphone icons;
 - red recording indicators beyond OS requirements;
 - pronunciation gauges.
 
@@ -761,6 +773,7 @@ Prototype 0.1 uses:
 - warm neutral background;
 - natural concept colors;
 - one temporary state accent when needed;
+- one written word under the picture, shown but never required;
 - no decorative animation layer.
 
 When nothing important is happening:
@@ -794,7 +807,7 @@ The product should avoid:
 - repeated vibration patterns;
 - reward sounds.
 
-The spoken word is the main audio event.
+Voices are the only sounds: the word and the guide phrases. There is no music, no instrument sound and no effect sound (parent, 2026-11-17).
 
 A single soft haptic tick may accompany a deliberate child tap if real-device testing shows that it strengthens cause-and-effect understanding.
 
@@ -881,7 +894,7 @@ The child should experience continuity, not debt.
 
 If the parent reports:
 
-> “Used outside Miozira”
+> “He said it”
 
 the child does not need to see:
 
@@ -1056,6 +1069,8 @@ Evidence remains item-specific and contextual.
 
 # 63. Child-Facing Language
 
+All instructions to the child are spoken in Malayalam, his home language, recorded by both parents. One parent's voice is used for a whole session and the other's for the next.
+
 Child-facing spoken prompts should be:
 
 - short;
@@ -1063,7 +1078,7 @@ Child-facing spoken prompts should be:
 - natural;
 - non-instruction-heavy.
 
-For Tamil, use natural household Tamil rather than literal translations.
+The learning languages are never used for instructions. For Tamil words, use natural household Tamil rather than literal translations.
 
 ---
 
@@ -1074,6 +1089,10 @@ The visual language should prioritize:
 1. clear concept;
 2. clear action;
 3. calm state feedback.
+
+Pictures are realistic and softly painted, one thing per picture on the plain background. No picture shows the face of a person or an animal; body parts are shown one at a time (UI/UX design §8).
+
+One written word sits under the picture in the language's own script. It is for familiarity and never needs to be read.
 
 Decorative branding is secondary.
 

@@ -9,8 +9,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Quick Reference Summary
 
 - **Product:** Miozira Prototype 0.1 (Offline multilingual learning for pre-readers, age 4–5).
-- **Curriculum:** 8 concepts (`apple`, `ball`, `cup`, `hand`, `nose`, `cat`, `car`, `water`) in English + Tamil.
-- **Invariants:** 100% offline, zero network access, zero cloud, zero tracking, no gamification (no streaks, XP, timers, scores), low-stimulation palette (`#F2EEE7`), memory-only speech attempt detection.
+- **Curriculum:** 8 concepts (`apple`, `ball`, `cup`, `hand`, `nose`, `cat`, `car`, `water`) in five languages: English, Tamil, Japanese, Arabic, Spanish; two per session. The build that exists today contains English + Tamil only.
+- **Session:** one a day, about 8–10 minutes (warm-up, first language, one thinking puzzle, second language, easy ending); a planned set of items that ends itself and goes quiet. Landscape only.
+- **Invariants:** 100% offline, zero network access, zero cloud, zero tracking, no gamification (no streaks, XP, timers, scores, nothing earned or unlocked), nothing ever shown as correct or wrong, low-stimulation palette (`#F2EEE7`), memory-only speech attempt detection, voices as the only sounds, no faces on people or animals in pictures.
 - **Tech Stack:** Kotlin Multiplatform + Compose Multiplatform + Room / DataStore + Kotlin Coroutines (Android tablet first).
 - **Documentation:** Single source of truth is located in [`docs/`](docs/README.md).
 - **Open Questions:** Tracked in [`docs/OPEN-QUESTIONS.md`](docs/OPEN-QUESTIONS.md).
@@ -62,7 +63,12 @@ dependency chain — implementations live in `platform`, interfaces are consumed
 
 ## Read These First
 
-`docs/README.md` indexes all 39 specs. For most tasks, these four carry the load:
+`docs/README.md` indexes all 39 specs. Two approved designs from 2026-11 revise them and win wherever they differ:
+
+- [`docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md`](docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md) — five languages, session shape, thinking puzzles, order of work.
+- [`docs/superpowers/specs/2026-11-16-ui-ux-design.md`](docs/superpowers/specs/2026-11-16-ui-ux-design.md) — every screen and state, picture rules, guide voice, parent area.
+
+For most tasks, these four carry the load:
 
 1. [`docs/00-foundation/prototype-0.1-scope.md`](docs/00-foundation/prototype-0.1-scope.md) — the scope boundary; check before adding anything.
 2. [`docs/03-engineering/architecture.md`](docs/03-engineering/architecture.md) — layers, state ownership, dependency direction.
@@ -80,7 +86,11 @@ silently break the product if violated:
 
 - `android.permission.INTERNET` must be absent from the manifest. No backend, no analytics SDK, no remote config, no cloud ASR.
 - Child microphone PCM stays in memory. Never written to disk, never transcribed, never scored. Family voice recordings are a separate, adult-initiated feature writing to app-private storage.
-- No gamification of any kind (streaks, XP, timers, scores, badges, confetti, mascot pressure, correctness colors) — including "just for the spike."
+- No gamification of any kind (streaks, XP, timers, scores, badges, confetti, mascot pressure, correctness colors) — including "just for the spike." Nothing is earned or unlocked, and nothing is ever shown as wrong.
+- The app never mentions missed days, time spent or time since the last session, to the child or the parent. The parent area shows no numbers, dates or durations.
+- Voices are the only sounds: no music, instrument or effect sounds.
+- No picture shows the face of a person or an animal; body parts are shown one at a time.
+- The app is locked to landscape, and no child screen announces which language a block is in.
 - Exposure and evidence writes must be idempotent; audio/mic callbacks carry session/interaction IDs so stale callbacks are rejected across rotation and lifecycle events.
 - UI never calls DAOs directly.
 

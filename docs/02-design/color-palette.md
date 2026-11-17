@@ -28,3 +28,15 @@
 > The concept illustration should normally be the most colorful element on the child screen.
 
 No rainbow UI, neon backgrounds, reward colors, flashing gradients, correctness green/red, or color used to create urgency.
+
+## Uses added 2026-11-17
+
+From `docs/superpowers/specs/2026-11-16-ui-ux-design.md`:
+
+| Use | Hex |
+|---|---|
+| His-turn ring around the picture | `#607C8A` (Listening) |
+| Written word while it is spoken | `#4F746B` (Primary action) |
+| Written word at rest | `#26312E` (Primary content) |
+| Empty place outline in "What comes next?" | `#B8B2A8` (Border) |
+| Quiet screen | `#F2EEE7` (Child background), nothing else |

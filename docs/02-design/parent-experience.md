@@ -4,9 +4,23 @@
 **Version:** 0.1  
 **Status:** Draft for Prototype 0.1  
 **Product:** Miozira  
-**Prototype:** Android-first, 8 concepts × English + Tamil  
+**Prototype:** Android-first, 8 concepts × five languages (English, Tamil, Japanese, Arabic, Spanish)  
 **Primary adult user:** parent/caregiver  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+Revised to match the approved UI/UX design, `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, which is the source of truth
+for screens and wins wherever the two differ.
+
+Changed in place: five languages with no language setup; the two-step parent
+gate; a parent home in sentences with four words for today; no counts, dates or
+durations; the Voices area. Wherever this document says "suggestion", read "the
+four words for today"; wherever it says "family recording", read "voice
+recording" (guide phrases by both parents, and Tamil words). New parent
+functions are listed in the addendum at the end.
 
 ---
 
@@ -131,34 +145,15 @@ A short “Learn more” link inside the parent area may provide additional deta
 
 # 7. Setup Step 2 — Languages
 
-Prototype 0.1 supports:
+Miozira uses five languages: English, Tamil, Japanese, Arabic and Spanish, with equal standing.
 
-- English;
-- Tamil.
-
-The parent should be able to see both languages clearly.
-
-Possible setting:
-
-```text
-Starting language
-[ English ]
-[ Tamil   ]
-```
-
-Both remain available to the session system.
+There is nothing to choose. Each session has two of them, and the pairing rotates per completed session, so a skipped day never skips a language. Setup simply explains this.
 
 ---
 
-# 8. Starting Language
+# 8. Starting Language (retired)
 
-The starting language affects the beginning of early sessions.
-
-It does not mean the other language is disabled.
-
-Recommended explanation:
-
-> “Choose the language Miozira should begin with. Both English and Tamil can still appear.”
+Retired 2026-11-17. The rotation decides which two languages a session uses; there is no starting-language setting.
 
 ---
 
@@ -247,20 +242,19 @@ After setup:
 
 # 14. Parent Gate
 
-The parent area must require an intentional adult action.
+The parent area requires two intentional adult actions:
 
-Recommended Prototype 0.1 candidate:
-
-> long-press an unobtrusive corner hotspot for approximately 2 seconds.
-
-Then:
+1. hold the top-right corner for 3 seconds. Nothing is drawn there and the hold shows no progress;
+2. type a two-digit number that is written as a word, which changes every time.
 
 ```text
-Parent area
-[Continue]
+Parents only
+Type this number:
+forty-seven
+[number pad]
 ```
 
-The final interaction may evolve after testing.
+A wrong answer, or 10 seconds of nothing, returns silently to the child screen. The area locks again when the parent leaves it or the screen turns off. A parent-chosen PIN replaces step 2 once the child can read number words.
 
 ---
 
@@ -291,19 +285,20 @@ These can attract children rather than separate adult controls.
 
 # 17. Parent Home
 
-Recommended Prototype 0.1 parent home:
-
 ```text
 Parent Home
 │
-├── Try this outside Miozira
-├── Recent learning
-├── Recognized / Used outside Miozira
-├── Family recordings
-└── Settings & privacy
+├── Four words for today
+├── Most recent session
+├── Noticed at home
+├── How each language is going
+├── How the puzzles are going
+├── Voices
+├── Start an extra session
+└── Microphone and privacy
 ```
 
-This may be one vertically scrolling screen.
+This is one vertically scrolling screen.
 
 ---
 
@@ -313,30 +308,34 @@ Information order should reflect Miozira's philosophy.
 
 Recommended priority:
 
-1. real-world suggestion;
-2. quick observation actions;
-3. recent activity;
-4. recordings/settings.
+1. four words for today;
+2. the most recent session, in sentences;
+3. noticed-at-home actions;
+4. voices and settings.
 
-Not:
+Never:
 
 1. time spent;
 2. lessons completed;
-3. percentage progress.
+3. percentage progress;
+4. counts, dates or missed days.
 
 ---
 
-# 19. Real-World Suggestion Card
+# 19. Four Words for Today
 
-The suggestion should be prominent but lightweight.
+Four words from the most recent session, each with the moment of the day to say it.
 
 Example:
 
-> **Try this outside Miozira**
+> **Four words for today**
 >
-> At snack time, say the Tamil word for apple while handing over a slice.
+> At breakfast, when you pour: water (Tamil)
+> At snack time, handing a slice: apple (Tamil)
+> At bath time: nose (English)
+> At dinner, passing it: cup (English)
 
-No completion checkbox is required.
+No completion checkbox. No reminders: the card is seen only when a parent opens the parent area.
 
 ---
 
@@ -410,8 +409,8 @@ Preferred wording:
 - Heard recently
 - Tried saying it
 - Replayed
-- Recognized outside Miozira
-- Used outside Miozira
+- He understood it
+- He said it
 - Coming back later
 
 Avoid:
@@ -428,20 +427,18 @@ Avoid:
 
 # 25. Evidence Detail Level
 
-Prototype 0.1 should avoid overwhelming the parent with event logs.
-
-Default view should summarize.
-
-Optional detail may show:
+The parent sees sentences, never counts.
 
 ```text
-Apple — Tamil
-Heard 3 times
-Last heard yesterday
-Used outside Miozira
+Most recent session: English and Tamil
+Tried saying: apple, ball, cup, water (Tamil)
+Said before the app did: ball, cup (Tamil)
+Listened without speaking: nose, cat
 ```
 
-Even here, counts should remain descriptive rather than competitive.
+No numbers ("Heard 3 times"), dates ("Last heard yesterday") or durations appear anywhere. Words such as "most", "some" and "not yet" stand in for counts, and sessions are "most recent" and "before that".
+
+A quiet turn is "listened without speaking", never "missed".
 
 ---
 
@@ -463,8 +460,8 @@ Do not show:
 The parent should be able to record:
 
 ```text
-[Recognized outside Miozira]
-[Used outside Miozira]
+[He understood it]
+[He said it]
 ```
 
 for a relevant concept-language pair.
@@ -511,11 +508,11 @@ Example:
 ```text
 Today
 Car — Tamil
-Used outside Miozira
+He said it
 
 Yesterday
 Ball — English
-Recognized outside Miozira
+He understood it
 ```
 
 ---
@@ -527,7 +524,7 @@ The learning model distinguishes these concepts.
 Prototype 0.1 parent UI may keep one simple button:
 
 ```text
-Used outside Miozira
+He said it
 ```
 
 If later testing shows value, the parent flow may expand to:
@@ -554,22 +551,30 @@ Observation logging is occasional and lightweight.
 
 ---
 
-# 33. Family Recording Area
+# 33. Voices Area
 
-Recommended structure:
+Two lists.
 
 ```text
-Family recordings
+Guide phrases in Malayalam
 
-Apple — Tamil
-Standard voice [Play]
-Family voice   [Record / Play / Replace / Delete]
+Your turn
+Mother   Recorded            [Play] [Record again]
+Father   Not recorded yet    [Record]
 
-Ball — Tamil
+What's gone?
 ...
 ```
 
-The UI may filter by language.
+```text
+Tamil words
+
+Apple    Recorded            [Play] [Record again] [Delete]
+Ball     Not recorded yet    [Record]
+...
+```
+
+Both parents record every guide phrase. The app uses one parent's voice for a whole session and the other's for the next; a prepared voice is used only until a recording exists.
 
 ---
 
@@ -659,12 +664,11 @@ Prototype 0.1 settings should remain small.
 Recommended:
 
 ```text
-Languages
-Starting language
 Speaking-attempt detection
-Family recordings
+Voices
+Start an extra session
 Privacy
-Reset Miozira data
+Erase everything on this tablet
 ```
 
 No advanced adaptive controls.
@@ -686,10 +690,7 @@ The adaptive engine remains product logic.
 
 # 42. Parent May Influence Language Context
 
-Parent controls may allow:
-
-- starting language;
-- temporarily enabling/disabling one language for testing if needed.
+Since 2026-11-17 the parent has no language controls: all five languages are always on and the rotation decides which two a session uses.
 
 If this exists, explain that it changes session content, not child ability.
 
@@ -822,7 +823,7 @@ Use a neutral empty state.
 
 Example:
 
-> “When you notice a word being recognized or used outside Miozira, you can save it here.”
+> “When you notice a word being understood or said at home, you can save it here.”
 
 ---
 
@@ -950,7 +951,7 @@ Prototype 0.1 is not normed for developmental comparison.
 
 The parent UI may initially remain in English for Prototype 0.1.
 
-Child content still supports English and Tamil.
+Child content is in five languages: English, Tamil, Japanese, Arabic and Spanish.
 
 A future version may localize the parent experience.
 
@@ -1002,8 +1003,8 @@ Exact presentation belongs in final UI design.
 │ Apple — Tamil                      │
 │ Heard recently · Tried saying it   │
 │                                    │
-│ [Recognized outside Miozira]       │
-│ [Used outside Miozira]             │
+│ [He understood it]       │
+│ [He said it]             │
 ├────────────────────────────────────┤
 │ Family recordings                  │
 │ Settings & privacy                 │
@@ -1063,9 +1064,9 @@ Exact presentation belongs in final UI design.
 ├────────────────────────────────────┤
 │ What did you notice?               │
 │                                    │
-│ [Recognized outside Miozira]       │
+│ [He understood it]       │
 │                                    │
-│ [Used outside Miozira]             │
+│ [He said it]             │
 │                                    │
 │ [Cancel]                           │
 └────────────────────────────────────┘
@@ -1245,9 +1246,9 @@ Prototype 0.1 parent experience is intentionally small.
 The parent should be able to:
 
 1. understand Miozira quickly;
-2. choose the starting language;
+2. see that five languages rotate, with nothing to set up;
 3. understand and optionally enable microphone detection;
-4. optionally record family voice;
+4. record the guide phrases and Tamil words;
 5. enter a protected parent area;
 6. see one real-world suggestion;
 7. view lightweight recent learning evidence;
@@ -1266,3 +1267,15 @@ The parent should **not** need to:
 - force completion.
 
 The parent experience should support the child quietly rather than turning family life into a learning-management workflow.
+
+---
+
+# Addendum 2026-11-17 — New Parent Functions
+
+Defined in `docs/superpowers/specs/2026-11-16-ui-ux-design.md` §10.
+
+- **Start an extra session.** One confirmation ("Start another session now?"); the parent area then locks and the child's first picture is waiting. Without this, the app stays on its quiet screen for the rest of a day whose session is finished.
+- **How each language is going.** One short paragraph per language, for example: "Tamil — he tries most of his Tamil words. Said before the app did: cup, water. Still just listening: nose."
+- **How the puzzles are going.** One sentence per puzzle kind he has met, for example: "What's gone? — usually joins in."
+- **Noticed at home.** The two observation buttons are labelled "He understood it" and "He said it".
+- **Words taught at home.** Feelings words and family words are not pictured in the app (they cannot be shown without faces); the parents teach them themselves.

@@ -4,7 +4,15 @@
 **Version:** 0.1  
 **Status:** Draft for Prototype 0.1  
 **Product:** Miozira  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+AC-H07 (parent area) and the content criteria in section 6 are updated for decisions the parent made on 2026-11-16 and 2026-11-17: the two-step parent gate, the parent area in sentences with four words for the day, the decided Tamil forms for `cup` and `water`, five languages, and the picture rules.
+
+The rest of this document predates `docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md` and `docs/superpowers/specs/2026-11-16-ui-ux-design.md` and has not yet been extended for the new child screens (written word, "say it first", "Which one?", thinking puzzles, session ending). Those two documents win wherever this one differs.
 
 ---
 
@@ -200,9 +208,16 @@ warm launch ~<=2 s
 ## AC-H07 — Parent area
 
 - [ ] Child does not casually enter parent controls during normal tapping.
-- [ ] Parent can mark “recognized outside Miozira.”
-- [ ] Parent can mark “used outside Miozira.”
-- [ ] Parent can view one real-world suggestion.
+- [ ] Nothing is drawn at the parent corner; a short tap there does nothing; the 3-second hold shows no progress.
+- [ ] The reading step shows a two-digit number written as a word, different each time.
+- [ ] A wrong number, or 10 seconds without input, returns silently to the same child state.
+- [ ] The parent area locks again on leaving it and when the screen turns off.
+- [ ] Parent can mark “He understood it.”
+- [ ] Parent can mark “He said it.”
+- [ ] Parent can view four words for today, each with a moment to say it.
+- [ ] The parent area shows no numbers, dates or durations, and never the words “missed”, “wrong” or “mastered”.
+- [ ] Parent can record, play and replace each guide phrase in both parent voices, and each Tamil word.
+- [ ] Parent can start an extra session, after one confirmation.
 - [ ] Parent can manage microphone setting.
 - [ ] Parent can reset local data.
 
@@ -238,16 +253,21 @@ Before family test:
 
 - [ ] `apple` approved in English/Tamil.
 - [ ] `ball` approved in English/Tamil.
-- [ ] `cup` Tamil lexical choice resolved.
+- [x] `cup` Tamil lexical choice resolved: `கப்` (2026-11-16).
+- [ ] `cup` approved in English/Tamil.
 - [ ] `hand` approved in English/Tamil.
 - [ ] `nose` approved in English/Tamil.
 - [ ] `cat` approved in English/Tamil.
 - [ ] `car` approved in English/Tamil.
-- [ ] `water` Tamil lexical choice resolved.
-- [ ] All 16 canonical clips reviewed by fluent speaker.
+- [x] `water` Tamil lexical choice resolved: `தண்ணி` (2026-11-16).
+- [ ] `water` approved in English/Tamil.
+- [ ] All 16 English and Tamil clips reviewed by a fluent speaker and accepted by a parent by ear.
+- [ ] Every Japanese, Arabic and Spanish word and clip checked by a native speaker before the child hears it (24 further clips for the eight concepts).
 - [ ] Tamil household/register review complete.
 - [ ] English accent/voice consistency complete.
 - [ ] Visuals contain no brand/product placement.
+- [ ] No visual shows the face of a person or an animal; body parts are shown one at a time.
+- [ ] Visuals are in the one painted realistic style, with no glow, frame or room behind the object.
 - [ ] No active content field remains `TBD`.
 
 ---

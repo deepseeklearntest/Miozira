@@ -4,9 +4,20 @@
 **Version:** 0.2  
 **Status:** Draft for Prototype 0.1 — Palette & Wellbeing Update  
 **Product:** Miozira  
-**Prototype:** Android-first, 8 concepts × English + Tamil  
+**Prototype:** Android-first, 8 concepts × five languages (English, Tamil, Japanese, Arabic, Spanish)  
 **Target child:** approximately 4–5 years old  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+Revised to match the approved UI/UX design, `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, which is the source of truth
+for screens and wins wherever the two differ.
+
+Changed in place: landscape only; the child's written word is now always shown
+but remains non-essential; Arabic and Japanese rendering; the parent gate's
+reading step.
 
 ---
 
@@ -85,7 +96,7 @@ Prototype 0.1 shall actively support:
 - imprecise preschool touch;
 - no-reading child interaction;
 - optional/no speech response;
-- portrait and landscape;
+- landscape (the only orientation);
 - high visual clarity;
 - strong contrast;
 - low visual clutter;
@@ -742,15 +753,15 @@ Do not remove:
 
 # 23. Orientation Accessibility
 
-## ACC-LAYOUT-001 — Portrait and landscape — P0
+## ACC-LAYOUT-001 — Landscape only — P0
 
-Core child and parent functionality shall work in portrait and landscape.
+The app is locked to landscape (2026-11-17). Core child and parent functionality shall work fully in landscape.
 
 ---
 
 ## ACC-LAYOUT-002 — Orientation does not alter task — P0
 
-Rotating the device shall not create a different interaction model.
+The screen does not turn. If the screen is rebuilt for any other reason, the task and its state shall be unchanged.
 
 ---
 
@@ -829,6 +840,11 @@ Tamil script must render correctly with:
 - no clipped combining marks;
 - no Latin-only font assumptions.
 
+The same applies to the other scripts the child sees:
+
+- Arabic: right-to-left layout, vowel marks shown and not clipped;
+- Japanese: hiragana and katakana rendered with Japanese glyph shapes.
+
 ---
 
 # 26. Typography
@@ -846,7 +862,7 @@ Parent typography shall prioritize:
 
 ## ACC-TEXT-006 — Child text is non-essential — P0
 
-Any child-visible written word or label is supplementary unless a later product revision explicitly changes the pre-reader design.
+Since 2026-11-17 one written word is always shown under the picture. It remains supplementary: the child never needs to read it, it is never a tap target, and every activity works for a child who ignores it.
 
 ---
 
@@ -906,6 +922,8 @@ Potential options:
 
 The final mechanism will be tested.
 
+Since 2026-11-17 the gate is a 3-second corner hold followed by typing a number written as a word. The corner also works from the quiet screen. Whether an adult using assistive technology needs a further route is still to be tested.
+
 ---
 
 ## ACC-GATE-002 — Do not require precise long-press only — P1
@@ -948,7 +966,7 @@ The child experience shall not use aggressive or repeated vibration effects.
 
 ## ACC-LANG-001 — Language explicitly identified in data — P0
 
-English and Tamil content shall carry explicit language metadata.
+Content in all five languages shall carry explicit language metadata.
 
 ---
 
@@ -1132,8 +1150,7 @@ Before family testing, manually verify:
 - [ ] replay is easy;
 - [ ] state cues are not color-only;
 - [ ] reduced motion preserves meaning;
-- [ ] portrait works;
-- [ ] landscape works;
+- [ ] landscape (the only orientation) works;
 - [ ] rotation does not duplicate learning events.
 
 ---
@@ -1160,8 +1177,8 @@ Before family testing, verify:
 
 Prototype validation should include at least:
 
-1. intended family tablet in portrait;
-2. intended family tablet in landscape;
+1. intended family tablet in landscape (the only orientation);
+2. the written word in all four scripts on that tablet;
 3. lower-capability Android tablet/emulator profile;
 4. TalkBack enabled in parent mode;
 5. large font/display scaling;
@@ -1410,7 +1427,7 @@ Prototype 0.1 accessibility is based on:
 8. clear, replayable target audio;
 9. minimal non-essential motion;
 10. reduced-motion compatibility;
-11. portrait and landscape support;
+11. landscape-only layout;
 12. accessible parent semantics and text scaling;
 13. explicit microphone fallback;
 14. honest documentation of visual/hearing limitations.

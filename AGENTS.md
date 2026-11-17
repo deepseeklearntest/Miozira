@@ -26,6 +26,10 @@ Before writing production code:
 
 ## Product North Star
 
+> **Revised 2026-11-17.** The parent revised the scope. The decisions are in
+> `docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md` and
+> `docs/superpowers/specs/2026-11-16-ui-ux-design.md`; they win wherever an older document differs.
+
 Miozira is an audio-first multilingual learning environment for young pre-readers that helps language move from the tablet into real family life.
 
 The core loop is:
@@ -33,17 +37,20 @@ The core loop is:
 $$\text{SEE} \longrightarrow \text{HEAR} \longrightarrow \text{IMITATE IF THE CHILD WANTS} \longrightarrow \text{ENCOUNTER AGAIN LATER} \longrightarrow \text{USE WITH A HUMAN}$$
 
 ### Prototype 0.1 Specification
-- **Form factor:** Android tablet first (landscape + portrait).
+- **Form factor:** Android tablet first, landscape only (the screen is locked and does not turn).
 - **Target age:** Approximately 4–5 years old.
 - **Concepts:** 8 concepts (`apple`, `ball`, `cup`, `hand`, `nose`, `cat`, `car`, `water`).
-- **Languages:** English + Tamil (16 concept-language pairs).
+- **Languages:** English, Tamil, Japanese, Arabic and Spanish (40 concept-language pairs), two languages per session in separate blocks. The build that exists today contains English + Tamil only.
+- **Session:** One a day, about 8–10 minutes: warm-up, first language, one thinking puzzle, second language, easy ending. A session is a planned set of items; it ends itself and goes quiet. No visible timer.
+- **Written word:** Shown under the picture in the language's own script; never required and never a tap target.
+- **Guide voice:** All instructions to the child are spoken in Malayalam, recorded by both parents.
 - **Connectivity:** 100% offline; omit `INTERNET` permission.
-- **Core interaction:** Tap picture → hear canonical native word.
+- **Core interaction:** Tap picture → hear canonical native word → "your turn". Also "say it first", the two-picture "Which one?", and one thinking puzzle per session; after any tap the same thing happens and nothing is ever shown as wrong.
 - **Speaking attempt:** Completely optional; microphone detects only whether speech-like activity occurred.
 - **Zero Evaluation:** No transcription, no pronunciation grading, no red/green correctness cues, and **no raw child speech storage**.
 - **Adaptive Spacing:** Local spaced repetition engine running on SQLite/Room.
-- **Protected Parent Area:** Simple parent gate to view activity, record optional custom family pronunciations, or mark real-world transfer.
-- **Real-World Transfer:** One quiet, context-appropriate prompt for parents after a meaningful session.
+- **Protected Parent Area:** Hidden two-step gate (3-second corner hold, then typing a number written as a word). Describes sessions in sentences with no numbers, dates or durations; holds the voice recordings; marks real-world transfer; starts an extra session.
+- **Real-World Transfer:** Four words for the parents to use that day, each with the moment to say it, after a meaningful session. No reminders.
 - **Zero Commercial Distractions:** No backend, no accounts, no analytics, no ads, no subscriptions, no IAP, no cloud speech, no remote content.
 
 ---
@@ -61,6 +68,11 @@ The learning itself should be interesting. The interface must **never** use over
 - Emotional mascot manipulation or "come back" pressure
 - Push-notification engagement hooks
 - Pronunciation correctness grading or red/green error states
+- Anything earned, unlocked or announced as an achievement
+- Any mention of missed days, time spent, or time since the last session
+- Music, instrument sounds or effect sounds (voices are the only sounds)
+- Pictures showing the face of a person or an animal
+- A cue announcing which language a block is in
 
 ### Normal Child Behaviors (Never Treat as Failures)
 - Remaining silent
@@ -76,6 +88,7 @@ The learning itself should be interesting. The interface must **never** use over
 **Quiet interface. Vivid reality. Meaningful motion. Calm curiosity.**
 
 - The concept illustration should normally be the most colorful element on screen.
+- Pictures are realistic and softly painted, one thing per picture, cut out on the plain background. No faces on people or animals; body parts are shown one at a time; no glow, frame or room behind the object.
 - Palette and design tokens are locked in [`docs/02-design/design-system.md`](docs/02-design/design-system.md) and [`docs/02-design/color-palette.md`](docs/02-design/color-palette.md):
   - Child background: `#F2EEE7` (warm stone)
   - Primary content: `#26312E` (deep green-charcoal)

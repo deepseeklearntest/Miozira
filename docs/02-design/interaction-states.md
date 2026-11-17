@@ -4,8 +4,20 @@
 **Version:** 0.1  
 **Status:** Draft for Prototype 0.1  
 **Product:** Miozira  
-**Prototype:** Android-first, 8 concepts × English + Tamil  
-**Last updated:** 2026-08-25
+**Prototype:** Android-first, 8 concepts × five languages (English, Tamil, Japanese, Arabic, Spanish)  
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+Revised to match the approved UI/UX design, `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, which is the source of truth
+for screens and wins wherever the two differ.
+
+Changed in place: the screen is locked to landscape, so `OrientationChanged`
+can no longer come from rotation (the event and its rules are kept for any other
+screen rebuild); the parent gate gains a reading step; session end produces four
+words for today. New child states are listed in the addendum at the end.
 
 ---
 
@@ -99,7 +111,7 @@ They should not themselves be used as the only source of truth for the UI.
 
 ## IS-P05 — Rotation is not a learning event
 
-Orientation change must never create:
+The screen is locked to landscape (2026-11-17), so rotation no longer occurs. The `OrientationChanged` events in this document remain only as the rule for any other screen rebuild. A rebuild must never create:
 
 - a new exposure;
 - a replay;
@@ -522,9 +534,9 @@ LISTENING → RESPONDING
 
 ---
 
-# 20. Orientation During LISTENING
+# 20. Screen Rebuild During LISTENING
 
-Rotation must not:
+Rotation cannot occur (landscape lock). Any other screen rebuild must not:
 
 - restart the listening window from zero;
 - create a second microphone session;
@@ -714,7 +726,7 @@ Purpose:
 - stop active audio/microphone;
 - commit valid pending interaction data;
 - close session record;
-- generate/store real-world suggestion if appropriate.
+- generate/store the four words for today if appropriate.
 
 Entry reasons may include:
 
@@ -788,7 +800,7 @@ Purpose:
 
 Recommended duration:
 
-> approximately 2 seconds.
+> 3 seconds, with no visible progress.
 
 Events:
 
@@ -809,22 +821,33 @@ GATE_HOLDING → GATE_HIDDEN
 
 # 34. GATE_CONFIRMING
 
-Adult-oriented confirmation screen.
-
-Example:
+Adult-oriented reading step.
 
 ```text
-Parent area
-[Continue]
-[Cancel]
+Parents only
+Type this number:
+forty-seven
+[number pad]
+```
+
+The number is two digits, written as a word, and changes every time.
+
+Events:
+
+```text
+CorrectNumberEntered
+WrongNumberEntered
+TenSecondsWithoutInput
 ```
 
 Transitions:
 
 ```text
-GATE_CONFIRMING → GATE_ACCEPTED
-GATE_CONFIRMING → GATE_CANCELLED
+GATE_CONFIRMING → GATE_ACCEPTED     if the correct number is entered
+GATE_CONFIRMING → GATE_CANCELLED    on a wrong number or after 10 seconds
 ```
+
+Cancelling returns silently to exactly the child state that was active, with no message, sound or animation.
 
 ---
 
@@ -1920,3 +1943,32 @@ The most important implementation protections are:
 - microphone failure never dead-ends the child;
 - parent recording separated from child attempt detection;
 - technical lifecycle events never become learning evidence.
+
+---
+
+# Addendum 2026-11-17 — New Child States
+
+Defined in `docs/superpowers/specs/2026-11-16-ui-ux-design.md` §5 and §7. They extend the single word loop; the invariants
+above (idempotent writes, stale-callback rejection, no failure UI) apply to all
+of them.
+
+| State | Entered when | Leaves to |
+|---|---|---|
+| SAY_IT_FIRST | A familiar word is presented: picture, no written word, ring for about 3 seconds. A tap ends the wait early. | PLAYING_AUDIO (the app says the word either way) |
+| GUIDE_PHRASE | A Malayalam guide phrase is playing ("Your turn", a puzzle question, the closing phrase). Taps are ignored. | the state the phrase introduces |
+| WHICH_ONE_ASKING | Two pictures shown; the app has said one word. Waits for a tap, about 8 seconds. | WHICH_ONE_NAMING |
+| WHICH_ONE_NAMING | The touched picture (or, with no tap, the asked one) steps forward and is named; then the other. | TRANSITIONING |
+| PUZZLE_ASKING | A puzzle is laid out and its question has been asked. Waits for a tap, about 8 seconds. | PUZZLE_RESOLVING |
+| PUZZLE_RESOLVING | What he touched is named (if anything), then the real answer plays out. Taps are ignored. | TRANSITIONING |
+| MOVEMENT | A movement prompt has been spoken; waits about 5 seconds. Nothing is detected or checked. | PUZZLE_ASKING |
+| BREATH | One second of plain background before and after the puzzle. | next part |
+| CLOSING | The closing phrase plays and the picture fades. | QUIET |
+| QUIET | Session finished, or about a minute without a touch. Nothing is tappable except the hidden parent corner. | resumes on a tap only if the session is unfinished and it is the same day |
+
+Session-level rules:
+
+- A session is a planned set of items and ends when the set is done; there is no session timer.
+- A finished session leaves the app in QUIET for the rest of that day; opening the app again shows QUIET.
+- "Start an extra session" in the parent area creates a new session on the same day.
+- An unfinished session does not advance the language rotation.
+- The his-turn ring shows in LISTENING whether or not the microphone is on; only the nod depends on a detected attempt.

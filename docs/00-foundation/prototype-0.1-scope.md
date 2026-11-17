@@ -1,14 +1,37 @@
 # Miozira — Prototype 0.1 Scope
 
 **Document:** `prototype-0.1-scope.md`  
-**Version:** 0.1  
-**Status:** Draft for Prototype 0.1  
+**Version:** 0.2  
+**Status:** Draft for Prototype 0.1 — scope revised 2026-11-17  
 **Product:** Miozira  
 **Primary platform:** Android tablet  
 **Prototype target age:** approximately 4–5 years  
-**Languages:** English + Tamil  
+**Languages:** English, Tamil, Japanese, Arabic, Spanish  
 **Concept count:** 8  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-11-17
+
+---
+
+## Scope revision — 2026-11-17
+
+The parent formally revised the scope on 2026-11-16 and 2026-11-17. The decisions are recorded in
+`docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md` (the product design) and
+`docs/superpowers/specs/2026-11-16-ui-ux-design.md` (the UI/UX design); those two documents win wherever this one differs.
+
+What changed:
+
+- two languages became five, with two per session in separate blocks;
+- the written word is shown under the picture, but never needs to be read;
+- one thinking puzzle is part of every session;
+- instructions to the child are spoken in Malayalam, recorded by both parents;
+- the tablet is used in landscape only; the screen does not turn;
+- the only sounds are voices;
+- no picture shows the face of a person or an animal;
+- the parent area speaks in sentences, not numbers, and offers four words for the day.
+
+What did not change: fully offline, no saved child audio, no pronunciation scoring, no gamification, no correct/wrong labels, eight concepts.
+
+Build order follows section 8 of the product design. The build that exists today contains English and Tamil only.
 
 ---
 
@@ -35,7 +58,7 @@ No implementation work should add major features outside this boundary without a
 
 The primary objective is to test this question:
 
-> **Can a 4–5-year-old child use Miozira for roughly 5–10 minutes, understand what to do with little or no instruction, willingly interact with spoken words, and later recognize or use at least one of those words away from the tablet?**
+> **Can a 4–5-year-old child use Miozira for roughly 8–10 minutes, understand what to do with little or no instruction, willingly interact with spoken words, and later recognize or use at least one of those words away from the tablet?**
 
 Prototype 0.1 is successful if it gives us reliable evidence about this question.
 
@@ -48,7 +71,7 @@ It does not need to prove:
 - commercial scalability;
 - store-readiness;
 - multi-device synchronization; or
-- four-language learning.
+- that all five languages have been learned.
 
 ---
 
@@ -56,7 +79,7 @@ It does not need to prove:
 
 Prototype 0.1 is:
 
-> **Android-first → 8 concepts → 2 languages → adaptive audio loop → offline → parent feedback → real-world transfer**
+> **Android-first → 8 concepts → 5 languages, two per session → adaptive audio loop with one thinking puzzle → offline → parent feedback → real-world transfer**
 
 This is the canonical summary for this release.
 
@@ -70,9 +93,8 @@ Prototype 0.1 must:
 
 - run on Android tablets;
 - support touch interaction;
-- support portrait orientation;
-- support landscape orientation;
-- preserve the active session during orientation changes where practical;
+- run in landscape only, with the screen locked so it does not turn;
+- preserve the active session if the screen is ever rebuilt;
 - remain responsive on midrange tablet hardware;
 - work without internet connectivity after installation and setup.
 
@@ -138,26 +160,31 @@ Prototype 0.1 does not require multi-parent accounts or remote caregiver access.
 
 ## 6. Languages
 
-Prototype 0.1 supports exactly two languages:
+Prototype 0.1 supports exactly five languages, with equal standing:
 
 1. English
 2. Tamil
+3. Japanese
+4. Arabic
+5. Spanish
 
-The prototype should support language-aware content internally so a third or fourth language can be added later without redesigning the whole app.
+Each session uses two of them, in separate blocks. The pairing rotates per completed session, so a skipped day never skips a language.
+
+Malayalam is the instruction language only: guide phrases are spoken in it, and it is not taught.
+
+No Arabic, Japanese or Spanish word reaches the child before a native speaker has checked it.
 
 ### 6.1 Out of scope for 0.1
 
 The following are not required:
 
-- Spanish;
-- Arabic;
-- Japanese;
+- Hindi, and Malayalam as a learning language;
 - language downloads;
 - dynamic language packs;
 - automatic language detection;
 - dialect switching;
 - transliteration;
-- written vocabulary for the child.
+- teaching the child to read (the written word is shown, never required).
 
 ---
 
@@ -176,14 +203,16 @@ Prototype 0.1 includes exactly eight familiar concepts:
 
 Each concept requires:
 
-- one primary visual asset;
-- English spoken-word audio;
-- Tamil spoken-word audio;
+- one primary picture, with up to three pictures per concept over time;
+- spoken-word audio in each of the five languages;
+- the written word in each language's own script;
 - concept metadata;
 - learning-history support;
 - scheduling/adaptation support.
 
-Optional additional visual variants may be used during internal testing, but the product requirement is one dependable primary visual per concept.
+A new word always uses its primary picture; the other pictures join once the word is familiar.
+
+Pictures are realistic and softly painted, one thing per picture. No picture shows the face of a person or an animal, and body parts are shown one at a time (UI/UX design, section 8).
 
 ---
 
@@ -195,8 +224,8 @@ The basic child loop is:
 
 1. show one concept;
 2. child taps the concept;
-3. play the spoken word;
-4. visually or audibly invite imitation;
+3. play the spoken word and show the written word beneath the picture;
+4. invite imitation with "your turn" in a parent's Malayalam voice and a calm ring;
 5. briefly listen for speech activity if microphone permission is available;
 6. give a warm response;
 7. continue to the next interaction;
@@ -213,6 +242,10 @@ Prototype 0.1 must provide:
 - spoken word playback;
 - replay ability;
 - a gentle imitation invitation;
+- the written word under the picture, never required;
+- "say it first" for familiar words;
+- the two-picture "Which one?" activity;
+- one thinking puzzle per session, in which nothing is ever shown as wrong;
 - microphone attempt detection where enabled;
 - a non-punitive response;
 - automatic progression;
@@ -254,7 +287,9 @@ Prototype 0.1 must not require:
 
 A normal session should naturally fit within approximately:
 
-**5–10 minutes**
+**8–10 minutes, once a day**
+
+A session is a planned set of items and ends when the set is done; completing the set matters, not the minutes. There is no timer and nothing the child can see counts down.
 
 This is a design target, not a child-facing requirement.
 
@@ -264,7 +299,9 @@ There is no minimum session length.
 
 ### 9.2 Session composition
 
-A session may include:
+A session has five parts: a warm-up of known words, the first language, one thinking puzzle, the second language, and an easy ending, after which the app goes quiet by itself.
+
+Within those parts a session may include:
 
 - familiar concepts;
 - recently uncertain concepts;
@@ -282,6 +319,7 @@ Prototype 0.1 must not:
 - show a failure state for leaving early;
 - punish inactivity;
 - reset progress for skipped days;
+- notice or comment on skipped days in any way;
 - require daily usage.
 
 ---
@@ -377,11 +415,11 @@ Prototype 0.1 requires fully local audio playback.
 
 Required audio categories:
 
-- English target-word audio;
-- Tamil target-word audio;
-- short child-directed interaction prompts;
-- warm acknowledgement audio where used;
-- optional parent-recorded audio.
+- target-word audio in each of the five languages;
+- Malayalam guide phrases, recorded by both parents, with a prepared voice until they exist;
+- parent-recorded Tamil words.
+
+Voices are the only sounds. There is no music, no instrument sound and no effect sound.
 
 Audio must work offline.
 
@@ -399,12 +437,12 @@ At minimum, the parent should be able to:
 
 - access the parent area intentionally;
 - view the supported languages;
-- view basic concept activity;
-- view recent learning history;
-- mark a concept as recognized outside Miozira;
-- mark a concept as used outside Miozira;
-- view one short real-world suggestion after a session;
-- manage parent/family recordings if this feature is included in the build;
+- read what the child did in the most recent session, in sentences and without numbers, dates or durations;
+- mark that the child understood a word at home;
+- mark that the child said a word at home;
+- view four words to use that day, each with the moment to say it;
+- record and manage the guide phrases (both parents) and the Tamil words;
+- start an extra session on a day whose session is already finished;
 - access privacy-related information;
 - reset prototype data if needed.
 
@@ -428,9 +466,9 @@ Prototype 0.1 does not require:
 
 Prototype 0.1 must include a small bridge between app use and family life.
 
-After a session, the parent should receive one short suggestion.
+After a session, the parent area shows four words to use that day, each tied to a moment. The app sends no reminders; the parent opens the parent area to see them.
 
-Example structure:
+Example structure for one of the four:
 
 > “At snack time, say the Tamil word for apple when handing over a piece.”
 
@@ -441,7 +479,7 @@ The suggestion should:
 - avoid telling the parent to quiz the child;
 - be simple enough to use immediately.
 
-Prototype 0.1 requires one suggestion per completed or meaningfully active session.
+Prototype 0.1 requires four such words per completed or meaningfully active session.
 
 ---
 
@@ -552,7 +590,7 @@ Required:
 - clear audio;
 - responsive touch feedback;
 - no essential control placed too close to screen edges;
-- child experience usable in both orientations.
+- child experience fully usable in landscape, the only orientation.
 
 Full formal accessibility conformance certification is not required for Prototype 0.1.
 
@@ -566,7 +604,7 @@ Target behaviours:
 
 - tapping a concept should produce prompt feedback quickly;
 - local audio should start without noticeable loading delays;
-- orientation changes should not lose learning state;
+- a screen rebuild should not lose learning state (the screen itself is locked to landscape);
 - session transitions should remain smooth;
 - app startup should not depend on network availability.
 
@@ -582,7 +620,7 @@ Prototype 0.1 must gracefully handle:
 - microphone temporarily unavailable;
 - missing parent recording;
 - app killed mid-session;
-- orientation change;
+- screen rebuild;
 - corrupted or missing optional local asset where recoverable;
 - no prior learning history;
 - partially completed session.
@@ -599,7 +637,7 @@ Prototype 0.1 requires:
 
 - core unit tests for adaptive/session logic;
 - local persistence tests;
-- orientation/state-preservation tests;
+- landscape-lock and state-preservation tests;
 - microphone fallback tests;
 - audio playback tests;
 - child-flow UI tests;
@@ -643,7 +681,7 @@ The following must not be added without a scope revision:
 ### Product
 
 - more than 8 canonical concepts;
-- more than 2 languages;
+- more than 5 languages;
 - reading curriculum;
 - grammar curriculum;
 - story mode;
@@ -733,7 +771,10 @@ Prototype 0.1 is considered implementation-complete when all of the following ar
 ### Child loop
 
 - [ ] all 8 concepts can be shown;
-- [ ] both languages work;
+- [ ] all five languages work, two per session;
+- [ ] the written word appears in each language's script;
+- [ ] "Which one?" and one thinking puzzle run without showing anything as wrong;
+- [ ] the session ends by itself and goes quiet;
 - [ ] each target word has local audio;
 - [ ] tap-to-hear works;
 - [ ] replay works;
@@ -755,7 +796,8 @@ Prototype 0.1 is considered implementation-complete when all of the following ar
 - [ ] parent area is not easily entered accidentally;
 - [ ] parent can view basic activity;
 - [ ] parent can mark real-world recognition/use;
-- [ ] real-world suggestion is shown;
+- [ ] four words for today are shown;
+- [ ] the parent area shows no numbers, dates or durations;
 - [ ] local data can be reset.
 
 ### Offline
@@ -767,9 +809,7 @@ Prototype 0.1 is considered implementation-complete when all of the following ar
 
 ### Device behaviour
 
-- [ ] portrait works;
-- [ ] landscape works;
-- [ ] orientation change does not break the active session;
+- [ ] landscape works and the screen does not turn;
 - [ ] app remains usable after process restart.
 
 ### Validation
@@ -826,6 +866,6 @@ If the feature is not necessary, it should be deferred.
 
 For all planning, implementation, and AI-assisted coding work, Prototype 0.1 should be described as:
 
-> **Miozira Prototype 0.1 is an Android-first, fully offline, family-testable language-learning vertical slice for a 4–5-year-old child. It contains 8 familiar concepts in English and Tamil, uses a simple audio-first tap-and-repeat interaction, treats microphone input only as evidence of a speaking attempt, adapts concept repetition locally, gives parents lightweight real-world feedback tools, and contains no scores, streaks, reading requirements, cloud backend, or pronunciation grading.**
+> **Miozira Prototype 0.1 is an Android-first, fully offline, family-testable language-learning vertical slice for a 4–5-year-old child. It contains 8 familiar concepts in English, Tamil, Japanese, Arabic and Spanish, two languages per session, uses a simple audio-first tap-and-repeat interaction with one thinking puzzle per session, shows each written word without ever requiring it to be read, treats microphone input only as evidence of a speaking attempt, adapts concept repetition locally, gives parents lightweight real-world feedback tools in plain sentences, and contains no scores, streaks, rewards, correct/wrong labels, reading requirements, cloud backend, or pronunciation grading.**
 
-This statement should remain unchanged unless the scope itself is formally revised.
+This statement was revised with the scope on 2026-11-17 and should remain unchanged unless the scope is formally revised again.

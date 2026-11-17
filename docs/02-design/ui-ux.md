@@ -4,10 +4,25 @@
 **Version:** 0.2  
 **Status:** Draft for Prototype 0.1 — Palette & Wellbeing Update  
 **Product:** Miozira  
-**Prototype:** Android-first, 8 concepts × English + Tamil  
+**Prototype:** Android-first, 8 concepts × five languages (English, Tamil, Japanese, Arabic, Spanish)  
 **Target child:** approximately 4–5 years old  
-**Supported orientations:** Portrait + Landscape  
-**Last updated:** 2026-08-25
+**Supported orientations:** Landscape only (locked)  
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+Revised to match the approved UI/UX design, `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, which is the source of truth
+for screens and wins wherever the two differ.
+
+Changed in place: five languages; landscape only; one written word under the
+picture; "Your turn" in a parent's Malayalam voice after every word; no language
+cue; voices as the only sounds; the two-step parent gate; a parent home written
+in sentences with four words for today; the Voices screen.
+
+Added by reference (sections 89–91): "say it first", "Which one?", the thinking
+puzzles, the scene, and the picture rules.
 
 ---
 
@@ -71,7 +86,7 @@ One concept should visually own the screen.
 
 ## UX-P03 — No reading dependency
 
-Text may exist for adults or accessibility, but it must not be required for child operation.
+Text must never be required for child operation. One written word is shown under the picture in the language's own script; it is there for familiarity only and is never a tap target.
 
 ## UX-P04 — No precision interaction
 
@@ -107,30 +122,28 @@ Parent controls should not leak into the ordinary child flow.
 
 # 4. Information Architecture
 
-Prototype 0.1 should remain extremely shallow.
-
-Recommended structure:
+The structure stays extremely shallow.
 
 ```text
 App Launch
    |
    +-- Child Mode
    |     |
-   |     +-- Learning Session
+   |     +-- Session (word screen, "Which one?", one puzzle, ending)
    |     |
-   |     +-- Session Rest/End State
+   |     +-- Quiet screen
    |
-   +-- Parent Gate
+   +-- Parent Gate (hidden corner + reading step)
          |
-         +-- Parent Home
-         +-- Recent Learning
-         +-- Real-World Observation
-         +-- Family Recordings
-         +-- Language / Microphone Settings
-         +-- Privacy / Data Reset
+         +-- Parent Home (four words for today, most recent session, noticed at home)
+         +-- How each language is going
+         +-- How the puzzles are going
+         +-- Voices (guide phrases, Tamil words)
+         +-- Start an extra session
+         +-- Microphone and privacy (including erase)
 ```
 
-There should be no child-facing navigation hierarchy.
+There is no child-facing navigation hierarchy.
 
 ---
 
@@ -160,72 +173,53 @@ It should not delay access through a long animated intro.
 
 # 6. Child Learning Screen
 
-The child learning screen is the primary product screen.
+The word screen is the primary product screen. It contains:
 
-It should contain:
+1. the plain background;
+2. one dominant concept picture, which is the tap target;
+3. one written word beneath the picture, in the language's own script;
+4. a temporary "his turn" ring around the picture;
+5. the hidden parent corner (nothing is drawn there).
 
-1. background;
-2. dominant concept visual;
-3. optional subtle interaction cue;
-4. temporary listening/response indicator;
-5. hidden/inconspicuous parent-entry mechanism.
-
-No other persistent child controls are required.
+No other child controls exist. Full behaviour: UI/UX design §5.2 and §6.
 
 ---
 
-# 7. Child Screen Layout — Portrait
+# 7. Child Screen Layout — Portrait (retired)
 
-Recommended conceptual structure:
-
-```text
-┌──────────────────────┐
-│                      │
-│                      │
-│      CONCEPT         │
-│       VISUAL         │
-│                      │
-│                      │
-│    subtle state      │
-│       cue            │
-│                      │
-└──────────────────────┘
-```
-
-The concept should occupy most of the usable central area.
+Retired 2026-11-17. The app is locked to landscape; there is no portrait layout.
 
 ---
 
 # 8. Child Screen Layout — Landscape
 
-Recommended conceptual structure:
+The only layout.
 
 ```text
 ┌──────────────────────────────────┐
-│                                  │
-│          CONCEPT VISUAL          │
-│                                  │
-│            state cue             │
-│                                  │
+│            ╭ ─ ─ ─ ─ ╮           │
+│           ¦  CONCEPT  ¦          │
+│            ╰ ─ ─ ─ ─ ╯           │
+│               word               │
 └──────────────────────────────────┘
 ```
 
-Landscape should not create a new navigation model.
-
-It should simply give the concept more horizontal breathing room.
+The picture is centred and about 60% of the screen's height. The written word is
+centred beneath it. The ring belongs to the picture; the word always sits below
+the ring with a clear gap, and the two never touch or overlap.
 
 ---
 
-# 9. Responsive Layout Rules
+# 9. Layout Rules
 
 ## UX-003 — Preserve hierarchy
 
-Portrait and landscape must preserve:
+Every child screen preserves:
 
 1. concept dominance;
 2. large touch region;
 3. uncluttered background;
-4. simple listening/response cue.
+4. picture first, written word beneath it.
 
 ---
 
@@ -235,15 +229,17 @@ Layout should use adaptive constraints rather than fixed coordinates for one tab
 
 ---
 
-## UX-005 — Orientation continuity
+## UX-005 — Landscape lock
 
-When orientation changes:
+The screen is locked to landscape and does not turn.
+
+If the screen is ever rebuilt for another reason:
 
 - active concept stays the same;
 - active language stays the same;
 - session remains in the same state;
 - no duplicate exposure is recorded;
-- no automatic replay occurs solely because of rotation.
+- nothing is replayed.
 
 ---
 
@@ -391,41 +387,38 @@ Recommended visual feedback:
 
 # 16. INVITING State
 
-After the target word, Miozira may invite imitation.
+After every word, "Your turn" is spoken once in Malayalam in a parent's recorded voice.
 
-The prompt may be:
+It is always the same short, warm phrase. It is never repeated, never louder and never followed by another prompt.
 
-- spoken;
-- visual;
-- both.
+(Decided 2026-11-17: to this child the phrase is company, not pressure. This replaces the earlier advice to minimise spoken prompts.)
 
-Prototype 0.1 should minimize dependence on spoken UI prompts because too much spoken interface can compete with the target word.
+For familiar words the order is reversed ("say it first"): the picture appears with no written word, the ring shows in silence for about 3 seconds, then the app says the word. See UI/UX design §5.3.
 
 ---
 
-# 17. Listening Cue
+# 17. His-Turn Cue
 
-## UX-012 — Simple listening indicator
+## UX-012 — One calm ring
 
-When microphone detection is active, the screen may display:
+During his turn one calm ring (`#607C8A`) breathes slowly around the picture for about 4 seconds.
 
-- one calm ring;
-- small microphone symbol;
-- expanding/contracting shape.
+It means "you may speak", not "you are being recorded". It shows whether or not the microphone is on.
 
 It must not display:
 
 - audio waveform;
 - decibel meter;
+- microphone icon;
 - recording countdown;
 - pronunciation score;
 - red/green accuracy bar.
 
 ---
 
-## UX-013 — Listening indicator is temporary
+## UX-013 — The ring is temporary
 
-The cue disappears when the short listening window ends.
+The ring fades when the turn ends. It never touches or overlaps the written word.
 
 ---
 
@@ -433,11 +426,7 @@ The cue disappears when the short listening window ends.
 
 The child receives a small acknowledgement.
 
-Possible visual response:
-
-- concept gently moves;
-- soft halo;
-- brief smile-like motion in surrounding UI if non-character-based.
+The only visual response is the small nod described in §19: the picture grows very slightly and settles, once. No halo, glow or added decoration.
 
 Avoid turning the concept itself into a mascot unless separately approved.
 
@@ -445,12 +434,9 @@ Avoid turning the concept itself into a mascot unless separately approved.
 
 # 19. Response for Detected Attempt
 
-The UI may use:
+The picture gives one small warm nod: a slight grow-and-settle. No sound and no colour.
 
-- warm neutral sound;
-- slight positive visual change.
-
-It must not imply verified correctness.
+The nod is the same whatever he said. The app can only tell that he made a sound; it never judges how a word was said, now or later.
 
 Avoid:
 
@@ -464,13 +450,7 @@ Perfect!
 
 # 20. Response for No Attempt
 
-The interface should remain neutral.
-
-Possible behavior:
-
-- replay canonical word once;
-- quiet pause;
-- transition onward.
+The ring fades and, about a second later, the next picture appears. Nothing else happens.
 
 Do not show:
 
@@ -539,25 +519,11 @@ Avoid animated lip-sync characters unless separately designed and tested.
 
 # 25. Language Switching UX
 
-Language changes should feel intentional but subtle.
+Settled 2026-11-17: there is no child-facing language cue of any kind.
 
-Possible options:
+Each session has two of the five languages in separate blocks. The app simply switches; the script of the written word is the only visible difference. He hears the word and links it to the picture.
 
-### Option A — No child-facing label
-
-The app simply switches language according to session structure.
-
-### Option B — Small non-reading visual cue
-
-A subtle transition style distinguishes a language block.
-
-### Option C — Short spoken cue
-
-Used only if child testing shows the switch is confusing.
-
-Prototype recommendation:
-
-> start with **Option A**, adding cues only if testing shows confusion.
+The earlier options B (visual cue) and C (spoken cue) are dropped.
 
 ---
 
@@ -568,7 +534,7 @@ National flags should not be the main way Miozira represents language.
 Reasons:
 
 - languages are not equivalent to one country;
-- English and Tamil span regional/cultural contexts;
+- all five languages span many regional/cultural contexts;
 - future languages may have multiple country variants.
 
 Parent UI may use written language names.
@@ -577,27 +543,30 @@ Parent UI may use written language names.
 
 # 27. Movement Interaction UX
 
-If a movement prompt is used:
-
-- keep the same main screen;
-- show the relevant concept;
-- use a short spoken instruction;
-- allow time for the child to respond.
+When a fitting word is in the day's set, the puzzle part opens with one movement prompt in a parent's Malayalam voice beside the picture.
 
 Example:
 
 ```text
-[nose visual]
+[nose picture]
 "Touch your nose."
 ```
 
-No new score screen appears.
+The app waits about 5 seconds and moves on. Nothing is checked and no score screen appears.
 
 ---
 
 # 28. Natural Session End
 
-The child experience should not end with:
+A session is a planned set of items, not a length of time. It ends when the set is done. Nothing counts down and no word is ever cut off.
+
+The end is:
+
+1. one familiar favourite (later, the scene);
+2. one closing phrase in a parent's voice, such as "all done, off you go" — never "see you tomorrow";
+3. a slow fade into the quiet screen.
+
+It never ends with:
 
 - stars;
 - confetti;
@@ -605,42 +574,34 @@ The child experience should not end with:
 - progress wheel;
 - daily streak.
 
-Recommended end:
-
-1. familiar/easy final item;
-2. soft visual transition;
-3. neutral resting state or exit;
-4. parent content available separately.
-
 ---
 
-# 29. Resting Child Screen
+# 29. Quiet Screen
 
-After a planned session ends, Miozira may show a very simple resting state.
+Plain `#F2EEE7` with nothing on it. Taps do nothing and make no sound. After about 30 seconds the tablet is allowed to dim and sleep.
 
-Possible elements:
+It is shown:
 
-- Miozira mark;
-- calm background;
-- no urgent button.
+- after a session ends;
+- after about a minute without a touch mid-session (a tap later the same day carries on where he left off);
+- whenever the app is opened again on a day whose session is already finished.
 
-The exact state may be bypassed if the app simply returns to launch/child home.
+A further session on the same day starts only from the parent area. Nothing is ever said about stopping early or about days without a session.
 
 ---
 
 # 30. Parent Entry Mechanism
 
-Parent access must be intentional and unlikely to occur accidentally.
+Parent access takes two deliberate steps:
 
-Recommended Prototype 0.1 candidate:
+1. hold the top-right corner for 3 seconds. Nothing is drawn there, a short tap does nothing, and the hold shows no progress;
+2. a plain adult screen asks the parent to type a two-digit number that is written as a word ("forty-seven"). The number changes every time.
 
-> **long-press on a small, visually unobtrusive corner hotspot for approximately 2 seconds**
+A wrong answer, or 10 seconds of nothing, returns silently to exactly where the child was, with no sound or animation.
 
-followed by:
+The corner works from every child screen, including the quiet screen. The parent area locks again when the parent leaves it or the screen turns off.
 
-> **simple adult confirmation gate**
-
-The final mechanism should be tested.
+Once he can read number words, a parent-chosen PIN replaces step 2 (not built now).
 
 ---
 
@@ -656,51 +617,28 @@ The parent gate should:
 
 ---
 
-# 32. Parent Gate Candidate Options
+# 32. Parent Gate Candidate Options (settled)
 
-Potential candidates:
-
-### Candidate A — Long press + hold confirmation
-
-Example:
-
-- hold corner;
-- continue holding until ring completes.
-
-### Candidate B — Long press + simple text confirmation
-
-Example:
-
-- “Parent area — continue?”
-
-### Candidate C — Two-step adult gesture
-
-Example:
-
-- long press;
-- tap a small adult-oriented confirmation target.
-
-Recommended starting candidate:
-
-> **A or B**
-
-because they are simple and fully offline.
+Settled 2026-11-17 as the two-step gate in §30. The earlier candidates A–C are dropped.
 
 ---
 
 # 33. Parent Home
 
-Recommended parent home sections:
+Sections, in order:
 
 ```text
-Recent learning
-Try this outside Miozira
-Recognized / Used outside Miozira
-Family recordings
-Settings & privacy
+Four words for today
+Most recent session
+Noticed at home
+How each language is going
+How the puzzles are going
+Voices
+Start an extra session
+Microphone and privacy
 ```
 
-Avoid a dashboard full of charts.
+No charts, numbers, dates or durations anywhere.
 
 ---
 
@@ -720,58 +658,55 @@ The parent area should remain visually calm and compact.
 
 # 35. Parent Home Priority
 
-The most important parent information should be:
+The most important parent information is:
 
-1. current real-world suggestion;
-2. quick observation actions;
-3. recent activity;
-4. family recordings/settings.
+1. four words for today;
+2. the most recent session, in sentences;
+3. noticed-at-home actions;
+4. everything else.
 
 Not:
 
 - percentage mastery;
-- engagement statistics;
+- counts of any kind;
+- time spent or missed days;
 - comparison charts.
 
 ---
 
-# 36. Real-World Suggestion Card
+# 36. Four Words for Today
 
-Recommended structure:
+Replaces the single real-world suggestion. Four words from the most recent session, each with the moment of the day to say it:
 
 ```text
-Try this outside Miozira
+Four words for today
 
-At snack time, say the Tamil word for apple while handing over a slice.
+At breakfast, when you pour: water (Tamil)
+At snack time, handing a slice: apple (Tamil)
+At bath time: nose (English)
+At dinner, passing it: cup (English)
 ```
-
-Optional:
-
-- concept thumbnail;
-- target-language label.
 
 Avoid:
 
-- checklist completion box;
-- streak reward;
-- push-reminder prompt.
+- checklist completion boxes;
+- streak rewards;
+- reminders or notifications. The card is seen only when a parent opens the parent area.
 
 ---
 
 # 37. Real-World Observation UI
 
-The parent should be able to record evidence with minimal friction.
-
-Recommended flow:
+The parent records evidence with minimal friction.
 
 ```text
 Recent concept row
    ↓
-[Recognized outside Miozira]
-[Used outside Miozira]
+[He understood it]
+[He said it]
 ```
 
-One tap on the appropriate action should save the observation.
+One tap saves the observation. These labels replace "Recognized outside Miozira" and "Used outside Miozira".
 
 ---
 
@@ -789,25 +724,19 @@ Do not use:
 
 ---
 
-# 39. Recent Learning Screen
+# 39. Most Recent Session
 
-Parent-facing recent activity may show:
-
-```text
-Apple — Tamil
-Heard recently
-Tried saying it
-```
-
-or:
+Described in sentences only:
 
 ```text
-Ball — English
-Replayed
-Recognized outside Miozira
+Most recent session: English and Tamil
+Tried saying: apple, ball, cup, water (Tamil)
+Said before the app did: ball, cup (Tamil)
+Listened without speaking: nose, cat
+Puzzle, What's gone?: he chose before the answer came back.
 ```
 
-Avoid numeric scoring.
+No counts ("Heard 3 times"), dates or durations. Sessions are "most recent" and "before that".
 
 ---
 
@@ -815,53 +744,46 @@ Avoid numeric scoring.
 
 Preferred:
 
-- Heard
-- Tried saying it
-- Replayed
-- Recognized outside Miozira
-- Used outside Miozira
+- Tried saying
+- Said before the app did
+- Listened without speaking
+- He understood it (at home)
+- He said it (at home)
 - Coming back later
+- "most", "some", "not yet" in place of counts
 
 Avoid:
 
+- Missed
 - Failed
 - Weak
 - Incorrect
+- Learned
 - Mastered
 - 37% complete
 - Behind
+- any number of times, days or minutes
 
 ---
 
-# 41. Family Recordings Screen
+# 41. Voices Screen
 
-The parent should be able to:
+Two lists.
 
-- select concept;
-- select language;
-- hear canonical audio;
-- record family voice;
-- listen to family recording;
-- replace;
-- delete.
+**Guide phrases in Malayalam.** One row per phrase with two slots, Mother and Father. Both parents record every phrase; the app uses one parent's voice for a whole session and the other's for the next. A prepared voice is used only until a recording exists.
+
+**Tamil words.** One row per word, recorded by the parents.
+
+In both lists the parent can play, record, replace and delete.
 
 ---
 
-# 42. Family Recording UI
-
-Recommended flow:
+# 42. Voice Row
 
 ```text
-Concept + language
-Canonical model [Play]
-
-Family voice
-[Record]
-
-after recording:
-[Play]
-[Record again]
-[Delete]
+Your turn
+Mother   Recorded            [Play] [Record again]
+Father   Not recorded yet    [Record]
 ```
 
 Recording controls belong only in parent mode.
@@ -909,34 +831,21 @@ Avoid throwing the Android permission dialog at the child without context.
 
 # 46. Settings
 
-Prototype 0.1 parent settings should remain minimal.
+Parent settings stay minimal:
 
-Possible settings:
-
-- enabled languages;
-- preferred starting language;
-- microphone attempt detection;
-- family recordings;
-- reset prototype data;
+- microphone attempt detection on/off;
+- the voices;
+- start an extra session;
+- erase everything on this tablet;
 - privacy information.
 
-Avoid settings that allow the parent to micromanage the adaptive engine.
+There is no language setting: all five languages are always on and the rotation decides. Avoid settings that let the parent micromanage the adaptive engine.
 
 ---
 
-# 47. Language Settings
+# 47. Language Settings (retired)
 
-Parent UI may display:
-
-```text
-Languages
-English
-Tamil
-```
-
-Prototype 0.1 should keep both available.
-
-If one is disabled for testing, that should be an explicit parent choice.
+Retired 2026-11-17. The five languages are always available, two per session, rotating per completed session.
 
 ---
 
@@ -1037,14 +946,14 @@ On a normal child screen, the learning object should usually be the most visuall
 
 # 52. Typography
 
-Child mode should use little or no visible instructional text.
+Child mode shows exactly one piece of text: the written word under the picture.
 
-When text exists:
+- about a tenth of the screen's height, centred;
+- in the language's own script: Latin; Tamil; Arabic with vowel marks, laid out right to left; Japanese as a children's book writes the word (hiragana for everyday words, katakana for borrowed ones);
+- the whole word fades in `#4F746B` as it is spoken and settles to `#26312E`;
+- never required, never a tap target.
 
-- large;
-- clear;
-- simple;
-- high contrast.
+There is no instructional text for the child.
 
 Parent mode may use standard readable text hierarchy.
 
@@ -1056,24 +965,16 @@ Exact fonts/typescale belong in `design-system.md`.
 
 Animation is allowed only when it improves comprehension, causality, or state clarity.
 
-Allowed examples:
+Allowed:
 
-- 1–2% press response;
-- short fade;
-- one gentle transition;
-- a concept-specific meaningful motion;
-- restrained listening indicator;
+- a very slight grow on tap;
+- a slow fade;
+- the small nod after an attempt;
+- a picture "stepping forward" (growing a little) while it is named;
+- the breathing ring;
+- a missing picture fading back into its place;
+- in the two later puzzles only: the cup tipping once, and the close-up widening once;
 - one soft haptic acknowledgement when useful.
-
-Meaningful motion examples:
-
-```text
-car → rolls briefly
-hand → opens/closes once
-water → pours once
-```
-
-These should be used only when the motion teaches or clarifies something.
 
 Avoid:
 
@@ -1109,18 +1010,9 @@ Tune through real-device observation.
 
 # 55. Sound Design Rules
 
-Non-word sound effects should be:
+The only sounds are voices: the word, and the guide phrases.
 
-- sparse;
-- soft;
-- short.
-
-Avoid:
-
-- loud reward sounds;
-- arcade effects;
-- continuous music;
-- competing spoken audio.
+There is no music, no instrument sound and no effect sound of any kind (parent decision 2026-11-17).
 
 ---
 
@@ -1244,11 +1136,7 @@ Once the child understands the pattern:
 
 # 63. Microphone Disabled UX
 
-When microphone attempt detection is disabled:
-
-- do not show listening ring;
-- maintain a short natural pause after target audio;
-- move onward gently.
+When microphone attempt detection is off or not permitted, everything looks the same, including the ring as a quiet space. Only the nod never happens.
 
 The session must still feel complete.
 
@@ -1293,11 +1181,11 @@ Prototype 0.1 may show a small chronological list:
 ```text
 Today
 Apple — Tamil
-Used outside Miozira
+He said it
 
 Yesterday
 Ball — English
-Recognized outside Miozira
+He understood it
 ```
 
 No chart required.
@@ -1395,34 +1283,32 @@ Final architecture belongs in `architecture.md`.
 
 ---
 
-# 73. Initial Child Screen Count
-
-Prototype 0.1 should aim for an extremely small child-screen count.
-
-Potentially:
+# 73. Child Screen Kinds
 
 ```text
-1. Learning screen
-2. Rest/end screen
+1. Word screen (including "say it first")
+2. Two-picture screen ("Which one?")
+3. Puzzle screens
+4. Quiet screen
+5. Scene (later)
 ```
 
-Everything else should be state changes within the learning screen.
+Everything else is a state change within one of these.
 
 ---
 
-# 74. Initial Parent Screen Count
-
-Likely minimal parent screens:
+# 74. Parent Screens
 
 ```text
-1. Parent Home
-2. Recent Learning
-3. Real-World Observation
-4. Family Recordings
-5. Settings / Privacy
+1. Parent gate (reading step)
+2. Parent Home
+3. How each language is going
+4. How the puzzles are going
+5. Voices
+6. Microphone and privacy
 ```
 
-Some may be merged to reduce complexity.
+"Start an extra session" is a confirmation, not a screen.
 
 ---
 
@@ -1447,7 +1333,7 @@ Before family testing:
 - microphone cue is not confusing;
 - silence does not create failure feedback;
 - child can stop at any time;
-- orientation does not reset the flow;
+- the screen stays in landscape and never turns;
 - parent controls are not accidentally activated.
 
 ---
@@ -1513,7 +1399,7 @@ No mandatory “Next” button exists.
 No ordinary child tap opens destructive parent controls.
 
 ### UX-INV-009
-Orientation changes preserve the learning state.
+The screen is locked to landscape; any screen rebuild preserves the learning state.
 
 ### UX-INV-010
 Microphone denial does not create a broken child screen.
@@ -1524,72 +1410,84 @@ Parent real-world suggestions are not child quizzes.
 ### UX-INV-012
 The parent UI uses evidence language, not mastery claims.
 
+### UX-INV-013
+After any child tap in "Which one?" or a puzzle, the same two things happen: what he touched is named, then the real answer plays out. Nothing is ever shown as wrong.
+
+### UX-INV-014
+Nothing in the app is earned, unlocked or announced as an achievement.
+
+### UX-INV-015
+The parent UI shows no numbers, dates or durations.
+
+### UX-INV-016
+No picture shows the face of a person or an animal.
+
+### UX-INV-017
+The only sounds are voices.
+
 ---
 
 # 80. Prototype Wireframe — Child
 
 ```text
-PORTRAIT
+LANDSCAPE (the only orientation)
 
-┌──────────────────────────────┐
-│                              │
-│                              │
-│                              │
-│        [ BIG APPLE ]         │
-│                              │
-│                              │
-│                              │
-│          ◌ listening         │
-│          when active         │
-│                              │
-└──────────────────────────────┘
+┌──────────────────────────────────┐
+│            ╭ ─ ─ ─ ─ ╮           │
+│           ¦ BIG APPLE ¦          │   ring only during his turn
+│            ╰ ─ ─ ─ ─ ╯           │
+│              apple               │   written word, below the ring
+└──────────────────────────────────┘
 ```
 
-The concept itself is tappable.
+The picture itself is tappable.
 
 ---
 
 # 81. Prototype Wireframe — Parent Home
 
 ```text
-┌────────────────────────────────────┐
-│ Miozira — Parent                   │
-├────────────────────────────────────┤
-│ Try this outside Miozira           │
-│                                    │
-│ At snack time, say the Tamil word  │
-│ for apple while handing over a     │
-│ slice.                              │
-├────────────────────────────────────┤
-│ Recent learning                    │
-│ Apple — Tamil                      │
-│ Heard recently · Tried saying it   │
-│                                    │
-│ [Recognized outside Miozira]       │
-│ [Used outside Miozira]             │
-├────────────────────────────────────┤
-│ Family recordings                  │
-│ Settings & privacy                 │
-└────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ Miozira for parents         [Lock and go back]│
+├──────────────────────────────────────────────┤
+│ Four words for today                          │
+│  At breakfast, when you pour: water (Tamil)   │
+│  At snack time, handing a slice: apple (Tamil)│
+│  At bath time: nose (English)                 │
+│  At dinner, passing it: cup (English)         │
+├──────────────────────────────────────────────┤
+│ Most recent session: English and Tamil        │
+│  Tried saying: apple, ball, cup, water (Tamil)│
+│  Said before the app did: ball, cup (Tamil)   │
+│  Listened without speaking: nose, cat         │
+├──────────────────────────────────────────────┤
+│ Noticed at home                               │
+│  Cup, in Tamil [He understood it] [He said it]│
+├──────────────────────────────────────────────┤
+│ How each language is going                  › │
+│ How the puzzles are going                   › │
+│ Voices                                      › │
+│ Start an extra session                      › │
+│ Microphone and privacy                      › │
+└──────────────────────────────────────────────┘
 ```
 
 ---
 
-# 82. Prototype Wireframe — Family Recording
+# 82. Prototype Wireframe — Voices
 
 ```text
-┌────────────────────────────────────┐
-│ Apple — Tamil                      │
-├────────────────────────────────────┤
-│ Standard voice                     │
-│ [Play]                             │
-│                                    │
-│ Family voice                       │
-│ [Record]                           │
-│                                    │
-│ after recording:                   │
-│ [Play]  [Record again]  [Delete]   │
-└────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ Guide phrases in Malayalam                    │
+│ Until you record a phrase, a prepared voice   │
+│ is used. Recordings stay on this tablet.      │
+├──────────────────────────────────────────────┤
+│ Your turn                                     │
+│  Mother  Recorded          [Play][Record again]│
+│  Father  Not recorded yet  [Record]           │
+│ What's gone?                                  │
+│  ...                                          │
+└──────────────────────────────────────────────┘
 ```
 
 ---
@@ -1619,18 +1517,21 @@ The concept itself is tappable.
 
 # 84. Open UX Questions
 
-The following should be tested rather than assumed:
+Answered on 2026-11-17:
 
-1. photo vs illustration;
-2. exact concept size;
-3. dark vs light child background;
-4. whether language switches need a cue;
-5. whether explicit “Your turn” audio is necessary;
-6. ideal listening indicator;
-7. exact parent-gate gesture;
-8. whether parent home needs a separate Recent Learning screen;
-9. whether family voice should be exposed in Prototype 0.1 or deferred if it complicates testing;
-10. whether movement prompts feel natural with the initial eight concepts.
+1. photo vs illustration — painted realistic pictures;
+3. dark vs light child background — light, locked;
+4. language-switch cue — none;
+5. explicit “Your turn” audio — yes, after every word;
+6. listening indicator — one calm ring around the picture;
+7. parent-gate gesture — 3-second corner hold plus a reading step;
+8. separate Recent Learning screen — no; the home describes the most recent session;
+9. family voice — in: guide phrases by both parents, and Tamil words;
+10. movement prompts — one, opening the puzzle part, when a fitting word is in the set.
+
+Still to be tested rather than assumed:
+
+2. exact concept size.
 
 ---
 
@@ -1680,23 +1581,49 @@ The following should be tested rather than assumed:
 
 # 88. Decision Summary
 
-Prototype 0.1 UI/UX is intentionally minimal:
-
-- one primary child learning screen;
-- one dominant concept;
-- concept itself is the main tap target;
-- tap plays the target word;
-- listening/response state appears temporarily;
-- no scores, streaks, text lessons, or child navigation;
-- portrait and landscape use the same interaction model;
-- parent mode is intentionally separated;
-- parent home prioritizes real-world transfer over dashboards;
-- family recordings and microphone controls live only in parent mode;
-- visual and motion design remain calm;
+- landscape only; the screen does not turn;
+- one dominant concept picture, which is the tap target;
+- one written word beneath it, shown but never required;
+- tap plays the word; "Your turn" follows in a parent's voice; a ring marks his turn;
+- "say it first", "Which one?" and one thinking puzzle per session;
+- after any tap the same thing happens; nothing is ever shown as wrong;
+- no language cue; no scores, streaks, rewards or anything earned;
+- the session is a set of items, ends by itself and goes quiet;
+- the only sounds are voices;
+- pictures are painted realistic, with no faces on people or animals;
+- the parent area sits behind a hidden two-step gate and speaks in sentences, not numbers;
 - every child interaction remains optional and non-punitive.
 
 The UX should be simple enough that the child can learn the app by using it.
 
+---
+
+# 89. "Say It First", "Which One?" and the Thinking Puzzles
+
+Defined in the UI/UX design §5.3–5.5 (`docs/superpowers/specs/2026-11-16-ui-ux-design.md`).
+
+One rule covers all of them: after any tap, (1) what he touched is named, then (2) the real answer plays out calmly. If he taps nothing, step 2 happens after a short wait.
+
+There is no tick, cross, colour, sound effect, shake or "try again".
+
+---
+
+# 90. The Scene
+
+Defined in the UI/UX design §5.6. One calm painted place containing things he already knows; he taps what he likes and hears its word.
+
+It is the ordinary ending of every session. It is never unlocked, earned or announced, it shows no empty outlines for things not yet met, and it has no pinch-zoom. It is built after the first three puzzles.
+
+---
+
+# 91. Pictures
+
+Defined in the UI/UX design §8.
+
+- realistic and softly painted; one thing per picture, cut out, directly on the warm background; no glow, frame or room behind it;
+- animals and people never show a face; body parts are shown one at a time;
+- people are modestly dressed; eating and drinking use the right hand;
+- three pictures per word; a new word always uses the same first picture.
 
 ---
 

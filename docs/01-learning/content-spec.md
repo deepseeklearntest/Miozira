@@ -6,7 +6,17 @@
 **Product:** Miozira  
 **Prototype:** 8 concepts × English + Tamil  
 **Target child:** approximately 4–5 years old  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-11-17
+
+---
+
+## Revision — 2026-11-17
+
+The Tamil forms for `cup` and `water` are decided (OQ-001 and OQ-002 are closed): `கப்` and `தண்ணி`, the conversational forms the parents say at home. The parents record the Tamil words themselves.
+
+The scope is now five languages (`docs/superpowers/specs/2026-11-16-five-languages-and-thinking-puzzles-design.md`). This document still specifies English and Tamil content only; the Japanese, Arabic and Spanish word lists are added batch by batch after a native-speaker check and are not yet written here.
+
+Pictures follow the rules in `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, section 8: realistic and softly painted, up to three pictures per concept, and no faces on people or animals. Those rules win over sections 15–17 of this document where they differ.
 
 ---
 
@@ -253,17 +263,12 @@ Content role:
 ```text
 concept_id: concept.cup
 English: cup
-Tamil candidate: TBD after family/native review
+Tamil: கப்
 ```
 
-Potential Tamil forms include:
+Decided by the parent on 2026-11-16: `கப்`, the form the family says at home. The formal `கோப்பை` is kept only as a reference form.
 
-- கப்
-- கோப்பை
-
-Prototype 0.1 must not lock this item purely from dictionary preference.
-
-The selected form should reflect:
+The choice reflects:
 
 - natural household usage;
 - child familiarity;
@@ -342,14 +347,14 @@ Content role:
 ```text
 concept_id: concept.water
 English: water
-Tamil candidate: தண்ணீர்
+Tamil: தண்ணி
 ```
 
-Preferred Prototype 0.1 direction:
+Prototype 0.1 direction:
 
 > use natural household Tamil rather than overly formal vocabulary.
 
-`தண்ணீர்` is therefore the leading candidate over formal `நீர்`, subject to family/native review.
+Decided by the parent on 2026-11-16: `தண்ணி`, the conversational form the family says at home. `தண்ணீர்` and the formal `நீர்` are kept only as reference forms.
 
 ---
 
@@ -1168,8 +1173,8 @@ It should not replace Tamil script as canonical content.
 Example internal-only metadata:
 
 ```text
-spoken_form: தண்ணீர்
-romanization_note: thanneer
+spoken_form: தண்ணி
+romanization_note: thanni
 ```
 
 Romanization convention must not be treated as linguistically authoritative unless standardized later.
@@ -1192,16 +1197,15 @@ Prototype 0.1 should select **one active canonical form** for the child experien
 
 # 44. Cup Decision
 
-`cup` is the main known lexical decision requiring explicit review.
-
-Candidate forms:
+Decided by the parent on 2026-11-16 (OQ-001 closed):
 
 ```text
 கப்
-கோப்பை
 ```
 
-Decision criteria:
+`கோப்பை` is kept as a reference form only.
+
+The criteria that were applied:
 
 1. what the child naturally hears at home;
 2. what Tamil-speaking families commonly use in comparable context;
@@ -1209,16 +1213,16 @@ Decision criteria:
 4. whether future phrases sound natural;
 5. whether the term is too formal or too English-borrowed for the desired register.
 
-Decision must be documented before final Tamil audio is recorded.
+The decision is recorded here and in `docs/OPEN-QUESTIONS.md`. The parents record the Tamil audio.
 
 ---
 
 # 45. Water Decision
 
-Preferred Prototype 0.1 candidate:
+Decided by the parent on 2026-11-16 (OQ-002 closed):
 
 ```text
-தண்ணீர்
+தண்ணி
 ```
 
 Reason:
@@ -1227,13 +1231,13 @@ Reason:
 - appropriate everyday register;
 - directly relevant to family life.
 
-Formal:
+The fuller `தண்ணீர்` and the formal:
 
 ```text
 நீர்
 ```
 
-may be stored as an alternate/reference form but should not automatically replace the household term.
+may be stored as alternate/reference forms but do not replace the household term.
 
 ---
 
@@ -1572,12 +1576,12 @@ The current content baseline is:
 |---|---|---|---|
 | apple | apple | ஆப்பிள் | review required |
 | ball | ball | பந்து | review required |
-| cup | cup | கப் / கோப்பை | decision required |
+| cup | cup | கப் | decided 2026-11-16; parents record |
 | hand | hand | கை | review required |
 | nose | nose | மூக்கு | review required |
 | cat | cat | பூனை | review required |
 | car | car | கார் | review required |
-| water | water | தண்ணீர் | preferred; review required |
+| water | water | தண்ணி | decided 2026-11-16; parents record |
 
 No Tamil candidate becomes final solely because it appears in this table.
 
