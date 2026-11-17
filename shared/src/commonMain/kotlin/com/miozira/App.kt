@@ -9,6 +9,12 @@ import androidx.compose.ui.graphics.Color
 import com.miozira.content.PrototypeContentRepository
 import com.miozira.presentation.child.ContentReviewScreen
 import com.miozira.presentation.child.ChildSessionScreen
+import com.miozira.presentation.parent.ParentAccess
+import com.miozira.presentation.parent.ParentAccessController
+import com.miozira.presentation.parent.ParentChallenge
+import com.miozira.presentation.parent.ParentReadingStepScreen
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import com.miozira.presentation.parent.ParentController
 import com.miozira.presentation.parent.ParentSummaryScreen
 import com.miozira.presentation.parent.FamilyRecordingController
@@ -76,12 +82,13 @@ fun MioziraApp(
 @Composable
 fun MioziraApp(
     controller: ChildSessionController,
+    parentAccess: ParentAccessController,
     parentController: ParentController? = null,
     familyRecordingController: FamilyRecordingController? = null,
     parentActionsController: ParentActionsController? = null,
     onOpenMicrophoneSettings: () -> Unit = {},
 ) {
-    var parentOpen by remember { mutableStateOf(false) }
+    val access by parentAccess.state.collectAsState()
     var familyPair by remember { mutableStateOf<PairId?>(null) }
     val scope = rememberCoroutineScope()
     MaterialTheme {
@@ -90,7 +97,14 @@ fun MioziraApp(
             color = Color(0xFFF2EEE7),
             contentColor = Color(0xFF26312E),
         ) {
-            if (parentController != null && parentOpen) {
+            val challenge = (access as? ParentAccess.Challenge)?.challenge
+            if (challenge != null) {
+                LaunchedEffect(challenge.typed) {
+                    delay(ParentChallenge.TIMEOUT_MS)
+                    parentAccess.timedOut()
+                }
+                ParentReadingStepScreen(challenge, onDigit = parentAccess::digit)
+            } else if (parentController != null && access == ParentAccess.Open) {
                 val state by parentController.state.collectAsState()
                 val familyState = familyRecordingController?.state?.collectAsState()?.value ?: FamilyRecordingState.Idle
                 val actionsState = parentActionsController?.state?.collectAsState()?.value
@@ -99,8 +113,8 @@ fun MioziraApp(
                     ) {
                     TextButton(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                        onClick = { parentOpen = false },
-                    ) { androidx.compose.material3.Text("Back to child area") }
+                        onClick = parentAccess::lock,
+                    ) { androidx.compose.material3.Text("Lock and go back") }
                     if (actionsState != null) {
                         ParentActionsScreen(
                             state = actionsState,
@@ -144,7 +158,7 @@ fun MioziraApp(
                 }
             } else {
                 ChildSessionScreen(controller) {
-                    parentOpen = true
+                    parentAccess.cornerHeld()
                     parentController?.let { controller -> scope.launch { controller.refresh() } }
                 }
             }

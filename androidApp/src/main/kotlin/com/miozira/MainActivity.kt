@@ -21,6 +21,7 @@ import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.LearningSessionEngine
 import com.miozira.domain.adaptive.AdaptivePairPlanner
 import com.miozira.domain.transfer.RealWorldTransferService
+import com.miozira.presentation.parent.ParentAccessController
 import com.miozira.presentation.parent.ParentController
 import com.miozira.presentation.parent.FamilyRecordingController
 import com.miozira.presentation.parent.ParentActionsController
@@ -44,6 +45,7 @@ private val android.content.Context.mioziraSettingsDataStore by preferencesDataS
 
 class MainActivity : ComponentActivity() {
     private val serviceScope = MainScope()
+    private val parentAccess = ParentAccessController()
     private lateinit var audioService: AndroidAudioService
     private lateinit var database: com.miozira.data.db.MioziraDatabase
     private lateinit var childSessionController: ChildSessionController
@@ -178,6 +180,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MioziraApp(
                 childSessionController,
+                parentAccess,
                 parentController,
                 familyRecordingController,
                 parentActionsController,
@@ -187,6 +190,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onStop() {
+        parentAccess.lock()
         if (::childSessionController.isInitialized) childSessionController.onBackground()
         super.onStop()
     }
