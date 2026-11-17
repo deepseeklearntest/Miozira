@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -91,12 +92,12 @@ fun WordScreen(state: ChildScreenState.Word, onTap: () -> Unit) {
 
 @Composable
 private fun WordContent(state: ChildScreenState.Word, onTap: () -> Unit) {
-    var tapped by remember(state.pair.pairId) { mutableStateOf(false) }
-    var pulsed by remember(state.pair.pairId) { mutableStateOf(false) }
-    val pictureScale = remember(state.pair.pairId) { Animatable(1f) }
+    var tapped by remember(state.interactionId) { mutableStateOf(false) }
+    var pulsed by remember(state.interactionId) { mutableStateOf(false) }
+    val pictureScale = remember(state.interactionId) { Animatable(1f) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(state.pair.pairId, state.phase == InteractionPhase.READY, tapped) {
+    LaunchedEffect(state.interactionId, state.phase == InteractionPhase.READY, tapped) {
         if (state.phase == InteractionPhase.READY && !tapped && !pulsed) {
             delay(IDLE_PULSE_AFTER_MS)
             pulsed = true
@@ -193,7 +194,9 @@ private fun WordContent(state: ChildScreenState.Word, onTap: () -> Unit) {
                     localeList = LocaleList(state.pair.languageId.value),
                     textDirection = TextDirection.Content,
                 ),
-                modifier = Modifier.fillMaxWidth().alpha(wordAlpha),
+                modifier = Modifier.fillMaxWidth().alpha(wordAlpha).then(
+                    if (state.wordVisible) Modifier else Modifier.clearAndSetSemantics {},
+                ),
             )
         }
     }

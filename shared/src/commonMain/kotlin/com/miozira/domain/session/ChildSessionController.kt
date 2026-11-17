@@ -356,6 +356,7 @@ class ChildSessionController(
         if (paused && _state.value == ChildScreenState.Quiet) return
         _state.value = ChildScreenState.Word(
             pair = word,
+            interactionId = current.interactionId,
             phase = current.phase,
             wordVisible = wordVisible,
             ringVisible = current.phase == InteractionPhase.LISTENING,

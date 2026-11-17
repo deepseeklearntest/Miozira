@@ -210,6 +210,15 @@ class ChildSessionControllerTest {
     }
 
     @Test
+    fun eachInteractionCarriesItsOwnId() = runBlocking<Unit> {
+        val h = Harness()
+        h.controller.open()
+        val first = h.word().interactionId
+        h.controller.tap(); h.audio.fail()
+        assertTrue(h.word().interactionId != first)
+    }
+
+    @Test
     fun aSuccessfulWord_resetsTheClipFailureCount() = runBlocking<Unit> {
         val h = Harness()
         h.controller.open()
