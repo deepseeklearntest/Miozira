@@ -290,7 +290,7 @@ and in `AdaptiveSelectionTest`: change the expectation for the new-pair cap from
   - `INVITING`, `LISTENING`, `RESPONDING` + `ReplayRequested` with matching IDs → `PLAYING_WORD`, `replayCount + 1`, effects `[StopListening, PlayCanonicalWord, RecordReplay]`. Non-matching IDs → unchanged with `DiagnosticInvalidEvent`.
   - `PLAYING_WORD` + `AudioPlaybackFailed` → `TRANSITIONING` with `completionReason = CONTENT_ERROR` and effect `CompleteInteraction` (was: end the session).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 @Test fun replayDuringListening_replaysTheWord_andCountsTheReplay()
@@ -299,8 +299,8 @@ and in `AdaptiveSelectionTest`: change the expectation for the new-pair cap from
 @Test fun failedClip_completesTheInteractionAsContentError_andDoesNotEndTheSession()
 ```
 
-- [ ] **Step 2: Run** `--tests '*InteractionReducerTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS (fix the one existing test that expected `SESSION_ENDING` after a failed clip).
-- [ ] **Step 5: Commit** `feat: allow replay during his turn and skip words whose clip fails`.
+- [x] **Step 2: Run** `--tests '*InteractionReducerTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS (fix the one existing test that expected `SESSION_ENDING` after a failed clip).
+- [x] **Step 5: Commit** `feat: allow replay during his turn and skip words whose clip fails`.
 
 ---
 
