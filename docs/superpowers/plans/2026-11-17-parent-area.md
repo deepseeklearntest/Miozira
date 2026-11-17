@@ -317,7 +317,7 @@ One paragraph per language, built only from pairs of that language:
 
 `ParentUiState.languageLines: List<String>` holds one line per language in `languageOrder`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 @Test fun languageNeverHeard_isNotMetYet()
@@ -328,8 +328,8 @@ One paragraph per language, built only from pairs of that language:
 @Test fun noLineContainsADigit_orAForbiddenWord()
 ```
 
-- [ ] **Step 2: Run** `--tests '*LanguageSentencesTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** — expect PASS.
-- [ ] **Step 5: Commit** `feat: describe how each language is going`.
+- [x] **Step 2: Run** `--tests '*LanguageSentencesTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** — expect PASS.
+- [x] **Step 5: Commit** `feat: describe how each language is going`.
 
 ---
 
