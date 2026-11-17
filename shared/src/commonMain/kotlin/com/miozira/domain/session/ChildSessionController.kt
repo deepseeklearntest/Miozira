@@ -1,5 +1,6 @@
 package com.miozira.domain.session
 
+import com.miozira.content.LanguageId
 import com.miozira.core.model.AttemptState
 import com.miozira.core.model.InteractionCompletionReason
 import com.miozira.core.model.InteractionId
@@ -44,7 +45,9 @@ class ChildSessionController(
             is AppResult.Failure -> return result
             is AppResult.Success -> result.value
         }
-        return when (val result = engine.beginInteraction(allowSpeakingInvite = speakingInviteEnabled)) {
+        // Temporary bridge until the controller drives the full step list (plan Task 6 rewrites this).
+        val firstStep = SessionStep.Word(SessionPart.WARM_UP, session.startingLanguage ?: LanguageId("en"), easy = true)
+        return when (val result = engine.beginInteraction(firstStep, allowSpeakingInvite = speakingInviteEnabled)) {
             is AppResult.Failure -> result
             is AppResult.Success -> {
                 interaction = InteractionState(

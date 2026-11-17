@@ -25,12 +25,20 @@ data class InteractionPlan(
     val allowSpeakingInvite: Boolean,
 )
 
+enum class SessionEndReason { COMPLETED, IDLE, CONTENT_ERROR }
+
 interface SessionPersistence {
     suspend fun createSession(snapshot: SessionSnapshot): AppResult<Unit>
     suspend fun createInteraction(plan: InteractionPlan): AppResult<Unit>
     suspend fun commitExposure(interactionId: InteractionId, committedAtMs: Long): AppResult<Unit>
     suspend fun recordAttempt(interactionId: InteractionId, state: com.miozira.core.model.AttemptState, recordedAtMs: Long): AppResult<Unit>
     suspend fun completeInteraction(interactionId: InteractionId, reason: com.miozira.core.model.InteractionCompletionReason, completedAtMs: Long): AppResult<Unit>
+    suspend fun endSession(sessionId: SessionId, reason: SessionEndReason, endedAtMs: Long): AppResult<Unit>
+}
+
+interface SessionHistory {
+    suspend fun completedSessionCount(): AppResult<Int>
+    suspend fun lastCompletedAtMs(): AppResult<Long?>
 }
 
 data class PairSelection(
@@ -38,28 +46,29 @@ data class PairSelection(
     val reason: String,
 )
 
-fun interface FixturePairSelector {
-    fun selectNext(available: List<ConceptLanguagePair>, usedPairIds: Set<PairId>): ConceptLanguagePair?
-}
+data class PairRequest(
+    val available: List<ConceptLanguagePair>,
+    val recentPairIds: List<PairId>,
+    val language: LanguageId?,
+    val easy: Boolean,
+    val newPairsInBlock: Int,
+)
 
 fun interface PairPlanner {
-    suspend fun selectNext(
-        available: List<ConceptLanguagePair>,
-        usedPairIds: Set<PairId>,
-        interactionCount: Int,
-    ): PairSelection?
+    suspend fun selectNext(request: PairRequest): PairSelection?
 }
 
 class LearningSessionEngine(
     private val pairs: List<ConceptLanguagePair>,
     private val persistence: SessionPersistence,
     private val clock: Clock,
-    private val selector: FixturePairSelector = FixturePairSelector { available, used -> available.firstOrNull { it.pairId !in used } },
     private val idGenerator: (String) -> String = { prefix -> "$prefix-${clock.nowMs()}" },
     private val planner: PairPlanner? = null,
 ) {
     private var session: SessionSnapshot? = null
-    private val usedPairIds = linkedSetOf<PairId>()
+    private val history = mutableListOf<PairId>()
+    private var currentPart: SessionPart? = null
+    private var newPairsInBlock = 0
 
     suspend fun startSession(preferredStartingLanguage: LanguageId? = null): AppResult<SessionSnapshot> {
         if (session != null) return AppResult.Failure(AppError.InvalidState("Session already active"))
@@ -78,10 +87,22 @@ class LearningSessionEngine(
         }
     }
 
-    suspend fun beginInteraction(allowSpeakingInvite: Boolean = false): AppResult<InteractionPlan> {
+    suspend fun beginInteraction(step: SessionStep.Word, allowSpeakingInvite: Boolean = true): AppResult<InteractionPlan> {
         val current = session ?: return AppResult.Failure(AppError.InvalidState("Session has not started"))
-        val selection = planner?.selectNext(pairs, usedPairIds, current.interactionCount)
-            ?: selector.selectNext(pairs, usedPairIds)?.let { PairSelection(it, if (current.interactionCount == 0) "EASY_OPENER" else "FIXTURE_ORDER") }
+        if (step.part != currentPart) {
+            currentPart = step.part
+            newPairsInBlock = 0
+        }
+        val request = PairRequest(
+            available = pairs,
+            recentPairIds = history.takeLast(RECENT_PAIR_WINDOW),
+            language = step.language,
+            easy = step.easy,
+            newPairsInBlock = newPairsInBlock,
+        )
+        val selection = planner?.selectNext(request)
+            ?: pairs.firstOrNull { it.languageId == step.language && it.pairId !in request.recentPairIds }
+                ?.let { PairSelection(it, if (step.easy) "EASY_OPENER" else "FIXTURE_ORDER") }
             ?: return AppResult.Failure(AppError.Unavailable("No eligible pair remains"))
         val plan = InteractionPlan(
             interactionId = InteractionId(idGenerator("interaction")),
@@ -94,10 +115,31 @@ class LearningSessionEngine(
         return when (val result = persistence.createInteraction(plan)) {
             is AppResult.Failure -> result
             is AppResult.Success -> {
-                usedPairIds += selection.pair.pairId
+                history += selection.pair.pairId
+                if (selection.reason == NEW_INTRODUCTION) newPairsInBlock++
                 session = current.copy(interactionCount = current.interactionCount + 1)
                 AppResult.Success(plan)
             }
         }
+    }
+
+    suspend fun endSession(reason: SessionEndReason): AppResult<Unit> {
+        val current = session ?: return AppResult.Failure(AppError.InvalidState("Session has not started"))
+        return when (val result = persistence.endSession(current.sessionId, reason, clock.nowMs())) {
+            is AppResult.Failure -> result
+            is AppResult.Success -> {
+                session = null
+                history.clear()
+                currentPart = null
+                newPairsInBlock = 0
+                result
+            }
+        }
+    }
+
+    private companion object {
+        /** A pair is not offered again while it is one of the last this many turns. */
+        const val RECENT_PAIR_WINDOW = 2
+        const val NEW_INTRODUCTION = "NEW_INTRODUCTION"
     }
 }

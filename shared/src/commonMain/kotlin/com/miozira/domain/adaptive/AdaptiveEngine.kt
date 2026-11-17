@@ -6,6 +6,7 @@ import com.miozira.core.model.PairId
 import com.miozira.core.result.AppError
 import com.miozira.core.result.AppResult
 import com.miozira.domain.session.PairPlanner
+import com.miozira.domain.session.PairRequest
 import com.miozira.domain.session.PairSelection
 
 data class ScheduledPairCandidate(
@@ -37,7 +38,7 @@ class AdaptiveEngine(
             candidate.state.state != LearningState.RESTING &&
                 candidate.state.restUntilMs?.let { it > context.nowMs } != true &&
                 candidate.pair.pairId !in recent &&
-                !(candidate.state.state == LearningState.NEW && context.newPairsSelected >= 2)
+                !(candidate.state.state == LearningState.NEW && context.newPairsSelected >= policy.maxNewPairsPerBlock)
         }
         if (base.isEmpty()) {
             val fallback = context.candidates.firstOrNull {
@@ -86,21 +87,18 @@ class AdaptivePairPlanner(
     private val nowMs: () -> Long,
     private val engine: AdaptiveEngine = AdaptiveEngine(),
 ) : PairPlanner {
-    override suspend fun selectNext(
-        available: List<ConceptLanguagePair>,
-        usedPairIds: Set<PairId>,
-        interactionCount: Int,
-    ): PairSelection? {
+    override suspend fun selectNext(request: PairRequest): PairSelection? {
+        val available = request.available.filter { request.language == null || it.languageId == request.language }
         val candidatesById = states().associateBy { it.pair.pairId }
         val candidates = available.mapNotNull { candidatesById[it.pairId] }
         val decision = engine.selectNext(
             AdaptiveSelectionContext(
                 candidates = candidates,
-                recentPairIds = usedPairIds.toList().takeLast(2),
-                newPairsSelected = candidates.count { it.pair.pairId in usedPairIds && it.state.state == LearningState.NEW },
-                activeLanguageBlock = null,
+                recentPairIds = request.recentPairIds,
+                newPairsSelected = request.newPairsInBlock,
+                activeLanguageBlock = request.language,
                 nowMs = nowMs(),
-                needsEasyOpener = interactionCount == 0,
+                needsEasyOpener = request.easy,
             ),
         ) as? AppResult.Success ?: return null
         val pair = available.firstOrNull { it.pairId == decision.value.pairId } ?: return null

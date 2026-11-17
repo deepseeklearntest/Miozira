@@ -8,6 +8,8 @@ import com.miozira.content.CanonicalAudioAssetRef
 import com.miozira.content.ContentReviewStatus
 import com.miozira.core.model.PairId
 import com.miozira.core.result.AppResult
+import com.miozira.domain.session.PairRequest
+import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -32,9 +34,35 @@ class AdaptiveSelectionTest {
         val result = engine.selectNext(context(
             candidate("resting", LearningState.RESTING, restUntil = now + 100),
             candidate("new", LearningState.NEW),
-        ).copy(newPairsSelected = 2))
+        ).copy(newPairsSelected = 3))
         val decision = assertIs<AppResult.Success<SelectionDecision>>(result).value
         assertEquals("INSUFFICIENT_ALTERNATIVES", decision.reason)
+    }
+
+    @Test
+    fun aThirdNewPairInABlock_isStillAllowed() {
+        val result = engine.selectNext(context(
+            candidate("new", LearningState.NEW),
+        ).copy(newPairsSelected = 2))
+        val decision = assertIs<AppResult.Success<SelectionDecision>>(result).value
+        assertEquals("NEW_INTRODUCTION", decision.reason)
+    }
+
+    @Test
+    fun candidatesOutsideTheRequestedLanguage_areNeverChosen() = runBlocking {
+        val tamil = candidate("ball", LearningState.EMERGING, dueAt = now, language = "ta")
+        val english = candidate("apple", LearningState.NEW)
+        val planner = AdaptivePairPlanner({ listOf(tamil, english) }, nowMs = { now })
+        val selection = planner.selectNext(
+            PairRequest(
+                available = listOf(tamil.pair, english.pair),
+                recentPairIds = emptyList(),
+                language = LanguageId("en"),
+                easy = false,
+                newPairsInBlock = 0,
+            ),
+        )
+        assertEquals("apple:en", selection?.pair?.pairId?.value)
     }
 
     @Test
@@ -66,14 +94,14 @@ class AdaptiveSelectionTest {
         nowMs = now,
     )
 
-    private fun candidate(concept: String, state: LearningState, dueAt: Long? = null, restUntil: Long? = null) =
+    private fun candidate(concept: String, state: LearningState, dueAt: Long? = null, restUntil: Long? = null, language: String = "en") =
         ScheduledPairCandidate(
-            pair = pair(concept),
-            state = PairLearningState(PairId("$concept:en"), state, dueAt, restUntil, 0, 0, 0, 0, 0),
+            pair = pair(concept, language),
+            state = PairLearningState(PairId("$concept:$language"), state, dueAt, restUntil, 0, 0, 0, 0, 0),
         )
 
-    private fun pair(concept: String) = ConceptLanguagePair(
-        PairId("$concept:en"), ConceptId(concept), LanguageId("en"), concept,
+    private fun pair(concept: String, language: String = "en") = ConceptLanguagePair(
+        PairId("$concept:$language"), ConceptId(concept), LanguageId(language), concept,
         VisualAssetRef("visual.$concept", "drawable/$concept.png"),
         CanonicalAudioAssetRef("audio.$concept", "audio/$concept.m4a", ContentReviewStatus.APPROVED),
     )

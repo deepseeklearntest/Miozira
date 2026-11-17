@@ -148,6 +148,7 @@ class ChildSessionControllerTest {
             return AppResult.Success(Unit)
         }
         override suspend fun completeInteraction(interactionId: InteractionId, reason: InteractionCompletionReason, completedAtMs: Long) = AppResult.Success(Unit)
+        override suspend fun endSession(sessionId: com.miozira.core.model.SessionId, reason: SessionEndReason, endedAtMs: Long) = AppResult.Success(Unit)
     }
 
     private class RecordingAudioService : AudioService {

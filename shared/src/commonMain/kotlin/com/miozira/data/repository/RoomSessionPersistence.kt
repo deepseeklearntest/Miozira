@@ -3,9 +3,11 @@ package com.miozira.data.repository
 import com.miozira.core.model.AttemptState
 import com.miozira.core.model.InteractionCompletionReason
 import com.miozira.core.model.InteractionId
+import com.miozira.core.model.SessionId
 import com.miozira.core.result.AppResult
 import com.miozira.core.time.Clock
 import com.miozira.domain.session.InteractionPlan
+import com.miozira.domain.session.SessionEndReason
 import com.miozira.domain.session.SessionPersistence
 import com.miozira.domain.session.SessionSnapshot
 
@@ -42,4 +44,7 @@ class RoomSessionPersistence(
         reason: InteractionCompletionReason,
         completedAtMs: Long,
     ): AppResult<Unit> = learning.completeInteraction(interactionId, reason, completedAtMs)
+
+    override suspend fun endSession(sessionId: SessionId, reason: SessionEndReason, endedAtMs: Long): AppResult<Unit> =
+        sessions.endSession(sessionId, reason, endedAtMs)
 }
