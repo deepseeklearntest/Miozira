@@ -71,6 +71,7 @@ class ChildSessionController(
     // Microphone-off result, recorded when the turn ends so the ring stays up for the full turn.
     private var heldResult: AttemptState? = null
     private var listening: SpeechAttemptHandle? = null
+    private var startingFor: InteractionId? = null
 
     // One running timer at a time (idle, invite, turn, after-turn, breath, next step), plus the nod.
     private var timer: Job? = null
@@ -301,7 +302,9 @@ class ChildSessionController(
     private suspend fun startDetector(state: InteractionState): Boolean {
         val detector = speechAttemptDetector ?: return false
         val request = SpeechAttemptRequest(state.sessionId, state.interactionId, durationMs = timings.turnMs)
-        return when (val result = detector.start(request, speechListener)) {
+        startingFor = state.interactionId
+        val result = try { detector.start(request, speechListener) } finally { startingFor = null }
+        return when (result) {
             is AppResult.Failure -> false
             is AppResult.Success -> {
                 if (isListening(state.interactionId)) listening = result.value
@@ -397,23 +400,32 @@ class ChildSessionController(
         }
     }
 
+    // The detector calls back from a background thread: hop to the controller's scope before
+    // touching any state, and check the IDs there.
     private val speechListener = object : SpeechAttemptListener {
         override fun onAttemptDetected(handle: SpeechAttemptHandle) = report(handle, AttemptState.ATTEMPT_DETECTED)
 
         override fun onNoAttemptDetected(handle: SpeechAttemptHandle) = report(handle, AttemptState.NO_ATTEMPT_DETECTED)
 
         override fun onMicrophoneUnavailable(error: MicrophoneError) {
-            // No handle to check: accept only while this interaction's detector is listening.
-            val current = interaction ?: return
-            if (listening == null || !isListening(current.interactionId)) return
-            listening = null
-            heldResult = AttemptState.MICROPHONE_UNAVAILABLE
+            scope.launch {
+                // No handle to check: accept only while this interaction's detector is listening.
+                val current = interaction ?: return@launch
+                if (listening == null || !isListening(current.interactionId)) return@launch
+                listening = null
+                heldResult = AttemptState.MICROPHONE_UNAVAILABLE
+            }
         }
 
         private fun report(handle: SpeechAttemptHandle, state: AttemptState) {
-            if (!isCurrent(handle)) return
-            if (listening == handle) listening = null
-            dispatch(InteractionEvent.AttemptResultRecorded(handle.sessionId, handle.interactionId, state))
+            scope.launch {
+                if (!isCurrent(handle)) return@launch
+                // Only the window now listening may answer: after a replay the same interaction
+                // listens again with a new handle. A result delivered inside start() is accepted too.
+                if (listening != handle && startingFor != handle.interactionId) return@launch
+                listening = null
+                dispatch(InteractionEvent.AttemptResultRecorded(handle.sessionId, handle.interactionId, state))
+            }
         }
     }
 }

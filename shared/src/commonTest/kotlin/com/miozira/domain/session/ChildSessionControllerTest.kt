@@ -364,6 +364,26 @@ class ChildSessionControllerTest {
     }
 
     @Test
+    fun afterAReplay_aLateResultFromTheStoppedWindow_isIgnored() = runBlocking<Unit> {
+        val detector = FakeDetector()
+        val h = Harness(measurement = AttemptMeasurementDecision.OPEN_WINDOW, detector = detector)
+        h.controller.open()
+        h.controller.tap()
+        h.audio.finishWord()
+        h.pauses.finish(T.invitePauseMs)
+        val stopped = detector.lastHandle!!
+        h.controller.tap()
+        h.audio.finishWord()
+        h.pauses.finish(T.invitePauseMs)
+        assertEquals(2, detector.starts.size)
+        detector.listener!!.onAttemptDetected(stopped)
+        assertEquals(InteractionPhase.LISTENING, h.word().phase)
+        assertTrue(h.persistence.attempts.isEmpty())
+        detector.emitDetected()
+        assertEquals(listOf(AttemptState.ATTEMPT_DETECTED), h.persistence.attempts)
+    }
+
+    @Test
     fun staleAudioCallbacks_doNotCommitExposureForCurrentInteraction() = runBlocking<Unit> {
         val h = Harness()
         h.controller.open()

@@ -102,8 +102,12 @@ fun ChildSessionScreen(
 ) {
     val state by controller.state.collectAsState()
     Box(Modifier.fillMaxSize().background(Color(0xFFF2EEE7)), contentAlignment = Alignment.Center) {
-        // Loading, Breath and Quiet are the plain background: nothing tappable, nothing described.
+        // Loading, Breath and Quiet are the plain background, with nothing described. Only Quiet
+        // takes a tap (no indication, no sound): the controller resumes a paused session from it.
         (state as? ChildScreenState.Word)?.let { WordScreen(it, onTap = controller::tap) }
+        if (state == ChildScreenState.Quiet) {
+            Box(Modifier.fillMaxSize().pointerInput(Unit) { detectTapGestures(onTap = { controller.tap() }) })
+        }
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
