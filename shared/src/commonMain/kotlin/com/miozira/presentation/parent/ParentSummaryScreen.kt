@@ -13,13 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.miozira.content.PrototypeContentRepository
+import com.miozira.core.model.PairId
 
 @Composable
 fun ParentSummaryScreen(
     state: ParentUiState,
-    onRecognized: (ParentPairActivity) -> Unit,
-    onUsed: (ParentPairActivity) -> Unit,
-    onFamilyVoice: ((ParentPairActivity) -> Unit)? = null,
+    onRecognized: (PairId) -> Unit,
+    onUsed: (PairId) -> Unit,
+    onFamilyVoice: ((PairId) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -27,19 +29,22 @@ fun ParentSummaryScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
-            Text("Recent learning", style = MaterialTheme.typography.headlineSmall)
+            Text("Most recent session", style = MaterialTheme.typography.headlineSmall)
         }
-        items(state.activities, key = { it.pairId.value }) { activity ->
+        items(state.sessionLines) { Text(it) }
+        item {
+            Text("Noticed at home", style = MaterialTheme.typography.titleMedium)
+        }
+        items(state.recentPairs, key = { it.value }) { pairId ->
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(activity.pairId.value)
-                Text("Heard ${activity.exposureCount} times")
-                Button(onClick = { onRecognized(activity) }) { Text("Recognized outside Miozira") }
-                Button(onClick = { onUsed(activity) }) { Text("Used outside Miozira") }
+                Text(wordLabel(pairId, PrototypeContentRepository.languageNames))
+                Button(onClick = { onRecognized(pairId) }) { Text("Recognized outside Miozira") }
+                Button(onClick = { onUsed(pairId) }) { Text("Used outside Miozira") }
                 onFamilyVoice?.let { openFamilyVoice ->
-                    Button(onClick = { openFamilyVoice(activity) }) { Text("Family voice") }
+                    Button(onClick = { openFamilyVoice(pairId) }) { Text("Family voice") }
                 }
             }
         }

@@ -5,6 +5,14 @@ import com.miozira.core.model.PairId
 object PrototypeContentRepository {
     const val contentVersion = "prototype-0.1-v1"
 
+    /** The language the family speaks; its words are shown bare in the parent area. */
+    val baseLanguageId = LanguageId("en")
+
+    val languageNames: Map<LanguageId, String> = mapOf(
+        LanguageId("en") to "English",
+        LanguageId("ta") to "Tamil",
+    )
+
     private val visuals = mapOf(
         "apple" to visual("apple", "png"),
         "ball" to visual("ball", "png"),

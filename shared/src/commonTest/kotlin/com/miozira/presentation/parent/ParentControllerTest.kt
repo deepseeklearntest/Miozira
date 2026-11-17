@@ -1,5 +1,6 @@
 package com.miozira.presentation.parent
 
+import com.miozira.content.LanguageId
 import com.miozira.core.model.PairId
 import com.miozira.core.result.AppResult
 import com.miozira.domain.transfer.RealWorldObservation
@@ -15,8 +16,8 @@ class ParentControllerTest {
     fun recordUse_savesExactPair_refreshesSummary_andusesNeutralNotice() = runBlocking {
         val repository = RecordingRepository()
         val data = object : ParentDataSource {
-            override suspend fun recentActivities() = AppResult.Success(
-                listOf(ParentPairActivity(PairId("apple:ta"), 2, 10L)),
+            override suspend fun mostRecentSession() = AppResult.Success<SessionSummary?>(
+                SessionSummary(listOf(LanguageId("ta")), listOf(PairId("apple:ta")), emptyList(), emptyList()),
             )
         }
         val controller = ParentController(data, RealWorldTransferService(repository), { 20L }, { "observation-1" })
@@ -24,7 +25,8 @@ class ParentControllerTest {
         assertEquals(PairId("apple:ta"), repository.last?.pairId)
         assertEquals(RealWorldObservationType.USED_OUTSIDE_APP, repository.last?.type)
         assertEquals(ParentUiState.Notice.SAVED, controller.state.value.notice)
-        assertEquals(2, controller.state.value.activities.single().exposureCount)
+        assertEquals(listOf(PairId("apple:ta")), controller.state.value.recentPairs)
+        assertEquals("Tried saying: apple (Tamil)", controller.state.value.sessionLines.last())
     }
 
     private class RecordingRepository : RealWorldObservationRepository {

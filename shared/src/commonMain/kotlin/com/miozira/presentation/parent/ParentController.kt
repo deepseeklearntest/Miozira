@@ -1,5 +1,6 @@
 package com.miozira.presentation.parent
 
+import com.miozira.content.PrototypeContentRepository
 import com.miozira.core.model.PairId
 import com.miozira.core.result.AppResult
 import com.miozira.domain.transfer.RealWorldObservation
@@ -9,22 +10,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class ParentPairActivity(
-    val pairId: PairId,
-    val exposureCount: Int,
-    val lastExposedAtMs: Long?,
-    val observations: Set<RealWorldObservationType> = emptySet(),
-)
-
 data class ParentUiState(
-    val activities: List<ParentPairActivity> = emptyList(),
+    val sessionLines: List<String> = describeSession(null, PrototypeContentRepository.languageNames),
+    val recentPairs: List<PairId> = emptyList(),
     val notice: Notice? = null,
 ) {
     enum class Notice { SAVED, ERROR }
 }
 
 interface ParentDataSource {
-    suspend fun recentActivities(): AppResult<List<ParentPairActivity>>
+    suspend fun mostRecentSession(): AppResult<SessionSummary?>
 }
 
 class ParentController(
@@ -37,9 +32,15 @@ class ParentController(
     val state: StateFlow<ParentUiState> = _state.asStateFlow()
 
     suspend fun refresh() {
-        _state.value = when (val result = dataSource.recentActivities()) {
+        _state.value = when (val result = dataSource.mostRecentSession()) {
             is AppResult.Failure -> ParentUiState(notice = ParentUiState.Notice.ERROR)
-            is AppResult.Success -> ParentUiState(activities = result.value)
+            is AppResult.Success -> {
+                val summary = result.value
+                ParentUiState(
+                    sessionLines = describeSession(summary, PrototypeContentRepository.languageNames),
+                    recentPairs = summary?.let { it.tried + it.listened + it.heardUnmeasured }.orEmpty(),
+                )
+            }
         }
     }
 

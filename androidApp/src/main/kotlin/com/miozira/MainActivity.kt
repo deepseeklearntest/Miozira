@@ -122,7 +122,7 @@ class MainActivity : ComponentActivity() {
             ),
         )
         parentController = ParentController(
-            dataSource = RoomParentDataSource(database.contentDao()),
+            dataSource = RoomParentDataSource(database.interactionDao()),
             transferService = RealWorldTransferService(
                 RoomRealWorldObservationRepository(database.realWorldObservationDao()),
             ),

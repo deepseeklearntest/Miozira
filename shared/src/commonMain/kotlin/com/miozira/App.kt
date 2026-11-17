@@ -147,11 +147,11 @@ fun MioziraApp(
                         ParentSummaryScreen(
                             modifier = Modifier.weight(1f),
                             state = state,
-                            onRecognized = { scope.launch { parentController.recordRecognition(it.pairId) } },
-                            onUsed = { scope.launch { parentController.recordUse(it.pairId) } },
-                            onFamilyVoice = familyRecordingController?.let { { activity ->
-                                familyPair = activity.pairId
-                                scope.launch { it.load(activity.pairId) }
+                            onRecognized = { scope.launch { parentController.recordRecognition(it) } },
+                            onUsed = { scope.launch { parentController.recordUse(it) } },
+                            onFamilyVoice = familyRecordingController?.let { { pairId ->
+                                familyPair = pairId
+                                scope.launch { it.load(pairId) }
                             } },
                         )
                     }
