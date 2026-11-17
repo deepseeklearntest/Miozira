@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class AdaptiveSelectionTest {
     private val engine = AdaptiveEngine()
@@ -84,6 +85,24 @@ class AdaptiveSelectionTest {
         val decision = assertIs<AppResult.Success<SelectionDecision>>(result).value
         assertEquals("familiar:en", decision.pairId.value)
         assertEquals("EASY_OPENER", decision.reason)
+    }
+
+    @Test
+    fun freshInstall_sixTurnsInABlock_neverRepeatWithinTwo_andStayWithinTheNewWordCap() = runBlocking {
+        val all = listOf("apple", "ball", "cup", "hand", "nose", "cat", "car", "water").map { candidate(it, LearningState.NEW) }
+        val planner = AdaptivePairPlanner({ all }, nowMs = { now })
+        val chosen = mutableListOf<PairId>()
+        var newInBlock = 0
+        repeat(6) {
+            val selection = planner.selectNext(
+                PairRequest(all.map { it.pair }, chosen.takeLast(2), LanguageId("en"), easy = false, newPairsInBlock = newInBlock),
+            )!!
+            assertTrue(selection.pair.pairId !in chosen.takeLast(2), "repeated within two turns: $chosen + ${selection.pair.pairId}")
+            if (selection.reason == "NEW_INTRODUCTION") newInBlock++
+            chosen += selection.pair.pairId
+        }
+        assertTrue(newInBlock <= AdaptivePolicy().maxNewPairsPerBlock, "new introductions: $newInBlock")
+        assertTrue(chosen.toSet().size <= AdaptivePolicy().maxNewPairsPerBlock, "distinct new words shown: ${chosen.toSet()}")
     }
 
     private fun context(vararg candidates: ScheduledPairCandidate) = AdaptiveSelectionContext(

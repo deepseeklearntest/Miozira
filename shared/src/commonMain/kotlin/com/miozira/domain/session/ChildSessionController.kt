@@ -45,7 +45,7 @@ class ChildSessionController(
             is AppResult.Failure -> return result
             is AppResult.Success -> result.value
         }
-        // Temporary bridge until the controller drives the full step list (plan Task 6 rewrites this).
+        // Temporary bridge until the controller drives the full step list (plan Task 7 rewrites this).
         val firstStep = SessionStep.Word(SessionPart.WARM_UP, session.startingLanguage ?: LanguageId("en"), easy = true)
         return when (val result = engine.beginInteraction(firstStep, allowSpeakingInvite = speakingInviteEnabled)) {
             is AppResult.Failure -> result

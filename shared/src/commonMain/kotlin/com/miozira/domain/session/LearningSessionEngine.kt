@@ -8,6 +8,7 @@ import com.miozira.core.model.SessionId
 import com.miozira.core.result.AppError
 import com.miozira.core.result.AppResult
 import com.miozira.core.time.Clock
+import com.miozira.domain.adaptive.AdaptivePolicy
 
 data class SessionSnapshot(
     val sessionId: SessionId,
@@ -64,6 +65,7 @@ class LearningSessionEngine(
     private val clock: Clock,
     private val idGenerator: (String) -> String = { prefix -> "$prefix-${clock.nowMs()}" },
     private val planner: PairPlanner? = null,
+    private val recentPairWindow: Int = AdaptivePolicy().recentPairWindow,
 ) {
     private var session: SessionSnapshot? = null
     private val history = mutableListOf<PairId>()
@@ -95,7 +97,7 @@ class LearningSessionEngine(
         }
         val request = PairRequest(
             available = pairs,
-            recentPairIds = history.takeLast(RECENT_PAIR_WINDOW),
+            recentPairIds = history.takeLast(recentPairWindow),
             language = step.language,
             easy = step.easy,
             newPairsInBlock = newPairsInBlock,
@@ -138,8 +140,6 @@ class LearningSessionEngine(
     }
 
     private companion object {
-        /** A pair is not offered again while it is one of the last this many turns. */
-        const val RECENT_PAIR_WINDOW = 2
         const val NEW_INTRODUCTION = "NEW_INTRODUCTION"
     }
 }

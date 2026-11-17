@@ -33,7 +33,7 @@ class AdaptiveEngine(
     private val policy: AdaptivePolicy = AdaptivePolicy(),
 ) {
     fun selectNext(context: AdaptiveSelectionContext): AppResult<SelectionDecision> {
-        val recent = context.recentPairIds.takeLast(2).toSet()
+        val recent = context.recentPairIds.takeLast(policy.recentPairWindow).toSet()
         val base = context.candidates.filter { candidate ->
             candidate.state.state != LearningState.RESTING &&
                 candidate.state.restUntilMs?.let { it > context.nowMs } != true &&
@@ -41,9 +41,16 @@ class AdaptiveEngine(
                 !(candidate.state.state == LearningState.NEW && context.newPairsSelected >= policy.maxNewPairsPerBlock)
         }
         if (base.isEmpty()) {
-            val fallback = context.candidates.firstOrNull {
-                it.state.state != LearningState.RESTING && it.state.restUntilMs?.let { until -> until > context.nowMs } != true
-            } ?: return AppResult.Failure(AppError.Unavailable("No eligible pair remains"))
+            // Same pairId order as the ranked path, so once the new-word cap is reached the
+            // block cycles through the words it already introduced instead of adding more.
+            val fallback = context.candidates
+                .filter {
+                    it.state.state != LearningState.RESTING &&
+                        it.state.restUntilMs?.let { until -> until > context.nowMs } != true &&
+                        it.pair.pairId !in recent
+                }
+                .sortedWith(compareBy<ScheduledPairCandidate> { it.state.state == LearningState.NEW }.thenBy { it.pair.pairId.value })
+                .firstOrNull() ?: return AppResult.Failure(AppError.Unavailable("No eligible pair remains"))
             return AppResult.Success(SelectionDecision(fallback.pair.pairId, "INSUFFICIENT_ALTERNATIVES"))
         }
 
