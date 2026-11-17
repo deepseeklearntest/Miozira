@@ -222,7 +222,7 @@ Decisions:
 - With no planner, the fallback is the first pair in the requested language that is not in `recentPairIds`.
 - SQL: `UPDATE session SET ended_at_ms = :endedAtMs, completion_reason = :reason WHERE session_id = :sessionId AND ended_at_ms IS NULL`; `SELECT COUNT(*) FROM session WHERE completion_reason = 'COMPLETED'`; `SELECT MAX(ended_at_ms) FROM session WHERE completion_reason = 'COMPLETED'`. No schema change, so the Room version stays 1.
 
-- [ ] **Step 1: Write the failing engine tests** (reuse the `RecordingPersistence` pattern from `ChildSessionControllerTest`, adding `ended: MutableList<Pair<SessionId, SessionEndReason>>`):
+- [x] **Step 1: Write the failing engine tests** (reuse the `RecordingPersistence` pattern from `ChildSessionControllerTest`, adding `ended: MutableList<Pair<SessionId, SessionEndReason>>`):
 
 ```kotlin
 @Test fun wordsComeFromTheRequestedLanguage() // begin 3 Word(FIRST_LANGUAGE, ta) steps -> every plan.pair.languageId == ta
@@ -234,11 +234,11 @@ Decisions:
 
 and in `AdaptiveSelectionTest`: change the expectation for the new-pair cap from 2 to 3 and add `candidatesOutsideTheRequestedLanguage_areNeverChosen`.
 
-- [ ] **Step 2: Run** `./gradlew :shared:testDebugUnitTest` — expect FAIL (compile errors on the new signatures).
-- [ ] **Step 3: Implement** the engine, planner and policy changes; update the callers in `AdaptiveSessionIntegrationTest` and `MainActivity` to the new `PairPlanner` signature so the build compiles.
-- [ ] **Step 4: Write the Room test** `SessionEndTest`: create a session, end it twice with `COMPLETED` (second call changes nothing and still returns Success), assert `completedSessionCount() == 1` and `lastCompletedAtMs()` equals the first end time; a session closed by `RoomRecoveryService` must not be counted as completed.
-- [ ] **Step 5: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS; `./gradlew :shared:connectedDebugAndroidTest` — expect PASS (if no emulator is available, run `:shared:compileDebugAndroidTestKotlin` and say so in the commit body).
-- [ ] **Step 6: Commit** `feat: pick words per language block and end sessions`.
+- [x] **Step 2: Run** `./gradlew :shared:testDebugUnitTest` — expect FAIL (compile errors on the new signatures).
+- [x] **Step 3: Implement** the engine, planner and policy changes; update the callers in `AdaptiveSessionIntegrationTest` and `MainActivity` to the new `PairPlanner` signature so the build compiles.
+- [x] **Step 4: Write the Room test** `SessionEndTest`: create a session, end it twice with `COMPLETED` (second call changes nothing and still returns Success), assert `completedSessionCount() == 1` and `lastCompletedAtMs()` equals the first end time; a session closed by `RoomRecoveryService` must not be counted as completed.
+- [ ] **Step 5: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS; `./gradlew :shared:connectedDebugAndroidTest` — expect PASS (if no emulator is available, run `:shared:compileDebugAndroidTestKotlin` and say so in the commit body). — NOT DONE: connected Room run needs a device or emulator, none was attached; the unit run and instrumented compile are done.
+- [x] **Step 6: Commit** `feat: pick words per language block and end sessions`.
 
 ---
 
