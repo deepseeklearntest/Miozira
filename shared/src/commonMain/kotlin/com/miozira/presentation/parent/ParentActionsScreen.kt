@@ -53,7 +53,13 @@ fun ParentActionsScreen(
             Button(onClick = onRequestReset) { Text("Erase everything on this tablet") }
         }
         state.notice?.let { notice ->
-            Text(if (notice == ParentActionsState.Notice.RESET_COMPLETE) "Local data reset." else "Reset could not finish safely.")
+            Text(
+                when (notice) {
+                    ParentActionsState.Notice.RESET_COMPLETE -> "Local data reset."
+                    ParentActionsState.Notice.ERROR -> "Reset could not finish safely."
+                    ParentActionsState.Notice.LISTENING_ERROR -> "Could not change this yet."
+                },
+            )
         }
         TextButton(onClick = onBack) { Text("Back") }
     }

@@ -19,7 +19,8 @@ data class ParentActionsState(
     val listeningOn: Boolean = false,
     val microphoneBlocked: Boolean = false,
 ) {
-    enum class Notice { RESET_COMPLETE, ERROR }
+    /** ERROR is a failed reset; LISTENING_ERROR is a failed save of the listening switch. */
+    enum class Notice { RESET_COMPLETE, ERROR, LISTENING_ERROR }
 }
 
 class ParentActionsController(
@@ -62,7 +63,7 @@ class ParentActionsController(
                 microphoneBlocked = if (on) false else _state.value.microphoneBlocked,
             )
         } else {
-            _state.value = _state.value.copy(notice = ParentActionsState.Notice.ERROR)
+            _state.value = _state.value.copy(notice = ParentActionsState.Notice.LISTENING_ERROR)
         }
     }
 

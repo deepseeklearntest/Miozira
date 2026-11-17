@@ -1,6 +1,7 @@
 package com.miozira.presentation.parent
 
 import com.miozira.content.LanguageId
+import com.miozira.content.PrototypeContentRepository
 import com.miozira.core.model.PairId
 import com.miozira.core.result.AppError
 import com.miozira.core.result.AppResult
@@ -32,9 +33,12 @@ class ParentControllerTest {
         assertEquals("Tried saying: apple (Tamil)", controller.state.value.sessionLines.last())
     }
 
-    private fun controllerWith(evidence: AppResult<List<PairEvidence>>) = ParentController(
+    private fun controllerWith(
+        evidence: AppResult<List<PairEvidence>>,
+        session: AppResult<SessionSummary?> = AppResult.Success(null),
+    ) = ParentController(
         object : ParentDataSource {
-            override suspend fun mostRecentSession() = AppResult.Success<SessionSummary?>(null)
+            override suspend fun mostRecentSession() = session
             override suspend fun pairEvidence() = evidence
         },
         RealWorldTransferService(RecordingRepository()), { 20L }, { "o" },
@@ -53,7 +57,18 @@ class ParentControllerTest {
         val controller = controllerWith(AppResult.Failure(AppError.Unexpected("x")))
         controller.refresh()
         assertTrue(controller.state.value.languageLines.isEmpty())
-        assertEquals(ParentUiState.Notice.ERROR, controller.state.value.notice)
+        assertEquals(ParentUiState.Notice.READ_ERROR, controller.state.value.notice)
+    }
+
+    @Test
+    fun refresh_whenSessionReadFails_doesNotShowTheFirstUseSentence() = runBlocking {
+        val controller = controllerWith(AppResult.Success(emptyList()), AppResult.Failure(AppError.Unexpected("x")))
+        controller.refresh()
+        val state = controller.state.value
+        assertEquals(listOf("Miozira could not read his sessions just now."), state.sessionLines)
+        assertTrue(describeSession(null, PrototypeContentRepository.languageNames).none { it in state.sessionLines })
+        assertEquals(ParentUiState.Notice.READ_ERROR, state.notice)
+        assertEquals(2, state.languageLines.size)
     }
 
     private class RecordingRepository : RealWorldObservationRepository {

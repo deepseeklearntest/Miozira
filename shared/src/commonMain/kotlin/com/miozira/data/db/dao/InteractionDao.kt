@@ -23,6 +23,13 @@ interface InteractionDao {
     @Query("SELECT * FROM pair_learning_state")
     suspend fun allPairStates(): List<PairLearningStateEntity>
 
+    /** Pairs with at least one measured listening result (attempt or no attempt). */
+    @Query(
+        "SELECT DISTINCT pair_id FROM interaction " +
+            "WHERE attempt_state IN ('ATTEMPT_DETECTED', 'NO_ATTEMPT_DETECTED')",
+    )
+    suspend fun measuredPairIds(): List<String>
+
     @Query("SELECT * FROM pair_learning_state WHERE pair_id = :pairId")
     suspend fun findPairState(pairId: String): PairLearningStateEntity?
 

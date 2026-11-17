@@ -23,9 +23,15 @@ class RoomParentDataSource(
     }
 
     override suspend fun pairEvidence(): AppResult<List<PairEvidence>> = try {
+        val measured = interactionDao.measuredPairIds().toSet()
         AppResult.Success(
             interactionDao.allPairStates().map {
-                PairEvidence(PairId(it.pairId), it.validExposureCount > 0, it.attemptDetectedCount > 0)
+                PairEvidence(
+                    PairId(it.pairId),
+                    heard = it.validExposureCount > 0,
+                    tried = it.attemptDetectedCount > 0,
+                    measured = it.pairId in measured,
+                )
             },
         )
     } catch (error: Exception) {

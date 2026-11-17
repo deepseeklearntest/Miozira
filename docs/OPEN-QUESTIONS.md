@@ -87,6 +87,37 @@ This document tracks unresolved product, content, engineering, and UX questions 
 - **Impact:** The wording is unreviewed by the parent or a copy owner.
 - **Required:** Review and approve the wording, or supply the intended text.
 
+### OQ-013: Parent-Area Dependencies on the Child-Session Plan
+- **Referenced in:** `docs/superpowers/plans/2026-11-17-parent-area.md` (Tasks 1, 4, 7), `docs/superpowers/specs/2026-11-16-ui-ux-design.md` §10.1, `shared/src/commonMain/kotlin/com/miozira/presentation/parent/ParentActionsController.kt`, `shared/src/commonMain/kotlin/com/miozira/presentation/child/ChildSessionScreen.kt`, `shared/src/commonMain/kotlin/com/miozira/content/ContentRepository.kt`
+- **Context:** The parent area was built before the child session state machine. Found in the final branch review on 2026-11-17:
+  - **(a) The listening switch has no effect yet.** `isSpeechAttemptDetectionEnabled` is read only by `ParentActionsController.load()`; no production code calls `ChildSessionController.completeInvitation` or `decideAttemptMeasurement`. The Microphone and privacy page still says "When listening is on, the microphone only notices…", which describes intended behaviour, not current behaviour.
+  - **(b) The parent corner is missing on the null state and the quiet screen.** `ChildSessionScreen` returns early when the session state is null (the corner is never drawn), and the quiet screen does not exist yet. Spec §10.1 requires the corner on every child screen, the quiet screen included.
+  - **(c) The extra-session row and `startExtraSession` were left out** (parent-area ruling R4), and the `languageNames` parameter added to the parent sentences must be merged with the child-session plan's content changes (rulings R1, R11).
+- **Impact:** A parent can turn listening on with no change in the child session; the parent area cannot be opened from a screen with no session state; no extra session can be started.
+- **Required:** The child-session plan wires the setting into measurement, places the corner on every child screen including the quiet screen, adds the extra-session row with its confirmation, and merges `languageNames`.
+
+### OQ-014: Three Docs Still Describe the Removed Suggestion Code
+- **Referenced in:** `docs/03-engineering/api.md` (`getRealWorldSuggestions`, `chooseSuggestion`, §32 `SuggestionContext`), `docs/03-engineering/architecture.md` (`getRealWorldSuggestions`, `RealWorldSuggestion`), `docs/01-learning/real-world-transfer.md` (`RealWorldSuggestion`)
+- **Context:** Parent-area Task 5 removed `chooseSuggestion`, `RealWorldSuggestion` and `SuggestionContext` from the code (ruling R9) and replaced them with the fixed daily-moments table. The three docs were not rewritten in that plan.
+- **Impact:** A reader of these docs expects an API that no longer exists.
+- **Required:** A docs pass updates the three files to describe `dailyMoments` and `wordsForToday`, or records why the suggestion service should return.
+
+### OQ-015: Parent Data Source Imports Presentation Types
+- **Referenced in:** `shared/src/commonMain/kotlin/com/miozira/data/repository/RoomParentDataSource.kt`, `shared/src/commonMain/kotlin/com/miozira/presentation/parent/ParentSentences.kt`, `docs/03-engineering/architecture.md` (dependency direction)
+- **Context:** `RoomParentDataSource` (data layer) imports `PairEvidence`, `ParentDataSource`, `SessionSummary` and `summarize()` from `presentation.parent`. The grouping rule in `summarize()` is domain logic living in presentation. Moving these types to `domain` was deferred in the final branch review (2026-11-17) as too large for the fix wave.
+- **Impact:** The data layer depends on presentation, the reverse of the stated direction. The child-session plan will merge against this shape.
+- **Required:** Move `SessionSummary`, `PairEvidence`, `ParentDataSource` and `summarize()` to a domain package in a separate change.
+
+### OQ-016: Parent-Area Wording Added in the Final Review Needs Copy Review
+- **Referenced in:** `shared/src/commonMain/kotlin/com/miozira/presentation/parent/ParentSentences.kt` (`describeLanguage`), `ParentController.kt`, `ParentSummaryScreen.kt`, `ParentActionsScreen.kt`
+- **Context:** The final branch review (2026-11-17) found the language page said "he has not tried" for words that were never measured (listening off). New sentences were written:
+  - "<Language> — he has been hearing his <Language> words." (heard, nothing measured; unmeasured words are also left out of "Still just listening")
+  - "Miozira could not read his sessions just now." (session read failed)
+  - "Some of this page could not be shown. Try opening it again later." (any read failed)
+  - "Could not change this yet." (listening switch could not be saved)
+- **Impact:** The wording is unreviewed by the parent or a copy owner.
+- **Required:** Review and approve the wording, or supply the intended text.
+
 ---
 
 ## 3. Decision Process

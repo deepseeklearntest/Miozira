@@ -37,6 +37,7 @@ import com.miozira.services.audio.AndroidAudioService
 import com.miozira.services.permissions.AndroidPermissionService
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import java.util.UUID
 import androidx.datastore.preferences.preferencesDataStore
@@ -195,6 +196,11 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         parentAccess.lock()
         if (::childSessionController.isInitialized) childSessionController.onBackground()
+        // security.md §19: stop family recording on background. UNDISPATCHED starts the cancel
+        // inside onStop, so an onDestroy that cancels serviceScope cannot drop it.
+        if (::familyRecordingController.isInitialized) {
+            serviceScope.launch(start = CoroutineStart.UNDISPATCHED) { familyRecordingController.onBackground() }
+        }
         super.onStop()
     }
 

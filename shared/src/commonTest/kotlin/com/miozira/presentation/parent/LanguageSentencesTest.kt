@@ -13,12 +13,29 @@ class LanguageSentencesTest {
     private val ta = LanguageId("ta")
     private val concepts = listOf("apple", "ball", "cup", "hand", "nose", "cat", "car", "water")
 
-    private fun ev(vararg states: Pair<String, Pair<Boolean, Boolean>>) =
-        states.map { PairEvidence(PairId("${it.first}:ta"), it.second.first, it.second.second) }
+    private data class S(val heard: Boolean, val tried: Boolean, val measured: Boolean)
 
-    private val heardTried = true to true
-    private val heardOnly = true to false
-    private val unheard = false to false
+    private fun ev(vararg states: Pair<String, S>) =
+        states.map { PairEvidence(PairId("${it.first}:ta"), it.second.heard, it.second.tried, it.second.measured) }
+
+    private val heardTried = S(heard = true, tried = true, measured = true)
+    /** Listening was on and he did not try. */
+    private val heardOnly = S(heard = true, tried = false, measured = true)
+    /** Listening was off: heard, nothing measured. */
+    private val heardUnmeasured = S(heard = true, tried = false, measured = false)
+    private val unheard = S(heard = false, tried = false, measured = false)
+
+    @Test fun unmeasuredEvidence_neverSaysNotTriedOrStillListening() {
+        val all = ev(*concepts.map { it to heardUnmeasured }.toTypedArray())
+        assertEquals("Tamil — he has been hearing his Tamil words.", describeLanguage(ta, all, names))
+        val mixed = describeLanguage(ta, ev("apple" to heardTried, "nose" to heardOnly, "cat" to heardUnmeasured), names)
+        assertEquals("Tamil — he tries some of his Tamil words. Still just listening: nose.", mixed)
+        for (line in listOf(describeLanguage(ta, all, names), mixed)) {
+            assertFalse(line.contains("cat"), line)
+            assertFalse(line.contains("not tried"), line)
+        }
+        assertFalse(describeLanguage(ta, all, names).contains("Still just listening"))
+    }
 
     @Test fun languageNeverHeard_isNotMetYet() {
         assertEquals("Tamil — not met yet.", describeLanguage(ta, ev("apple" to unheard), names))
@@ -54,6 +71,7 @@ class LanguageSentencesTest {
         val cases = listOf(
             emptyList(),
             ev("apple" to heardOnly),
+            ev("apple" to heardUnmeasured),
             ev("apple" to heardTried, "ball" to heardOnly),
             ev(*concepts.map { it to heardTried }.toTypedArray()),
         )

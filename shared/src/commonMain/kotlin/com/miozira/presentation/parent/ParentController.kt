@@ -17,7 +17,8 @@ data class ParentUiState(
     val languageLines: List<String> = emptyList(),
     val notice: Notice? = null,
 ) {
-    enum class Notice { SAVED, ERROR }
+    /** SAVED and ERROR follow a save; READ_ERROR follows a failed read of local history. */
+    enum class Notice { SAVED, ERROR, READ_ERROR }
 }
 
 interface ParentDataSource {
@@ -35,23 +36,33 @@ class ParentController(
     val state: StateFlow<ParentUiState> = _state.asStateFlow()
 
     suspend fun refresh() {
+        val names = PrototypeContentRepository.languageNames
         val evidence = dataSource.pairEvidence()
+        val languageLines = (evidence as? AppResult.Success)?.value
+            ?.let { rows -> languageOrder.map { describeLanguage(it, rows, names) } }
+            .orEmpty()
+        val readError = ParentUiState.Notice.READ_ERROR
         _state.value = when (val result = dataSource.mostRecentSession()) {
-            is AppResult.Failure -> ParentUiState(notice = ParentUiState.Notice.ERROR)
+            is AppResult.Failure -> ParentUiState(
+                sessionLines = listOf(SESSION_READ_FAILED),
+                languageLines = languageLines,
+                notice = readError,
+            )
             is AppResult.Success -> {
                 val summary = result.value
-                val names = PrototypeContentRepository.languageNames
                 ParentUiState(
-                    sessionLines = describeSession(summary, PrototypeContentRepository.languageNames),
-                    wordsForToday = wordsForToday(summary, PrototypeContentRepository.languageNames),
-                    languageLines = (evidence as? AppResult.Success)?.value
-                        ?.let { rows -> languageOrder.map { describeLanguage(it, rows, names) } }
-                        .orEmpty(),
+                    sessionLines = describeSession(summary, names),
+                    wordsForToday = wordsForToday(summary, names),
+                    languageLines = languageLines,
                     recentPairs = summary?.let { it.tried + it.listened + it.heardUnmeasured }.orEmpty(),
-                    notice = if (evidence is AppResult.Failure) ParentUiState.Notice.ERROR else null,
+                    notice = if (evidence is AppResult.Failure) readError else null,
                 )
             }
         }
+    }
+
+    companion object {
+        const val SESSION_READ_FAILED = "Miozira could not read his sessions just now."
     }
 
     suspend fun recordRecognition(pairId: PairId) = record(pairId, RealWorldObservationType.RECOGNIZED_OUTSIDE_APP)

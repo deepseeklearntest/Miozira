@@ -32,6 +32,9 @@ fun ParentSummaryScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item { Text("Miozira for parents", style = MaterialTheme.typography.headlineSmall) }
+        if (state.notice == ParentUiState.Notice.READ_ERROR) {
+            item { Text("Some of this page could not be shown. Try opening it again later.") }
+        }
         if (state.wordsForToday.isNotEmpty()) {
             item {
                 ParentCard {
@@ -55,8 +58,10 @@ fun ParentSummaryScreen(
                             Button(onClick = { open(pairId) }) { Text("Family voice") }
                         }
                     }
-                    state.notice?.let {
-                        Text(if (it == ParentUiState.Notice.SAVED) "Saved." else "Could not save this yet.")
+                    when (state.notice) {
+                        ParentUiState.Notice.SAVED -> Text("Saved.")
+                        ParentUiState.Notice.ERROR -> Text("Could not save this yet.")
+                        ParentUiState.Notice.READ_ERROR, null -> Unit
                     }
                 }
             }

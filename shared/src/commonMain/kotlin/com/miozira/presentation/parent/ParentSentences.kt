@@ -3,6 +3,7 @@ package com.miozira.presentation.parent
 import com.miozira.content.LanguageId
 import com.miozira.content.PrototypeContentRepository
 import com.miozira.content.dailyMoments
+import com.miozira.core.model.AttemptState
 import com.miozira.core.model.PairId
 
 /** The most recent session in which at least one word was heard, grouped for the parent. */
@@ -20,8 +21,10 @@ data class SessionSummary(
 internal fun summarize(rows: List<Pair<String, String>>, languageOf: Map<String, LanguageId>): SessionSummary? {
     val byPair = rows.filter { it.first in languageOf }.groupBy({ it.first }, { it.second })
     if (byPair.isEmpty()) return null
-    val tried = byPair.filterValues { "ATTEMPT_DETECTED" in it }.keys
-    val listened = byPair.filterValues { "ATTEMPT_DETECTED" !in it && "NO_ATTEMPT_DETECTED" in it }.keys
+    val tried = byPair.filterValues { AttemptState.ATTEMPT_DETECTED.name in it }.keys
+    val listened = byPair.filterValues {
+        AttemptState.ATTEMPT_DETECTED.name !in it && AttemptState.NO_ATTEMPT_DETECTED.name in it
+    }.keys
     val unmeasured = byPair.keys - tried - listened
     return SessionSummary(
         languages = byPair.keys.map { languageOf.getValue(it) }.distinct(),
@@ -67,8 +70,11 @@ fun wordsForToday(summary: SessionSummary?, languageNames: Map<LanguageId, Strin
         .map { it.second }
 }
 
-/** What the child has done with one pair: heard it (valid exposure) and tried saying it (attempt detected). */
-data class PairEvidence(val pairId: PairId, val heard: Boolean, val tried: Boolean)
+/**
+ * What the child has done with one pair: heard it (valid exposure), tried saying it (attempt detected),
+ * and whether listening was ever measured for it (an attempt or no-attempt result exists).
+ */
+data class PairEvidence(val pairId: PairId, val heard: Boolean, val tried: Boolean, val measured: Boolean)
 
 /** Languages in the order the content lists them. */
 val languageOrder: List<LanguageId> = PrototypeContentRepository.allPairs().map { it.languageId }.distinct()
@@ -83,14 +89,17 @@ fun describeLanguage(
     val pairs = PrototypeContentRepository.allPairs().filter { it.languageId == languageId }.associateBy { it.pairId }
     val heard = evidence.filter { it.heard && it.pairId in pairs }
     if (heard.isEmpty()) return "$name — not met yet."
-    val tried = heard.count { it.tried }
+    // Listening off leaves pairs unmeasured: say nothing about trying for them.
+    val measured = heard.filter { it.measured || it.tried }
+    if (measured.isEmpty()) return "$name — he has been hearing his $name words."
+    val tried = measured.count { it.tried }
     val head = when {
         tried == 0 -> "$name — he has not tried saying his $name words yet."
-        tried * 3 >= heard.size * 2 -> "$name — he tries most of his $name words."
+        tried * 3 >= measured.size * 2 -> "$name — he tries most of his $name words."
         else -> "$name — he tries some of his $name words."
     }
     val base = PrototypeContentRepository.baseLanguageId
-    val listening = heard.filter { !it.tried }.map { e ->
+    val listening = measured.filter { !it.tried }.map { e ->
         val concept = pairs.getValue(e.pairId).conceptId
         PrototypeContentRepository.allPairs().firstOrNull { it.conceptId == concept && it.languageId == base }?.spokenForm
             ?: concept.value
