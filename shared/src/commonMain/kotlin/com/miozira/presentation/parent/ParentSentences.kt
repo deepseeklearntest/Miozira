@@ -12,6 +12,24 @@ data class SessionSummary(
     val heardUnmeasured: List<PairId>,
 )
 
+/**
+ * Groups heard rows (pairId to attemptState, in session order) for the parent.
+ * Any ATTEMPT_DETECTED is Tried; else any NO_ATTEMPT_DETECTED is Listened; else Heard.
+ */
+internal fun summarize(rows: List<Pair<String, String>>, languageOf: Map<String, LanguageId>): SessionSummary? {
+    val byPair = rows.filter { it.first in languageOf }.groupBy({ it.first }, { it.second })
+    if (byPair.isEmpty()) return null
+    val tried = byPair.filterValues { "ATTEMPT_DETECTED" in it }.keys
+    val listened = byPair.filterValues { "ATTEMPT_DETECTED" !in it && "NO_ATTEMPT_DETECTED" in it }.keys
+    val unmeasured = byPair.keys - tried - listened
+    return SessionSummary(
+        languages = byPair.keys.map { languageOf.getValue(it) }.distinct(),
+        tried = tried.map(::PairId),
+        listened = listened.map(::PairId),
+        heardUnmeasured = unmeasured.map(::PairId),
+    )
+}
+
 /** "apple" for the base language, "water (Tamil)" otherwise. */
 fun wordLabel(pairId: PairId, languageNames: Map<LanguageId, String>): String {
     val pair = PrototypeContentRepository.allPairs().firstOrNull { it.pairId == pairId }

@@ -56,10 +56,33 @@ class ParentSentencesTest {
         assertTrue(lines.none { it.startsWith("Listened without speaking") })
     }
 
+    private val languageOf = mapOf("apple:en" to en, "ball:en" to en, "cup:ta" to ta)
+
     @Test fun aWordTriedOnceAndSilentOnce_countsAsTried() {
-        // The data source groups by pair: any ATTEMPT_DETECTED puts the pair in tried only.
-        val lines = describeSession(SessionSummary(listOf(en), listOf(p("apple:en")), emptyList(), emptyList()), names)
-        assertEquals(listOf("Most recent session: English", "Tried saying: apple"), lines)
+        val s = summarize(listOf("apple:en" to "ATTEMPT_DETECTED", "apple:en" to "NO_ATTEMPT_DETECTED"), languageOf)!!
+        assertEquals(listOf(p("apple:en")), s.tried)
+        assertEquals(emptyList(), s.listened)
+        assertEquals(emptyList(), s.heardUnmeasured)
+        assertEquals(listOf(en), s.languages)
+    }
+
+    @Test fun aSilentOnlyWord_isListened() {
+        val s = summarize(listOf("ball:en" to "NO_ATTEMPT_DETECTED", "ball:en" to "NOT_MEASURED"), languageOf)!!
+        assertEquals(emptyList(), s.tried)
+        assertEquals(listOf(p("ball:en")), s.listened)
+        assertEquals(emptyList(), s.heardUnmeasured)
+    }
+
+    @Test fun aMicrophoneUnavailableWord_isHeardUnmeasured() {
+        val s = summarize(listOf("apple:en" to "NO_ATTEMPT_DETECTED", "cup:ta" to "MICROPHONE_UNAVAILABLE"), languageOf)!!
+        assertEquals(emptyList(), s.tried)
+        assertEquals(listOf(p("apple:en")), s.listened)
+        assertEquals(listOf(p("cup:ta")), s.heardUnmeasured)
+        assertEquals(listOf(en, ta), s.languages)
+    }
+
+    @Test fun emptyInput_givesNull() {
+        assertEquals(null, summarize(emptyList(), languageOf))
     }
 
     @Test fun emptyGroups_produceNoLine() {
