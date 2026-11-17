@@ -20,7 +20,9 @@ import com.miozira.services.microphone.SpeechAttemptHandle
 import com.miozira.services.microphone.SpeechAttemptListener
 import com.miozira.services.microphone.SpeechAttemptRequest
 import com.miozira.services.permissions.AttemptMeasurementDecision
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -332,6 +334,27 @@ class ChildSessionControllerTest {
     }
 
     @Test
+    fun backgroundWhileTheNextWordIsBeingChosen_resumesThatStep_withoutEndingTheSession() = runBlocking<Unit> {
+        val h = Harness()
+        h.controller.open()
+        h.controller.tap()
+        h.audio.finishWord()
+        h.pauses.finish(T.invitePauseMs)
+        h.pauses.finish(T.turnMs)
+        h.persistence.holdNextInteraction = CompletableDeferred()
+        h.pauses.finish(T.afterTurnMs)
+        h.controller.onBackground()
+        assertTrue(h.persistence.ended.isEmpty())
+        assertEquals(1, h.persistence.interactions.size)
+        h.controller.open()
+        assertTrue(h.persistence.ended.isEmpty())
+        assertEquals(2, h.persistence.interactions.size)
+        assertEquals(en, h.persistence.interactions.last().pair.languageId)
+        assertEquals(InteractionPhase.READY, h.word().phase)
+        assertEquals(1, h.persistence.sessions.size)
+    }
+
+    @Test
     fun staleAudioCallbacks_doNotCommitExposureForCurrentInteraction() = runBlocking<Unit> {
         val h = Harness()
         h.controller.open()
@@ -434,7 +457,13 @@ class ChildSessionControllerTest {
             sessions += snapshot.sessionId
             return AppResult.Success(Unit)
         }
+        // Set to hold the next createInteraction; like Room, a cancelled write comes back as a Failure.
+        var holdNextInteraction: CompletableDeferred<Unit>? = null
         override suspend fun createInteraction(plan: InteractionPlan): AppResult<Unit> {
+            holdNextInteraction?.let { gate ->
+                holdNextInteraction = null
+                try { gate.await() } catch (e: CancellationException) { return AppResult.Failure(AppError.Unavailable("cancelled")) }
+            }
             interactions += plan
             return AppResult.Success(Unit)
         }
@@ -454,7 +483,9 @@ class ChildSessionControllerTest {
             completions += interactionId to reason
             return AppResult.Success(Unit)
         }
+        // Suspends like a Room write: a cancelled caller records nothing and gets a Failure.
         override suspend fun endSession(sessionId: SessionId, reason: SessionEndReason, endedAtMs: Long): AppResult<Unit> {
+            try { yield() } catch (e: CancellationException) { return AppResult.Failure(AppError.Unavailable("cancelled")) }
             ended += sessionId to reason
             endedAt += endedAtMs
             return AppResult.Success(Unit)

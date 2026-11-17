@@ -8,6 +8,7 @@ import com.miozira.core.model.InteractionId
 import com.miozira.core.result.AppResult
 import com.miozira.core.time.Clock
 import com.miozira.services.audio.AudioAssetRef
+import com.miozira.services.audio.BUNDLED_RESOURCES_ROOT
 import com.miozira.services.audio.AudioError
 import com.miozira.services.audio.AudioPlaybackListener
 import com.miozira.services.audio.AudioService
@@ -21,6 +22,10 @@ import com.miozira.services.microphone.SpeechAttemptRequest
 import com.miozira.services.permissions.AttemptMeasurementDecision
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -156,7 +161,13 @@ class ChildSessionController(
                 // The plan records that no spoken invite was given (product step 4 adds it); the
                 // reducer flag below only gates the silent turn (INVITING -> LISTENING).
                 val plan = (engine.beginInteraction(step, allowSpeakingInvite = false) as? AppResult.Success)?.value
-                    ?: return endSession(SessionEndReason.CONTENT_ERROR)
+                    ?: run {
+                        // A background cancels this step mid-write; resume() runs it again. Only a
+                        // real failure (no eligible pair, storage error) ends the session.
+                        currentCoroutineContext().ensureActive()
+                        if (paused) return
+                        return endSession(SessionEndReason.CONTENT_ERROR)
+                    }
                 interaction = InteractionState(
                     phase = InteractionPhase.SESSION_STARTING,
                     sessionId = plan.sessionId,
@@ -173,15 +184,22 @@ class ChildSessionController(
         }
     }
 
+    // Often runs inside the timer job (runStep after the last word), so it must not cancel that
+    // job, and the end write runs NonCancellable so a background cannot drop it either.
     private suspend fun endSession(reason: SessionEndReason) {
-        cancelTimers()
+        val running = currentCoroutineContext()[Job]
+        if (timer !== running) timer?.cancel()
+        nodTimer?.cancel()
+        nod = false
         stopListening()
         interaction = null
         pair = null
         sessionActive = false
         paused = false
-        engine.endSession(reason)
-        _state.value = ChildScreenState.Quiet
+        withContext(NonCancellable) {
+            engine.endSession(reason)
+            _state.value = ChildScreenState.Quiet
+        }
     }
 
     private fun dispatch(event: InteractionEvent) {
@@ -252,7 +270,7 @@ class ChildSessionController(
                 sessionId = state.sessionId,
                 interactionId = state.interactionId,
                 pairId = word.pairId,
-                assetRef = AudioAssetRef(word.audio.logicalId, BUNDLED_RESOURCES + word.audio.assetPath),
+                assetRef = AudioAssetRef(word.audio.logicalId, BUNDLED_RESOURCES_ROOT + word.audio.assetPath),
             ),
             audioListener,
         )
@@ -376,11 +394,6 @@ class ChildSessionController(
         override fun onFailed(handle: PlaybackHandle?, error: AudioError) {
             if (handle == null || isCurrent(handle)) dispatch(InteractionEvent.AudioPlaybackFailed)
         }
-    }
-
-    private companion object {
-        // Compose resources are packaged under this folder in the APK's assets (same prefix as SpikeAudio).
-        const val BUNDLED_RESOURCES = "composeResources/miozira.shared.generated.resources/"
     }
 
     private val speechListener = object : SpeechAttemptListener {

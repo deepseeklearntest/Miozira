@@ -149,6 +149,6 @@ private fun ConceptLanguagePair.toPlaybackRequest() = WordPlaybackRequest(
     pairId = pairId,
     assetRef = AudioAssetRef(
         logicalId = audio.logicalId,
-        assetPath = "composeResources/miozira.shared.generated.resources/${audio.assetPath}",
+        assetPath = com.miozira.services.audio.BUNDLED_RESOURCES_ROOT + audio.assetPath,
     ),
 )
