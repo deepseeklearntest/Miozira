@@ -69,6 +69,18 @@ This document tracks unresolved product, content, engineering, and UX questions 
 - **Update 2026-11-17:** The scope is now five languages (forty pairs). Six of the eight draft pictures are to be replaced or repainted under the picture rules in `docs/superpowers/specs/2026-11-16-ui-ux-design.md`, section 8 (painted realistic, no faces, no glow); only apple and ball are kept. No Arabic, Japanese or Spanish word reaches the child before a native speaker has checked it.
 - **Required before family-test freeze:** Record visual provenance/licences; obtain fluent Tamil and English review of wording, pronunciation, and loudness; then promote each accepted pair from `DRAFT` to an approved review status.
 
+### OQ-010: Landscape Lock Is Not Enforced in the Manifest
+- **Referenced in:** `CLAUDE.md` (invariants: "The app is locked to landscape"), `docs/superpowers/specs/2026-11-16-ui-ux-design.md` (sideways only), `androidApp/src/main/AndroidManifest.xml`
+- **Context:** The manifest sets no `android:screenOrientation` and the code sets no `requestedOrientation`. Found during the parent-area review on 2026-11-17. The gap predates the parent-area plan and is outside its scope.
+- **Impact:** The tablet can turn the app to portrait, which breaks a stated invariant.
+- **Required:** Decide the enforcement point (manifest attribute or runtime) in a separate change.
+
+### OQ-011: Parent Area Home Omits Two Spec Categories Until Their Data Exists
+- **Referenced in:** `docs/superpowers/specs/2026-11-16-ui-ux-design.md` §10.2–10.3; `docs/superpowers/plans/2026-11-17-parent-area.md` ("Decisions made in this plan" and "Not in this plan")
+- **Context:** Spec §10.2 lists "Said before the app did" and a puzzle line in the most recent session summary, and §10.3 lists "How the puzzles are going" and "Voices". The parent-area plan builds none of them: "say it first" and the puzzles do not exist yet, and the Voices screen belongs with the guide-voice plan.
+- **Impact:** Until they land, the parent home shows fewer categories than the spec describes. No data is invented for them.
+- **Required:** Add the two categories, the puzzle page and Voices with the child-session/puzzle and guide-voice plans.
+
 ---
 
 ## 3. Decision Process

@@ -160,7 +160,7 @@ class ParentAccessController(random: (IntRange) -> Int = { it.random() }) {
 
 `ParentReadingStepScreen(challenge: ChallengeState, onDigit: (Int) -> Unit)`: parent background `#F6F3EE`, three lines of text ("Parents only", "Type this number:", `challenge.words`) and a 0–9 pad of ordinary buttons. It shows nothing about what was typed and has no cancel button. `MioziraApp` replaces `parentOpen` with the controller's state: `Locked` → child screen, `Challenge` → reading step plus a `LaunchedEffect(challenge.typed)` that waits `ParentChallenge.TIMEOUT_MS` and calls `timedOut()`, `Open` → parent area. "Back to child area" becomes "Lock and go back" and calls `lock()`. `MainActivity.onStop` calls `lock()`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 @Test fun startsLocked()
@@ -174,9 +174,9 @@ class ParentAccessController(random: (IntRange) -> Int = { it.random() }) {
 @Test fun aSecondChallenge_usesADifferentNumber()
 ```
 
-- [ ] **Step 2: Run** `--tests '*ParentAccessControllerTest'` — expect FAIL. **Step 3: Implement the controller, the screen and the wiring.** **Step 4: Run** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug` — expect PASS.
+- [x] **Step 2: Run** `--tests '*ParentAccessControllerTest'` — expect FAIL. **Step 3: Implement the controller, the screen and the wiring.** **Step 4: Run** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug` — expect PASS.
 - [ ] **Step 5: Manual check on an emulator:** a wrong number and ten seconds of nothing both return to the same child picture with no message or sound; pressing the home button with the parent area open and returning shows the child screen; two challenges in a row show different numbers.
-- [ ] **Step 6: Commit** `feat: two-step parent gate that locks itself again`.
+- [x] **Step 6: Commit** `feat: two-step parent gate that locks itself again`.
 
 ---
 
