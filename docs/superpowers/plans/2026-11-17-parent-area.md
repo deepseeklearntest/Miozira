@@ -389,17 +389,17 @@ Parent home, top to bottom, on `#F6F3EE`:
 
 No raw pair ID, count, date or duration appears on any of these screens. The existing per-pair "Family voice" button and `FamilyVoiceScreen` stay reachable from each "Noticed at home" row until the guide-voice plan replaces them with the Voices screen.
 
-- [ ] **Step 1: Implement the three screens and the navigation in `MioziraApp`** (a small `enum class ParentPage { HOME, LANGUAGES, MICROPHONE }` held with `remember`, reset to `HOME` whenever access returns to `Locked`).
-- [ ] **Step 2: Build** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug :androidApp:checkManifestPolicy` — expect BUILD SUCCESSFUL.
-- [ ] **Step 3: Manual check on an emulator**, noting each result in the commit body:
+- [x] **Step 1: Implement the three screens and the navigation in `MioziraApp`** (a small `enum class ParentPage { HOME, LANGUAGES, MICROPHONE }` held with `remember`, reset to `HOME` whenever access returns to `Locked`).
+- [x] **Step 2: Build** `./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug :androidApp:checkManifestPolicy` — expect BUILD SUCCESSFUL.
+- [ ] **Step 3: Manual check on an emulator**, noting each result in the commit body: *(NOT VERIFIED: no device attached; R10)*
   - before any session: the home shows "Miozira will describe his sessions here." and no four-words card;
   - after a session: sentences appear, with no number, date, duration or pair ID anywhere on any parent screen;
   - "He understood it" answers "Saved.";
   - the listening switch asks for the microphone once and stays off if refused;
   - "Start an extra session" → "Start" returns to a waiting child picture and the parent area is locked;
   - "Erase everything on this tablet" still needs its own confirmation.
-- [ ] **Step 4: Update the docs:** tick the AC-H07 items now true; in `CLAUDE.md` state that the parent area has the two-step gate and sentence-based home, and that Voices and the puzzle page are not built.
-- [ ] **Step 5: Commit** `feat: parent home in sentences with languages and privacy pages`.
+- [x] **Step 4: Update the docs:** tick the AC-H07 items now true; in `CLAUDE.md` state that the parent area has the two-step gate and sentence-based home, and that Voices and the puzzle page are not built.
+- [x] **Step 5: Commit** `feat: parent home in sentences with languages and privacy pages`.
 
 ---
 
