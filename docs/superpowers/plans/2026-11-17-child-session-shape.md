@@ -261,7 +261,7 @@ and in `AdaptiveSelectionTest`: change the expectation for the new-pair cap from
 
 `todayIsFinished` is true only when the last completed session ended on the same local day as now. A failed history read counts as not finished (never lock him out because of a read error).
 
-- [ ] **Step 1: Write the failing tests** with a fake `LocalDay { it / 86_400_000 }`:
+- [x] **Step 1: Write the failing tests** with a fake `LocalDay { it / 86_400_000 }`:
 
 ```kotlin
 @Test fun completedEarlierToday_isFinished()
@@ -272,8 +272,8 @@ and in `AdaptiveSelectionTest`: change the expectation for the new-pair cap from
 @Test fun languages_advanceWithCompletedSessions()     // count 0 -> en,ta ; count 1 -> ja,ar with five ready
 ```
 
-- [ ] **Step 2: Run** `--tests '*SessionScheduleTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** — expect PASS.
-- [ ] **Step 5: Commit** `feat: decide whether today's session is finished`.
+- [x] **Step 2: Run** `--tests '*SessionScheduleTest'` — expect FAIL. **Step 3: Implement.** **Step 4: Run** — expect PASS.
+- [x] **Step 5: Commit** `feat: decide whether today's session is finished`.
 
 ---
 
