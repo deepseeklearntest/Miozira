@@ -227,7 +227,7 @@ SELECT * FROM interaction WHERE session_id = (
 
 `ParentUiState` becomes `data class ParentUiState(val sessionLines: List<String>, val recentPairs: List<PairId>, val notice: Notice?)`; `recentPairs` is every pair in the summary and feeds the "Noticed at home" rows. `ParentPairActivity.exposureCount` and `lastExposedAtMs` are removed.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```kotlin
 @Test fun noSession_givesTheEmptySentence()
@@ -240,11 +240,11 @@ SELECT * FROM interaction WHERE session_id = (
 @Test fun noParentSentenceUsesAForbiddenWord()                // missed, failed, wrong, learned, mastered (case-insensitive)
 ```
 
-- [ ] **Step 2: Run** `--tests '*ParentSentencesTest'` — expect FAIL.
-- [ ] **Step 3: Implement** `ParentSentences.kt`, the DAO query, `RoomParentDataSource.mostRecentSession()` (group the rows into a `SessionSummary`) and the `ParentController`/`ParentUiState` change; update `ParentControllerTest` to the new data source.
-- [ ] **Step 4: Write the Room test** `RecentSessionQueryTest`: with two sessions, only the later one's heard interactions return; a later session with no heard word is skipped; an empty database returns `Success(null)`.
-- [ ] **Step 5: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS; `./gradlew :shared:connectedDebugAndroidTest` — expect PASS.
-- [ ] **Step 6: Commit** `feat: describe the most recent session in sentences`.
+- [x] **Step 2: Run** `--tests '*ParentSentencesTest'` — expect FAIL.
+- [x] **Step 3: Implement** `ParentSentences.kt`, the DAO query, `RoomParentDataSource.mostRecentSession()` (group the rows into a `SessionSummary`) and the `ParentController`/`ParentUiState` change; update `ParentControllerTest` to the new data source.
+- [x] **Step 4: Write the Room test** `RecentSessionQueryTest`: with two sessions, only the later one's heard interactions return; a later session with no heard word is skipped; an empty database returns `Success(null)`.
+- [ ] **Step 5: Run** `./gradlew :shared:testDebugUnitTest` — expect PASS; `./gradlew :shared:connectedDebugAndroidTest` — expect PASS. *(connected Room run NOT VERIFIED: no device attached; unit run PASS, 84 tests)*
+- [x] **Step 6: Commit** `feat: describe the most recent session in sentences`.
 
 ---
 
