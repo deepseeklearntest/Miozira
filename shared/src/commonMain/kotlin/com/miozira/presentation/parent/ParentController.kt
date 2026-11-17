@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 data class ParentUiState(
     val sessionLines: List<String> = describeSession(null, PrototypeContentRepository.languageNames),
     val recentPairs: List<PairId> = emptyList(),
+    val wordsForToday: List<String> = emptyList(),
     val notice: Notice? = null,
 ) {
     enum class Notice { SAVED, ERROR }
@@ -38,6 +39,7 @@ class ParentController(
                 val summary = result.value
                 ParentUiState(
                     sessionLines = describeSession(summary, PrototypeContentRepository.languageNames),
+                    wordsForToday = wordsForToday(summary, PrototypeContentRepository.languageNames),
                     recentPairs = summary?.let { it.tried + it.listened + it.heardUnmeasured }.orEmpty(),
                 )
             }

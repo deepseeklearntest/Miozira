@@ -2,6 +2,7 @@ package com.miozira.presentation.parent
 
 import com.miozira.content.LanguageId
 import com.miozira.content.PrototypeContentRepository
+import com.miozira.content.dailyMoments
 import com.miozira.core.model.PairId
 
 /** The most recent session in which at least one word was heard, grouped for the parent. */
@@ -53,4 +54,15 @@ fun describeSession(summary: SessionSummary?, languageNames: Map<LanguageId, Str
         line("Listened without speaking", summary.listened),
         line("Heard", summary.heardUnmeasured),
     )
+}
+
+/** Up to [max] lines "<moment>: <word>", tried first, then listened, then heard; one per concept. */
+fun wordsForToday(summary: SessionSummary?, languageNames: Map<LanguageId, String>, max: Int = 4): List<String> {
+    if (summary == null) return emptyList()
+    val pairs = PrototypeContentRepository.allPairs().associateBy { it.pairId }
+    return (summary.tried + summary.listened + summary.heardUnmeasured)
+        .mapNotNull { id -> pairs[id]?.let { pair -> dailyMoments[pair.conceptId]?.let { pair.conceptId to "$it: ${wordLabel(id, languageNames)}" } } }
+        .distinctBy { it.first }
+        .take(max)
+        .map { it.second }
 }
