@@ -117,6 +117,9 @@ This document tracks unresolved product, content, engineering, and UX questions 
 - The word cross-fade is keyed on the pair, so a repeat of the same pair does not cross-fade (the per-interaction flags do reset).
 - `SessionEndTest` (Room) and the other connected tests were compiled but not run: no device was attached.
 - The Xiaomi Pad check and the emulator screenshot check of the word screen were not done.
+- A clip that cannot open is reported twice (`onFailed(null)` and the returned `Failure`); the second `AudioPlaybackFailed` is rejected as invalid. Harmless; drop one path when convenient.
+- A background that cancels the step after the interaction row is inserted leaves a row that never completes; `resume()` creates a new one for the same step. Recovery sees it; no exposure is invented.
+- `AndroidSpeechAttemptDetector` handle ids are `session:interaction`, so the handle of a replayed interaction equals the earlier one. The late-result check relies on main-thread ordering, not on handle uniqueness. Make the id unique per start.
 
 ---
 
