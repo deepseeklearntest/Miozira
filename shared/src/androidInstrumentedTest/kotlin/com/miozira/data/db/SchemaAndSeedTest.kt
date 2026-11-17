@@ -29,7 +29,7 @@ class SchemaAndSeedTest {
             seedService.seedContent(PrototypeContentRepository.contentVersion)
 
             assertEquals(8, database.contentDao().conceptCount())
-            assertEquals(2, database.contentDao().languageCount())
+            assertEquals(5, database.contentDao().languageCount())
             assertEquals(16, database.contentDao().pairCount())
             assertEquals(16, database.contentDao().newPairStateCount())
 

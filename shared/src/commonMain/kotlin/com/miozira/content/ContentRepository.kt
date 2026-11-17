@@ -2,6 +2,31 @@ package com.miozira.content
 
 import com.miozira.core.model.PairId
 
+val languageOrder: List<LanguageId> = listOf("en", "ta", "ja", "ar", "es").map(::LanguageId)
+
+val languageNames: Map<LanguageId, String> = mapOf(
+    LanguageId("en") to "English",
+    LanguageId("ta") to "Tamil",
+    LanguageId("ja") to "Japanese",
+    LanguageId("ar") to "Arabic",
+    LanguageId("es") to "Spanish",
+)
+
+private val needsNativeReview = setOf(LanguageId("ja"), LanguageId("ar"), LanguageId("es"))
+
+/** Ready = one pair per concept; ja/ar/es also need every word checked by a native speaker. */
+fun readyLanguages(pairs: List<ConceptLanguagePair>, conceptCount: Int = 8): List<LanguageId> =
+    languageOrder.filter { language ->
+        val own = pairs.filter { it.languageId == language }
+        own.map { it.conceptId }.toSet().size == conceptCount &&
+            own.size == conceptCount &&
+            (language !in needsNativeReview ||
+                own.all {
+                    it.audio.reviewStatus == ContentReviewStatus.NATIVE_REVIEWED ||
+                        it.audio.reviewStatus == ContentReviewStatus.APPROVED
+                })
+    }
+
 object PrototypeContentRepository {
     const val contentVersion = "prototype-0.1-v1"
 
@@ -40,6 +65,11 @@ object PrototypeContentRepository {
             ?: error("No content pair for ${conceptId.value}:${languageId.value}")
 
     fun allPairs(): List<ConceptLanguagePair> = pairs
+
+    fun pairsFor(languageId: LanguageId): List<ConceptLanguagePair> =
+        pairs.filter { it.languageId == languageId }
+
+    fun readyLanguages(): List<LanguageId> = readyLanguages(pairs)
 
     private fun visual(concept: String, extension: String) = VisualAssetRef(
         logicalId = "visual.concept.$concept.draft",
