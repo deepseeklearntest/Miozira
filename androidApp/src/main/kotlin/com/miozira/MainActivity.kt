@@ -21,7 +21,7 @@ import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.LearningSessionEngine
 import com.miozira.domain.session.SessionSchedule
 import com.miozira.core.time.AndroidLocalDay
-import com.miozira.services.permissions.AttemptMeasurementDecision
+import com.miozira.services.permissions.decideAttemptMeasurement
 import com.miozira.domain.adaptive.AdaptivePairPlanner
 import com.miozira.domain.transfer.RealWorldTransferService
 import com.miozira.presentation.parent.ParentController
@@ -74,6 +74,7 @@ class MainActivity : ComponentActivity() {
             return
         }
         val childDetector = AndroidSpeechAttemptDetector(applicationContext)
+        val settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore)
         val privateFileStore = AndroidPrivateFileStore(applicationContext)
         val familyRepository = RoomFamilyRecordingRepository(database.familyRecordingDao())
         val familyService = AndroidFamilyRecordingService(privateFileStore, privateFileStore, childDetector)
@@ -115,7 +116,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     },
-                    settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore),
+                    settings = settings,
                     clock = AndroidClock,
                     onResetComplete = {
                         permissionHistory.edit().remove("record_audio_requested").apply()
@@ -171,8 +172,13 @@ class MainActivity : ComponentActivity() {
             clock = AndroidClock,
             scope = serviceScope,
             readyLanguages = PrototypeContentRepository::readyLanguages,
-            // Detection stays off until Task 9 wires the settings switch and the detector.
-            measurement = { AttemptMeasurementDecision.NOT_MEASURED },
+            speechAttemptDetector = childDetector,
+            measurement = {
+                decideAttemptMeasurement(
+                    settings.isSpeechAttemptDetectionEnabled() == com.miozira.core.result.AppResult.Success(true),
+                    permissionService.getMicrophonePermissionState(),
+                )
+            },
         )
         serviceScope.launch {
             privateFileStore.deleteOrphanTemporaryFiles()
