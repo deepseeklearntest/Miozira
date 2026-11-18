@@ -13,8 +13,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
       - name: Test and assemble
-        run: ./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug
+        run: ./gradlew :shared:testDebugUnitTest :androidApp:assembleDebug :androidApp:checkManifestPolicy
       - name: Release lint
         run: ./gradlew :androidApp:lintRelease
