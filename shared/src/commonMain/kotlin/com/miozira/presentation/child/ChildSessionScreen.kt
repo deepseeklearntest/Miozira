@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -16,25 +14,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.input.pointer.pointerInput
 import com.miozira.content.ConceptLanguagePair
 import com.miozira.content.VisualAssetRef
 import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.InteractionPhase
 import com.miozira.core.result.AppResult
+import com.miozira.presentation.parent.ParentCorner
 import com.miozira.services.audio.AudioAssetRef
 import com.miozira.services.audio.AudioError
 import com.miozira.services.audio.AudioPlaybackListener
 import com.miozira.services.audio.AudioService
 import com.miozira.services.audio.PlaybackHandle
 import com.miozira.services.audio.WordPlaybackRequest
+import kotlin.time.TimeSource
 import kotlinx.coroutines.launch
 import miozira.shared.generated.resources.Res
 import miozira.shared.generated.resources.concept_apple_draft
@@ -99,6 +97,7 @@ fun ChildSessionScreen(
     onParentGateUnlocked: () -> Unit = {},
 ) {
     val state by controller.state.collectAsState()
+    val clockStart = remember { TimeSource.Monotonic.markNow() }
     val current = state ?: return
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Button(
@@ -120,13 +119,10 @@ fun ChildSessionScreen(
                 modifier = Modifier.fillMaxSize(),
             )
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(48.dp)
-                .pointerInput(Unit) {
-                    detectTapGestures(onLongPress = { _: Offset -> onParentGateUnlocked() })
-                },
+        ParentCorner(
+            nowMs = { clockStart.elapsedNow().inWholeMilliseconds },
+            onHoldCompleted = onParentGateUnlocked,
+            modifier = Modifier.align(Alignment.TopEnd),
         )
     }
 }

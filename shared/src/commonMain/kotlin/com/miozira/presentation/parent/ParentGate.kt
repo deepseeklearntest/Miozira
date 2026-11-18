@@ -20,7 +20,7 @@ sealed interface ParentGateEvent {
 }
 
 object ParentGate {
-    const val REQUIRED_HOLD_MS = 2_000L
+    const val REQUIRED_HOLD_MS = 3_000L
     const val MAX_MOVEMENT_PX = 32f
 
     fun reduce(state: ParentGateState, event: ParentGateEvent): ParentGateState = when (event) {

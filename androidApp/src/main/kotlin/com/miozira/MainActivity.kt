@@ -21,6 +21,7 @@ import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.LearningSessionEngine
 import com.miozira.domain.adaptive.AdaptivePairPlanner
 import com.miozira.domain.transfer.RealWorldTransferService
+import com.miozira.presentation.parent.ParentAccessController
 import com.miozira.presentation.parent.ParentController
 import com.miozira.presentation.parent.FamilyRecordingController
 import com.miozira.presentation.parent.ParentActionsController
@@ -36,6 +37,7 @@ import com.miozira.services.audio.AndroidAudioService
 import com.miozira.services.permissions.AndroidPermissionService
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import java.util.UUID
 import androidx.datastore.preferences.preferencesDataStore
@@ -44,6 +46,7 @@ private val android.content.Context.mioziraSettingsDataStore by preferencesDataS
 
 class MainActivity : ComponentActivity() {
     private val serviceScope = MainScope()
+    private val parentAccess = ParentAccessController()
     private lateinit var audioService: AndroidAudioService
     private lateinit var database: com.miozira.data.db.MioziraDatabase
     private lateinit var childSessionController: ChildSessionController
@@ -80,6 +83,7 @@ class MainActivity : ComponentActivity() {
             nowMs = { AndroidClock.nowMs() },
             idGenerator = { UUID.randomUUID().toString() },
         )
+        val settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore)
         parentActionsController = ParentActionsController(
             ResetService(
                 RoomResetCoordinator(
@@ -111,16 +115,18 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     },
-                    settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore),
+                    settings = settings,
                     clock = AndroidClock,
                     onResetComplete = {
                         permissionHistory.edit().remove("record_audio_requested").apply()
                     },
                 ),
             ),
+            settings,
+            permissionService,
         )
         parentController = ParentController(
-            dataSource = RoomParentDataSource(database.contentDao()),
+            dataSource = RoomParentDataSource(database.interactionDao()),
             transferService = RealWorldTransferService(
                 RoomRealWorldObservationRepository(database.realWorldObservationDao()),
             ),
@@ -178,6 +184,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MioziraApp(
                 childSessionController,
+                parentAccess,
                 parentController,
                 familyRecordingController,
                 parentActionsController,
@@ -187,7 +194,13 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onStop() {
+        parentAccess.lock()
         if (::childSessionController.isInitialized) childSessionController.onBackground()
+        // security.md §19: stop family recording on background. UNDISPATCHED starts the cancel
+        // inside onStop, so an onDestroy that cancels serviceScope cannot drop it.
+        if (::familyRecordingController.isInitialized) {
+            serviceScope.launch(start = CoroutineStart.UNDISPATCHED) { familyRecordingController.onBackground() }
+        }
         super.onStop()
     }
 

@@ -209,7 +209,7 @@ warm launch ~<=2 s
 
 - [ ] Child does not casually enter parent controls during normal tapping.
 - [ ] Nothing is drawn at the parent corner; a short tap there does nothing; the 3-second hold shows no progress.
-- [ ] The reading step shows a two-digit number written as a word, different each time.
+- [x] The reading step shows a two-digit number written as a word, different each time.
 - [ ] A wrong number, or 10 seconds without input, returns silently to the same child state.
 - [ ] The parent area locks again on leaving it and when the screen turns off.
 - [ ] Parent can mark “He understood it.”
