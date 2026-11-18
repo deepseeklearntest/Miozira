@@ -7,13 +7,19 @@ class ParentGateTest {
     @Test
     fun shortTap_doesNotUnlock() {
         val holding = ParentGate.reduce(ParentGateState(), ParentGateEvent.PressStarted(1_000L, 0f, 0f))
+        assertEquals(ParentGateState.Phase.IDLE, ParentGate.reduce(holding, ParentGateEvent.Released(1_100L)).phase)
+    }
+
+    @Test
+    fun holdOfTwoPointNineSeconds_doesNotUnlock() {
+        val holding = ParentGate.reduce(ParentGateState(), ParentGateEvent.PressStarted(0L, 0f, 0f))
         assertEquals(ParentGateState.Phase.IDLE, ParentGate.reduce(holding, ParentGateEvent.Released(2_999L)).phase)
     }
 
     @Test
-    fun exactTwoSecondStableHold_unlocks() {
+    fun exactThreeSecondStableHold_unlocks() {
         val holding = ParentGate.reduce(ParentGateState(), ParentGateEvent.PressStarted(1_000L, 0f, 0f))
-        assertEquals(ParentGateState.Phase.UNLOCKED, ParentGate.reduce(holding, ParentGateEvent.Released(3_000L)).phase)
+        assertEquals(ParentGateState.Phase.UNLOCKED, ParentGate.reduce(holding, ParentGateEvent.Released(4_000L)).phase)
     }
 
     @Test

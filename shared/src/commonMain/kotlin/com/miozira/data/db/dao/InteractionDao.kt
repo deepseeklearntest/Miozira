@@ -11,6 +11,25 @@ interface InteractionDao {
     @Query("SELECT * FROM interaction WHERE interaction_id = :interactionId")
     suspend fun findInteraction(interactionId: String): InteractionEntity?
 
+    @Query(
+        "SELECT * FROM interaction WHERE session_id = (" +
+            "SELECT s.session_id FROM session s " +
+            "WHERE EXISTS (SELECT 1 FROM interaction x WHERE x.session_id = s.session_id AND x.exposure_committed = 1) " +
+            "ORDER BY s.started_at_ms DESC LIMIT 1" +
+            ") AND exposure_committed = 1 ORDER BY sequence_index",
+    )
+    suspend fun heardInMostRecentSession(): List<InteractionEntity>
+
+    @Query("SELECT * FROM pair_learning_state")
+    suspend fun allPairStates(): List<PairLearningStateEntity>
+
+    /** Pairs with at least one measured listening result (attempt or no attempt). */
+    @Query(
+        "SELECT DISTINCT pair_id FROM interaction " +
+            "WHERE attempt_state IN ('ATTEMPT_DETECTED', 'NO_ATTEMPT_DETECTED')",
+    )
+    suspend fun measuredPairIds(): List<String>
+
     @Query("SELECT * FROM pair_learning_state WHERE pair_id = :pairId")
     suspend fun findPairState(pairId: String): PairLearningStateEntity?
 

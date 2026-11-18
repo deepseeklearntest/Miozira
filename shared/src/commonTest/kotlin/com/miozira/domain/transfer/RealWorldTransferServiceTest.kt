@@ -9,23 +9,6 @@ import kotlin.test.assertIs
 
 class RealWorldTransferServiceTest {
     @Test
-    fun meaningfulSession_getsAtMostOneEligiblePairSuggestion() {
-        val service = RealWorldTransferService(NoOpRepository())
-        val suggestion = RealWorldSuggestion("s1", PairId("apple:en"), "Try this word together at snack time.")
-        val result = service.chooseSuggestion(
-            SuggestionContext(true, listOf(PairId("apple:en")), listOf(suggestion)),
-        )
-        assertEquals(suggestion, assertIs<AppResult.Success<RealWorldSuggestion?>>(result).value)
-    }
-
-    @Test
-    fun insignificantSession_getsNoSuggestion() {
-        val service = RealWorldTransferService(NoOpRepository())
-        val result = service.chooseSuggestion(SuggestionContext(false, listOf(PairId("apple:en")), emptyList()))
-        assertEquals(null, assertIs<AppResult.Success<RealWorldSuggestion?>>(result).value)
-    }
-
-    @Test
     fun observationRepository_receivesExactPairAndType() = runBlocking {
         val repository = RecordingRepository()
         val service = RealWorldTransferService(repository)

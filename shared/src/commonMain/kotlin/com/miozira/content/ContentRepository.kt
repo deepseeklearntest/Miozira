@@ -30,6 +30,11 @@ fun readyLanguages(pairs: List<ConceptLanguagePair>, conceptCount: Int = 8): Lis
 object PrototypeContentRepository {
     const val contentVersion = "prototype-0.1-v1"
 
+    /** The language the family speaks; its words are shown bare in the parent area. */
+    val baseLanguageId = LanguageId("en")
+
+    val languageNames: Map<LanguageId, String> get() = com.miozira.content.languageNames
+
     private val visuals = mapOf(
         "apple" to visual("apple", "png"),
         "ball" to visual("ball", "png"),
