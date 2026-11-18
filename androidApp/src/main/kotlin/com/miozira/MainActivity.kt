@@ -19,6 +19,9 @@ import com.miozira.data.repository.FamilyRecordingCleanup
 import com.miozira.data.repository.RoomResetCoordinator
 import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.LearningSessionEngine
+import com.miozira.domain.session.SessionSchedule
+import com.miozira.core.time.AndroidLocalDay
+import com.miozira.services.permissions.decideAttemptMeasurement
 import com.miozira.domain.adaptive.AdaptivePairPlanner
 import com.miozira.domain.transfer.RealWorldTransferService
 import com.miozira.presentation.parent.ParentAccessController
@@ -54,6 +57,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var parentController: ParentController
     private lateinit var familyRecordingController: FamilyRecordingController
     private lateinit var parentActionsController: ParentActionsController
+    private var startupDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +77,7 @@ class MainActivity : ComponentActivity() {
             return
         }
         val childDetector = AndroidSpeechAttemptDetector(applicationContext)
+        val settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore)
         val privateFileStore = AndroidPrivateFileStore(applicationContext)
         val familyRepository = RoomFamilyRecordingRepository(database.familyRecordingDao())
         val familyService = AndroidFamilyRecordingService(privateFileStore, privateFileStore, childDetector)
@@ -83,7 +88,6 @@ class MainActivity : ComponentActivity() {
             nowMs = { AndroidClock.nowMs() },
             idGenerator = { UUID.randomUUID().toString() },
         )
-        val settings = DataStoreSettingsRepository(applicationContext.mioziraSettingsDataStore)
         parentActionsController = ParentActionsController(
             ResetService(
                 RoomResetCoordinator(
@@ -168,9 +172,18 @@ class MainActivity : ComponentActivity() {
                 ),
             ),
             persistence = persistence,
+            schedule = SessionSchedule(RoomSessionRepository(database.sessionDao()), AndroidLocalDay, AndroidClock),
             audioService = audioService,
             clock = AndroidClock,
             scope = serviceScope,
+            readyLanguages = PrototypeContentRepository::readyLanguages,
+            speechAttemptDetector = childDetector,
+            measurement = {
+                decideAttemptMeasurement(
+                    settings.isSpeechAttemptDetectionEnabled() == com.miozira.core.result.AppResult.Success(true),
+                    permissionService.getMicrophonePermissionState(),
+                )
+            },
         )
         serviceScope.launch {
             privateFileStore.deleteOrphanTemporaryFiles()
@@ -179,7 +192,8 @@ class MainActivity : ComponentActivity() {
                 nowMs = System::currentTimeMillis,
             ).seedContent(PrototypeContentRepository.contentVersion)
             RoomRecoveryService(database.recoveryDao(), AndroidClock).recoverInterruptedSessions()
-            childSessionController.start()
+            childSessionController.open()
+            startupDone = true
         }
         setContent {
             MioziraApp(
@@ -206,7 +220,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (::childSessionController.isInitialized) childSessionController.onForeground()
+        // Before startup finishes (seed and recovery), onCreate's own open() covers the first start.
+        if (startupDone) serviceScope.launch { childSessionController.open() }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

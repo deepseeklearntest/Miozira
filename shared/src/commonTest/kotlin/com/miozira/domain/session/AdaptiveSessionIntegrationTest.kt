@@ -34,7 +34,7 @@ class AdaptiveSessionIntegrationTest {
             idGenerator = { "$it-1" },
         )
         engine.startSession()
-        engine.beginInteraction()
+        engine.beginInteraction(SessionStep.Word(SessionPart.WARM_UP, com.miozira.content.LanguageId("en"), easy = true))
         assertEquals("EASY_OPENER", persistence.interactions.single().selectionReason)
         assertEquals("apple:en", persistence.interactions.single().pair.pairId.value)
     }
@@ -44,7 +44,9 @@ class AdaptiveSessionIntegrationTest {
         override suspend fun createSession(snapshot: SessionSnapshot) = AppResult.Success(Unit)
         override suspend fun createInteraction(plan: InteractionPlan): AppResult<Unit> { interactions += plan; return AppResult.Success(Unit) }
         override suspend fun commitExposure(interactionId: InteractionId, committedAtMs: Long) = AppResult.Success(Unit)
+        override suspend fun recordReplay(interactionId: InteractionId) = AppResult.Success(Unit)
         override suspend fun recordAttempt(interactionId: InteractionId, state: AttemptState, recordedAtMs: Long) = AppResult.Success(Unit)
         override suspend fun completeInteraction(interactionId: InteractionId, reason: InteractionCompletionReason, completedAtMs: Long) = AppResult.Success(Unit)
+        override suspend fun endSession(sessionId: com.miozira.core.model.SessionId, reason: SessionEndReason, endedAtMs: Long) = AppResult.Success(Unit)
     }
 }

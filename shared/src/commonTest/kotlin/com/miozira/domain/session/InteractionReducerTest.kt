@@ -1,6 +1,7 @@
 package com.miozira.domain.session
 
 import com.miozira.core.model.AttemptState
+import com.miozira.core.model.InteractionCompletionReason
 import com.miozira.core.model.InteractionId
 import com.miozira.core.model.PairId
 import com.miozira.core.model.SessionId
@@ -87,6 +88,67 @@ class InteractionReducerTest {
         val backgrounded = reduce(playing, InteractionEvent.AppBackgrounded)
         assertEquals(InteractionPhase.IDLE, backgrounded.state.phase)
         assertFalse(backgrounded.state.exposureCommitted)
+    }
+
+    private fun playing(): InteractionState {
+        var state = base
+        state = reduce(state, InteractionEvent.StartSession).state
+        state = reduce(state, InteractionEvent.PresentationSettled).state
+        return reduce(state, InteractionEvent.ConceptTapped).state
+    }
+
+    private fun listening(): InteractionState {
+        var state = reduce(playing(), InteractionEvent.WordPlaybackReachedExposureThreshold).state
+        state = reduce(state, InteractionEvent.WordPlaybackCompleted).state
+        return reduce(state, InteractionEvent.InviteCompleted).state
+    }
+
+    @Test
+    fun replayDuringListening_replaysTheWord_andCountsTheReplay() {
+        val state = listening()
+        assertEquals(InteractionPhase.LISTENING, state.phase)
+        val replay = reduce(state, InteractionEvent.ReplayRequested(state.sessionId, state.interactionId))
+        assertEquals(InteractionPhase.PLAYING_WORD, replay.state.phase)
+        assertEquals(1, replay.state.replayCount)
+        assertEquals(
+            listOf(InteractionEffect.StopListening, InteractionEffect.PlayCanonicalWord, InteractionEffect.RecordReplay),
+            replay.effects,
+        )
+        val inviting = reduce(reduce(playing(), InteractionEvent.WordPlaybackCompleted).state, InteractionEvent.ReplayRequested(state.sessionId, state.interactionId))
+        assertEquals(InteractionPhase.PLAYING_WORD, inviting.state.phase)
+        val responding = reduce(state, InteractionEvent.ListeningTimeout).state
+        val fromResponding = reduce(responding, InteractionEvent.ReplayRequested(state.sessionId, state.interactionId))
+        assertEquals(InteractionPhase.PLAYING_WORD, fromResponding.state.phase)
+        assertEquals(1, fromResponding.state.replayCount)
+    }
+
+    @Test
+    fun afterAReplay_theExposureThresholdDoesNotCommitAgain() {
+        val state = listening()
+        val replayed = reduce(state, InteractionEvent.ReplayRequested(state.sessionId, state.interactionId)).state
+        assertTrue(replayed.exposureCommitted)
+        val threshold = reduce(replayed, InteractionEvent.WordPlaybackReachedExposureThreshold)
+        assertTrue(threshold.state.exposureCommitted)
+        assertFalse(InteractionEffect.CommitExposure in threshold.effects)
+    }
+
+    @Test
+    fun replayWithStaleIds_isIgnored() {
+        val state = listening()
+        val staleInteraction = reduce(state, InteractionEvent.ReplayRequested(state.sessionId, InteractionId("old")))
+        assertEquals(state, staleInteraction.state)
+        assertEquals(listOf(InteractionEffect.DiagnosticInvalidEvent), staleInteraction.effects)
+        val staleSession = reduce(state, InteractionEvent.ReplayRequested(SessionId("old"), state.interactionId))
+        assertEquals(state, staleSession.state)
+        assertEquals(listOf(InteractionEffect.DiagnosticInvalidEvent), staleSession.effects)
+    }
+
+    @Test
+    fun failedClip_completesTheInteractionAsContentError_andDoesNotEndTheSession() {
+        val failed = reduce(playing(), InteractionEvent.AudioPlaybackFailed)
+        assertEquals(InteractionPhase.TRANSITIONING, failed.state.phase)
+        assertEquals(InteractionCompletionReason.CONTENT_ERROR, failed.state.completionReason)
+        assertEquals(listOf(InteractionEffect.CompleteInteraction), failed.effects)
     }
 
     @Test

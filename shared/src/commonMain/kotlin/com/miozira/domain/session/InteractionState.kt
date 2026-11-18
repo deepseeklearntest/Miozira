@@ -65,6 +65,7 @@ sealed interface InteractionEffect {
     data object StartListening : InteractionEffect
     data object StopListening : InteractionEffect
     data object RecordAttempt : InteractionEffect
+    data object RecordReplay : InteractionEffect
     data object CompleteInteraction : InteractionEffect
     data object EndSession : InteractionEffect
     data object StopPlayback : InteractionEffect
@@ -81,6 +82,13 @@ fun reduce(state: InteractionState, event: InteractionEvent): Transition {
     fun invalid() = unchanged(InteractionEffect.DiagnosticInvalidEvent)
     fun move(phase: InteractionPhase, vararg effects: InteractionEffect) =
         Transition(state.copy(phase = phase), effects.toList())
+    // Replay during his turn: play the word again; exposureCommitted is untouched, so no second exposure.
+    fun replay(event: InteractionEvent.ReplayRequested) = if (state.accepts(event.sessionId, event.interactionId)) {
+        Transition(
+            state.copy(phase = InteractionPhase.PLAYING_WORD, replayCount = state.replayCount + 1),
+            listOf(InteractionEffect.StopListening, InteractionEffect.PlayCanonicalWord, InteractionEffect.RecordReplay),
+        )
+    } else invalid()
 
     return when (state.phase) {
         InteractionPhase.SESSION_STARTING -> when (event) {
@@ -114,11 +122,15 @@ fun reduce(state: InteractionState, event: InteractionEvent): Transition {
             InteractionEvent.OrientationChanged -> unchanged()
             InteractionEvent.AppBackgrounded -> move(InteractionPhase.IDLE, InteractionEffect.StopPlayback, InteractionEffect.StopListening)
             InteractionEvent.SessionStopRequested -> move(InteractionPhase.SESSION_ENDING, InteractionEffect.StopPlayback, InteractionEffect.EndSession)
-            InteractionEvent.AudioPlaybackFailed -> move(InteractionPhase.SESSION_ENDING, InteractionEffect.EndSession)
+            InteractionEvent.AudioPlaybackFailed -> Transition(
+                state.copy(phase = InteractionPhase.TRANSITIONING, completionReason = InteractionCompletionReason.CONTENT_ERROR),
+                listOf(InteractionEffect.CompleteInteraction),
+            )
             else -> invalid()
         }
         InteractionPhase.INVITING -> when (event) {
             InteractionEvent.InviteCompleted -> move(InteractionPhase.LISTENING, InteractionEffect.StartListening)
+            is InteractionEvent.ReplayRequested -> replay(event)
             InteractionEvent.OrientationChanged -> unchanged()
             InteractionEvent.AppBackgrounded -> move(InteractionPhase.IDLE, InteractionEffect.StopListening)
             InteractionEvent.SessionStopRequested -> move(InteractionPhase.SESSION_ENDING, InteractionEffect.StopListening, InteractionEffect.EndSession)
@@ -131,6 +143,7 @@ fun reduce(state: InteractionState, event: InteractionEvent): Transition {
                     listOf(InteractionEffect.RecordAttempt),
                 )
             } else unchanged(InteractionEffect.DiagnosticInvalidEvent)
+            is InteractionEvent.ReplayRequested -> replay(event)
             InteractionEvent.ListeningTimeout -> Transition(
                 state.copy(phase = InteractionPhase.RESPONDING, attemptState = AttemptState.NO_ATTEMPT_DETECTED),
                 listOf(InteractionEffect.RecordAttempt),
@@ -142,6 +155,7 @@ fun reduce(state: InteractionState, event: InteractionEvent): Transition {
         }
         InteractionPhase.RESPONDING -> when (event) {
             InteractionEvent.ResponseAcknowledged -> move(InteractionPhase.TRANSITIONING, InteractionEffect.CompleteInteraction)
+            is InteractionEvent.ReplayRequested -> replay(event)
             InteractionEvent.OrientationChanged -> unchanged()
             InteractionEvent.AppBackgrounded -> move(InteractionPhase.IDLE, InteractionEffect.StopListening)
             InteractionEvent.SessionStopRequested -> move(InteractionPhase.SESSION_ENDING, InteractionEffect.EndSession)

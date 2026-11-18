@@ -1,6 +1,8 @@
 package com.miozira.presentation.child
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -22,6 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.miozira.content.ConceptLanguagePair
 import com.miozira.content.VisualAssetRef
+import com.miozira.domain.session.ChildScreenState
 import com.miozira.domain.session.ChildSessionController
 import com.miozira.domain.session.InteractionPhase
 import com.miozira.core.result.AppResult
@@ -98,27 +102,14 @@ fun ChildSessionScreen(
 ) {
     val state by controller.state.collectAsState()
     val clockStart = remember { TimeSource.Monotonic.markNow() }
-    val current = state ?: return
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(
-            modifier = Modifier.fillMaxSize().padding(48.dp).semantics {
-                contentDescription = "${current.pair.spokenForm}. Tap to hear the word."
-                role = Role.Button
-            },
-            enabled = current.phase == InteractionPhase.READY || current.phase == InteractionPhase.RESPONDING,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF2EEE7)),
-            onClick = {
-                if (current.phase == InteractionPhase.READY) controller.tap()
-                else controller.acknowledgeResponse()
-            },
-        ) {
-            Image(
-                painter = painterResource(current.pair.visual.toDrawableResource()),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize(),
-            )
+    Box(Modifier.fillMaxSize().background(Color(0xFFF2EEE7)), contentAlignment = Alignment.Center) {
+        // Loading, Breath and Quiet are the plain background, with nothing described. Only Quiet
+        // takes a tap (no indication, no sound): the controller resumes a paused session from it.
+        (state as? ChildScreenState.Word)?.let { WordScreen(it, onTap = controller::tap) }
+        if (state == ChildScreenState.Quiet) {
+            Box(Modifier.fillMaxSize().pointerInput(Unit) { detectTapGestures(onTap = { controller.tap() }) })
         }
+        // Drawn last so the parent hold wins over the Quiet tap layer in the corner.
         ParentCorner(
             nowMs = { clockStart.elapsedNow().inWholeMilliseconds },
             onHoldCompleted = onParentGateUnlocked,
@@ -145,6 +136,6 @@ private fun ConceptLanguagePair.toPlaybackRequest() = WordPlaybackRequest(
     pairId = pairId,
     assetRef = AudioAssetRef(
         logicalId = audio.logicalId,
-        assetPath = "composeResources/miozira.shared.generated.resources/${audio.assetPath}",
+        assetPath = com.miozira.services.audio.BUNDLED_RESOURCES_ROOT + audio.assetPath,
     ),
 )

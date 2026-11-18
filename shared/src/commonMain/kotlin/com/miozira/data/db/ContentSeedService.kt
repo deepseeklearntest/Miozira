@@ -55,6 +55,9 @@ class ContentSeedService(
         val languages = listOf(
             LanguageEntity("en", "en", "English", true),
             LanguageEntity("ta", "ta", "Tamil", true),
+            LanguageEntity("ja", "ja", "Japanese", true),
+            LanguageEntity("ar", "ar", "Arabic", true),
+            LanguageEntity("es", "es", "Spanish", true),
         )
         val pairEntities = pairs.map { pair ->
             ConceptLanguagePairEntity(

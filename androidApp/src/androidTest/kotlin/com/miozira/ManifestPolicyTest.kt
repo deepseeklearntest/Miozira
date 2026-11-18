@@ -1,6 +1,8 @@
 package com.miozira
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -24,5 +26,12 @@ class ManifestPolicyTest {
 
         assertEquals(setOf(Manifest.permission.RECORD_AUDIO), platformPermissions)
         assertFalse(Manifest.permission.INTERNET in platformPermissions)
+    }
+
+    @Test
+    fun mainActivity_isLockedToLandscape() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val info = context.packageManager.getActivityInfo(ComponentName(context, "com.miozira.MainActivity"), 0)
+        assertEquals(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, info.screenOrientation)
     }
 }
